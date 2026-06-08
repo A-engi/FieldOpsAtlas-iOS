@@ -6,8 +6,8 @@ The current app is a lightweight GitHub Pages build. It uses Leaflet for the map
 
 ## Live app
 
-- GitHub Pages: https://beezelbun.github.io/The-Field-Engineers-Atlas/
-- Repository: https://github.com/BeezelBun/The-Field-Engineers-Atlas
+- GitHub Pages: https://.github.io/
+- Repository: https://github.com/
 
 ## Current focus
 
