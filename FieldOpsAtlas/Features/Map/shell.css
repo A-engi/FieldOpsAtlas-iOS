@@ -356,7 +356,7 @@
   background-size: var(--site-search-icon-size) var(--site-search-icon-size), 100% 100%;
   background-position: var(--site-search-icon-left) center, center;
   background-image:
-    url("../../../icons/search.svg"),
+    url("../../../data/icons/search.svg"),
     linear-gradient(180deg, var(--chrome-control-bg-top), var(--chrome-control-bg-bottom));
   font-size: var(--site-search-font-size);
   font-weight: var(--site-search-font-weight);
@@ -379,7 +379,7 @@
   border-color: var(--site-search-focus-border);
   background-color: var(--chrome-control-bg);
   background-image:
-    url("../../../icons/search.svg"),
+    url("../../../data/icons/search.svg"),
     linear-gradient(180deg, var(--site-search-focus-bg-top), var(--site-search-focus-bg-bottom));
   box-shadow: var(--site-search-focus-shadow);
 }
