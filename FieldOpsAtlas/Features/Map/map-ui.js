@@ -671,9 +671,9 @@
 
     return [
       weatherCodeLabel(forecast.weatherCode),
-      formatNumber(forecast.temperature, "Â°C", 1),
-      "feels " + formatNumber(forecast.feelsLike, "Â°C", 1)
-    ].join(" Â· ");
+      formatNumber(forecast.temperature, "ÃÂ°C", 1),
+      "feels " + formatNumber(forecast.feelsLike, "ÃÂ°C", 1)
+    ].join(" ÃÂ· ");
   }
 
   function renderWindLine(forecast) {
@@ -682,7 +682,7 @@
     return [
       "Wind " + formatNumber(forecast.windSpeed, " mph", 0),
       "gust " + formatNumber(forecast.windGusts, " mph", 0)
-    ].join(" Â· ");
+    ].join(" ÃÂ· ");
   }
 
   function renderLightningLine(forecast) {
@@ -691,7 +691,7 @@
     var risk = forecast.risk || calculateRisk(forecast);
 
     if (risk.flags.indexOf("Thunder") !== -1) {
-      return "Thunder risk in forecast Â· check live strike map";
+      return "Thunder risk in forecast ÃÂ· check live strike map";
     }
 
     return "No thunder flag in 6h forecast";
@@ -819,9 +819,9 @@
     var summary = document.createElement("p");
     summary.className = "visible-weather-empty";
     summary.textContent = "Risk sort: " +
-      counts.high + " high Â· " +
-      counts.watch + " watch Â· " +
-      counts.low + " normal Â· " +
+      counts.high + " high ÃÂ· " +
+      counts.watch + " watch ÃÂ· " +
+      counts.low + " normal ÃÂ· " +
       counts.unknown + " manual";
 
     list.appendChild(summary);
@@ -838,21 +838,21 @@
     card.appendChild(title);
 
     var meta = document.createElement("span");
-    meta.textContent = getRegionName(walk.regionId) + " Â· " + walk.lat.toFixed(4) + ", " + walk.lng.toFixed(4);
+    meta.textContent = getRegionName(walk.regionId) + " ÃÂ· " + walk.lat.toFixed(4) + ", " + walk.lng.toFixed(4);
     card.appendChild(meta);
 
     var status = document.createElement("small");
 
     if (walk.forecast) {
-      status.textContent = risk.label + " Â· " +
-        risk.flags.join(" Â· ") + " Â· " +
-        weatherCodeLabel(walk.forecast.weatherCode) + " Â· " +
-        formatNumber(walk.forecast.temperature, "Â°C", 1) + " Â· " +
-        "wind " + formatNumber(walk.forecast.windSpeed, " mph", 0) + " Â· " +
-        "gust " + formatNumber(walk.forecast.windGusts, " mph", 0) + " Â· " +
+      status.textContent = risk.label + " ÃÂ· " +
+        risk.flags.join(" ÃÂ· ") + " ÃÂ· " +
+        weatherCodeLabel(walk.forecast.weatherCode) + " ÃÂ· " +
+        formatNumber(walk.forecast.temperature, "ÃÂ°C", 1) + " ÃÂ· " +
+        "wind " + formatNumber(walk.forecast.windSpeed, " mph", 0) + " ÃÂ· " +
+        "gust " + formatNumber(walk.forecast.windGusts, " mph", 0) + " ÃÂ· " +
         "rain " + formatNumber(walk.forecast.maxRainChance, "%", 0);
     } else {
-      status.textContent = "Forecast unavailable â point kept separate for manual check.";
+      status.textContent = "Forecast unavailable Ã¢ÂÂ point kept separate for manual check.";
     }
 
     card.appendChild(status);
@@ -985,7 +985,7 @@
     clearWeatherRiskLayer();
 
     /*
-      WEATHER MAP OVERLAY PAUSED â keep this here for later development.
+      WEATHER MAP OVERLAY PAUSED Ã¢ÂÂ keep this here for later development.
 
       Original intent:
       - draw visual weather-risk markers for visible walks
@@ -1016,8 +1016,8 @@
 
         marker.bindPopup(
           '<strong>' + escapeHtml(walk.name) + '</strong><br>' +
-          escapeHtml(walk.risk ? walk.risk.label : "Weather") + ' Â· ' +
-          escapeHtml(walk.risk ? walk.risk.flags.join(" Â· ") : "Manual check")
+          escapeHtml(walk.risk ? walk.risk.label : "Weather") + ' ÃÂ· ' +
+          escapeHtml(walk.risk ? walk.risk.flags.join(" ÃÂ· ") : "Manual check")
         );
 
         marker.addTo(layer);
@@ -1204,7 +1204,7 @@
     }
 
     var link = selectedDnoLink();
-    var postcode = settings.postcode ? " Â· " + settings.postcode : "";
+    var postcode = settings.postcode ? " ÃÂ· " + settings.postcode : "";
 
     target.textContent = link.label + postcode;
   }
@@ -1304,7 +1304,7 @@
 
     list.innerHTML = notes.map(function (note) {
       var date = formatNoteDate(note.createdAt);
-      var site = note.siteName ? " Â· " + note.siteName : "";
+      var site = note.siteName ? " ÃÂ· " + note.siteName : "";
 
       return [
         '<article class="field-note-card" data-note-id="' + escapeHtml(note.id) + '">',
@@ -1369,10 +1369,10 @@
         if (node.nodeType !== Node.TEXT_NODE) return;
 
         node.nodeValue = node.nodeValue
-          .replace(/ÃÂ·/g, "Â·")
-          .replace(/Ã¢ÂÂ/g, "â")
-          .replace(/Ã¢ÂÂ/g, "â")
-          .replace(/Ã¢ÂÂ/g, "â");
+          .replace(/ÃÂÃÂ·/g, "ÃÂ·")
+          .replace(/ÃÂ¢ÃÂÃÂ/g, "Ã¢ÂÂ")
+          .replace(/ÃÂ¢ÃÂÃÂ/g, "Ã¢ÂÂ")
+          .replace(/ÃÂ¢ÃÂÃÂ/g, "Ã¢ÂÂ");
       });
     });
   }
