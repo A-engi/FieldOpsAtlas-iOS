@@ -1,26 +1,36 @@
-/* RF ATLAS SERVICE WORKER v0.1.54
-   Caches the public prototype shell so the app can reopen offline. */
-
-const CACHE_NAME = "rf-atlas-v0.1.54";
+/* FIELDOPS ATLAS SERVICE WORKER v1.1.1-profile
+   Keeps the browser prototype usable offline where possible.
+   Map remains the main fallback page.
+*/
+const CACHE_NAME = "fieldops-atlas-v1.1.1-profile";
+const MAP_FALLBACK = "./FieldOpsAtlas/Features/Map/index.html";
 
 const CORE_FILES = [
   "./",
   "./index.html",
-  "./shell.css?v=0.1.54",
-  "./shell.js?v=0.1.54",
-  "./rf.css?v=0.1.54",
-  "./rf-demo-map.js",
-  "./map.html",
-  "./sites.html",
-  "./network.html",
-  "./tools.html",
-  "./dtt.html",
-  "./dab.html",
-  "./fm.html",
-  "./services.html",
-  "./equipment.html",
-  "./paths.html",
-  "./settings.html"
+  MAP_FALLBACK,
+  "./FieldOpsAtlas/Features/Profile/index.html",
+  "./FieldOpsAtlas/Features/RF/index.html",
+  "./FieldOpsAtlas/Features/RF/sites.html",
+  "./FieldOpsAtlas/Features/RF/dtt.html",
+  "./FieldOpsAtlas/Features/RF/dab.html",
+  "./FieldOpsAtlas/Features/RF/fm.html",
+  "./FieldOpsAtlas/Features/RF/services.html",
+  "./FieldOpsAtlas/Features/RF/equipment.html",
+  "./FieldOpsAtlas/Features/RF/paths.html",
+  "./FieldOpsAtlas/Features/RF/settings.html",
+  "./FieldOpsAtlas/Features/RF/shell.css?v=1.1.1",
+  "./FieldOpsAtlas/Features/RF/shell.css?v=1.1.1-profile",
+  "./FieldOpsAtlas/Features/RF/shell.js?v=1.1.1",
+  "./FieldOpsAtlas/Features/RF/shell.js?v=1.1.1-profile",
+  "./FieldOpsAtlas/Features/RF/page.css?v=1.1.1",
+  "./FieldOpsAtlas/Features/RF/page.css?v=1.1.1-profile",
+  "./FieldOpsAtlas/Features/RF/rf.css?v=1.1.1",
+  "./FieldOpsAtlas/Features/RF/rf.css?v=1.1.1-profile",
+  "./FieldOpsAtlas/Features/RF/rf-demo-map.js",
+  "./FieldOpsAtlas/Features/Network/index.html",
+  "./FieldOpsAtlas/Features/Docs/index.html",
+  "./FieldOpsAtlas/Features/Tools/index.html"
 ];
 
 self.addEventListener("install", (event) => {
@@ -28,6 +38,7 @@ self.addEventListener("install", (event) => {
     caches.open(CACHE_NAME)
       .then((cache) => cache.addAll(CORE_FILES))
       .then(() => self.skipWaiting())
+      .catch(() => self.skipWaiting())
   );
 });
 
@@ -49,6 +60,9 @@ self.addEventListener("fetch", (event) => {
         caches.open(CACHE_NAME).then((cache) => cache.put(event.request, copy));
         return response;
       })
-      .catch(() => caches.match(event.request, { ignoreSearch: true }).then((cached) => cached || caches.match("./index.html")))
+      .catch(() => {
+        return caches.match(event.request, { ignoreSearch: true })
+          .then((cached) => cached || caches.match(MAP_FALLBACK) || caches.match("./index.html"));
+      })
   );
 });
