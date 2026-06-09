@@ -157,7 +157,7 @@
 }
 
 /* =========================================================
-   04. Path details pane: anchored rail
+   04. Path details pane: true auto-length rail
    ========================================================= */
 
 .rf-path-toggle {
@@ -173,27 +173,10 @@
   --path-pane-pad-y: 7px;
   --path-row-gap: 5px;
   --path-title-height: 22px;
-
   --path-node-size: 22px;
   --path-node-icon-size: 9px;
   --path-node-row-height: 44px;
-  --path-node-edge-y: 33px;
-  --path-node-gap: 4px;
-
   --path-signal-width: 34px;
-  --path-signal-left: 2px;
-  --path-signal-top: calc(
-    var(--path-pane-pad-y) +
-    var(--path-title-height) +
-    var(--path-row-gap) +
-    var(--path-node-edge-y) +
-    var(--path-node-gap)
-  );
-  --path-signal-bottom: calc(
-    var(--path-pane-pad-y) +
-    var(--path-node-edge-y) +
-    var(--path-node-gap)
-  );
 
   position: absolute;
   top: 0;
@@ -249,7 +232,6 @@
 }
 
 .rf-path-pane-body {
-  position: relative;
   height: 100%;
   min-height: 0;
   padding:
@@ -258,7 +240,7 @@
     var(--path-pane-pad-y)
     var(--path-pane-pad-x);
   display: grid;
-  grid-template-columns: var(--path-node-size) minmax(0, 1fr);
+  grid-template-columns: var(--path-signal-width) minmax(0, 1fr);
   grid-template-rows:
     var(--path-title-height)
     var(--path-node-row-height)
@@ -270,7 +252,7 @@
 }
 
 /* =========================================================
-   05. Path details pane: title and nodes
+   05. Path details pane: title and transmitter nodes
    ========================================================= */
 
 .rf-path-pane-title {
@@ -311,7 +293,7 @@
   grid-column: 1 / -1;
   min-width: 0;
   display: grid;
-  grid-template-columns: var(--path-node-size) minmax(0, 1fr);
+  grid-template-columns: var(--path-signal-width) minmax(0, 1fr);
   align-items: center;
   column-gap: 7px;
 }
@@ -329,6 +311,7 @@
   height: var(--path-node-size);
   display: grid;
   place-items: center;
+  justify-self: center;
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.05);
 }
@@ -400,7 +383,7 @@
 }
 
 /* =========================================================
-   06. Path details pane: auto-length signal and data
+   06. Path details pane: signal rail and data
    ========================================================= */
 
 .rf-path-mid {
@@ -408,14 +391,13 @@
 }
 
 .rf-path-signal-vertical {
-  position: absolute;
-  left: var(--path-signal-left);
-  top: var(--path-signal-top);
-  bottom: var(--path-signal-bottom);
-  z-index: 1;
+  grid-column: 1;
+  grid-row: 3;
   width: var(--path-signal-width);
-  height: auto;
+  height: 100%;
   max-height: none;
+  align-self: stretch;
+  justify-self: center;
   object-fit: fill;
   object-position: center;
   filter:
