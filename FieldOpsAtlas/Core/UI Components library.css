@@ -1,0 +1,297 @@
+/*
+  FieldOps Atlas Core Button Library
+  File: FieldOpsAtlas/Core/buttons.css
+  Version: 0.1.0
+
+  Purpose:
+  - Reusable button standards for the browser prototype.
+  - Kept generic so the same sizing/layout rules can map cleanly to Swift/iOS later.
+  - This file does not load icons or choose page-specific effects.
+  - Page files can override variables when needed.
+
+  Components:
+  - ibutton1      = icon-only button
+  - i_txtbutton1 = icon + text button
+
+  Common industry equivalents:
+  - ibutton1      = icon button / icon-only button / action icon button
+  - i_txtbutton1 = icon-label button / nav item / tab bar item
+*/
+
+/* =========================================================
+   01. Shared defaults
+   ========================================================= */
+
+:root {
+  --fops-button-radius: 13px;
+
+  --fops-button-bg-top: #102b49;
+  --fops-button-bg-bottom: #0c233d;
+  --fops-button-border: rgba(42, 67, 93, 0.72);
+  --fops-button-text: rgba(255, 255, 255, 0.86);
+
+  /*
+    Gold is mainly for SVG/icon accent states.
+    Button surfaces stay navy by default.
+  */
+  --fops-icon-accent: #ffdda0;
+  --fops-active-border: rgba(237, 191, 99, 0.68);
+  --fops-active-glow: rgba(255, 199, 75, 0.12);
+}
+
+/* =========================================================
+   02. Shared button surface
+   ========================================================= */
+
+.ibutton1,
+.i_txtbutton1 {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid var(--fops-button-border);
+  border-radius: var(--fops-button-radius);
+  color: var(--fops-button-text);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 217, 133, 0.07), transparent 34%),
+    linear-gradient(180deg, var(--fops-button-bg-top), var(--fops-button-bg-bottom));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+/* =========================================================
+   03. ibutton1: icon-only button
+   ========================================================= */
+
+/*
+  Rule:
+  - Button supplies width and height.
+  - Icon placeholder is square.
+  - Icon placeholder is about 60% of the shortest button side.
+
+  Current shell default:
+  - button: 44 x 42
+  - icon placeholder: 25 x 25
+*/
+
+.ibutton1 {
+  --ibutton1-width: 44px;
+  --ibutton1-height: 42px;
+  --ibutton1-icon-slot: 25px;
+  --ibutton1-icon-color: var(--fops-button-text);
+
+  width: var(--ibutton1-width);
+  height: var(--ibutton1-height);
+  padding: 0;
+  display: inline-grid;
+  place-items: center;
+  line-height: 1;
+}
+
+.ibutton1__icon {
+  width: var(--ibutton1-icon-slot);
+  height: var(--ibutton1-icon-slot);
+  display: grid;
+  place-items: center;
+  color: var(--ibutton1-icon-color);
+  line-height: 1;
+}
+
+.ibutton1__icon svg,
+.ibutton1__icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+/*
+  Size aliases.
+  These keep page files readable and avoid repeated pixel values.
+*/
+
+.ibutton1--shell {
+  --ibutton1-width: 44px;
+  --ibutton1-height: 42px;
+  --ibutton1-icon-slot: 25px;
+}
+
+.ibutton1--square44 {
+  --ibutton1-width: 44px;
+  --ibutton1-height: 44px;
+  --ibutton1-icon-slot: 26px;
+}
+
+.ibutton1--square52 {
+  --ibutton1-width: 52px;
+  --ibutton1-height: 52px;
+  --ibutton1-icon-slot: 31px;
+}
+
+/*
+  Active/accent state.
+  Mainly changes icon/SVG colour and border glow.
+*/
+
+.ibutton1.is-active,
+.ibutton1--active {
+  --ibutton1-icon-color: var(--fops-icon-accent);
+
+  color: var(--fops-icon-accent);
+  border-color: var(--fops-active-border);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 0 0 1px rgba(255, 220, 140, 0.08),
+    0 0 9px var(--fops-active-glow);
+}
+
+/* =========================================================
+   04. i_txtbutton1: icon + text button
+   ========================================================= */
+
+/*
+  Rule:
+  - Button supplies width and height.
+  - Text box respects 17% left/right/bottom padding.
+  - Icon respects the 17% top padding.
+  - Icon placeholder is square.
+  - Icon height = 2 x text placeholder height.
+  - Gap = 10% of text placeholder height.
+  - Icon and text placeholders are centred horizontally.
+
+  Current shell default:
+  - button: 68 x 38
+  - x padding: 17% of 68 = 11.56px
+  - y padding: 17% of 38 = 6.46px
+  - text slot height: about 8.09px
+  - icon slot: about 16.18px
+  - gap: about 0.81px
+  - text slot width: about 44.88px
+*/
+
+.i_txtbutton1 {
+  --i-txtbutton1-width: 68px;
+  --i-txtbutton1-height: 38px;
+
+  --i-txtbutton1-pad-x: calc(var(--i-txtbutton1-width) * 0.17);
+  --i-txtbutton1-pad-y: calc(var(--i-txtbutton1-height) * 0.17);
+
+  --i-txtbutton1-available-y: calc(
+    var(--i-txtbutton1-height) - (var(--i-txtbutton1-pad-y) * 2)
+  );
+
+  --i-txtbutton1-text-height: calc(var(--i-txtbutton1-available-y) / 3.1);
+  --i-txtbutton1-icon-slot: calc(var(--i-txtbutton1-text-height) * 2);
+  --i-txtbutton1-gap: calc(var(--i-txtbutton1-text-height) * 0.1);
+  --i-txtbutton1-text-width: calc(
+    var(--i-txtbutton1-width) - (var(--i-txtbutton1-pad-x) * 2)
+  );
+
+  --i-txtbutton1-icon-color: var(--fops-button-text);
+  --i-txtbutton1-label-color: var(--fops-button-text);
+
+  width: var(--i-txtbutton1-width);
+  height: var(--i-txtbutton1-height);
+  padding: 0;
+  display: grid;
+  grid-template-rows:
+    var(--i-txtbutton1-pad-y)
+    var(--i-txtbutton1-icon-slot)
+    var(--i-txtbutton1-gap)
+    var(--i-txtbutton1-text-height)
+    var(--i-txtbutton1-pad-y);
+  justify-items: center;
+  align-items: center;
+  overflow: hidden;
+  line-height: 1;
+}
+
+.i_txtbutton1__icon {
+  grid-row: 2;
+  width: var(--i-txtbutton1-icon-slot);
+  height: var(--i-txtbutton1-icon-slot);
+  display: grid;
+  place-items: center;
+  color: var(--i-txtbutton1-icon-color);
+  line-height: 1;
+}
+
+.i_txtbutton1__icon svg,
+.i_txtbutton1__icon img {
+  width: 100%;
+  height: 100%;
+  display: block;
+  object-fit: contain;
+}
+
+.i_txtbutton1__text {
+  grid-row: 4;
+  width: var(--i-txtbutton1-text-width);
+  height: var(--i-txtbutton1-text-height);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--i-txtbutton1-label-color);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.i_txtbutton1__text span {
+  display: block;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: clip;
+  font-size: var(--i-txtbutton1-text-height);
+  line-height: var(--i-txtbutton1-text-height);
+  font-weight: 700;
+}
+
+/*
+  Size aliases.
+*/
+
+.i_txtbutton1--shell-nav {
+  --i-txtbutton1-width: 68px;
+  --i-txtbutton1-height: 38px;
+}
+
+/*
+  Active/accent state.
+  Mainly changes SVG/icon and label colour.
+*/
+
+.i_txtbutton1.is-active,
+.i_txtbutton1--active {
+  --i-txtbutton1-icon-color: var(--fops-icon-accent);
+  --i-txtbutton1-label-color: var(--fops-icon-accent);
+
+  color: var(--fops-icon-accent);
+  border-color: var(--fops-active-border);
+  background:
+    radial-gradient(circle at 50% 104%, rgba(255, 190, 47, 0.18), transparent 38%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.052), rgba(255, 255, 255, 0.012)),
+    linear-gradient(180deg, var(--fops-button-bg-top), var(--fops-button-bg-bottom));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 0 0 1px rgba(255, 220, 140, 0.08),
+    0 0 9px var(--fops-active-glow);
+}
+
+/* =========================================================
+   05. Generic inline SVG helpers
+   ========================================================= */
+
+.fops_stroke_icon path,
+.fops_stroke_icon line,
+.fops_stroke_icon polyline,
+.fops_stroke_icon polygon {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.fops_fill_icon path,
+.fops_fill_icon circle,
+.fops_fill_icon polygon {
+  fill: currentColor;
+}
