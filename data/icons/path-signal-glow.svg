@@ -10,8 +10,8 @@
       <stop offset="1" stop-color="#FF4432" />
     </linearGradient>
 
-    <filter id="softSignalGlow" x="-45%" y="-8%" width="190%" height="116%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="1.35" result="blur" />
+    <filter id="softSignalGlow" x="-40%" y="-8%" width="180%" height="116%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="1.1" result="blur" />
       <feColorMatrix
         in="blur"
         type="matrix"
@@ -19,7 +19,7 @@
           1 0 0 0 0
           0 1 0 0 0
           0 0 1 0 0
-          0 0 0 0.58 0"
+          0 0 0 0.44 0"
         result="softGlow"
       />
       <feMerge>
@@ -29,7 +29,7 @@
     </filter>
 
     <filter id="nodeGlow" x="-120%" y="-120%" width="340%" height="340%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="1.15" result="blur" />
+      <feGaussianBlur stdDeviation="0.95" result="blur" />
       <feColorMatrix
         in="blur"
         type="matrix"
@@ -37,7 +37,7 @@
           1 0 0 0 0
           0 1 0 0 0
           0 0 1 0 0
-          0 0 0 0.62 0"
+          0 0 0 0.48 0"
         result="softGlow"
       />
       <feMerge>
@@ -48,7 +48,19 @@
   </defs>
 
   <path
-    d="M21 8V108L16 115L26 122L15 131L27 140L14 150L27 160L16 170L25 180L19 190L22 200V272"
+    d="M21 8V108
+       L16 116
+       L26 124
+       L16 132
+       L26 140
+       L16 148
+       L26 156
+       L16 164
+       L26 172
+       L16 180
+       L26 188
+       L21 200
+       V272"
     stroke="url(#pathSignalGradient)"
     stroke-width="3.4"
     stroke-linecap="round"
