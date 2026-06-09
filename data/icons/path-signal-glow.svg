@@ -1,6 +1,6 @@
-<svg xmlns="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x77;&#x77;&#x77;&#x2E;&#x77;&#x33;&#x2E;&#x6F;&#x72;&#x67;&#x2F;&#x32;&#x30;&#x30;&#x30;&#x2F;&#x73;&#x76;&#x67;" viewBox="0 0 42 280" fill="none">
+<svg xmlns="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x77;&#x77;&#x77;&#x2E;&#x77;&#x33;&#x2E;&#x6F;&#x72;&#x67;&#x2F;&#x32;&#x30;&#x30;&#x30;&#x2F;&#x73;&#x76;&#x67;" viewBox="0 0 18 280" fill="none">
   <defs>
-    <linearGradient id="pathSignalGradient" x1="21" y1="8" x2="21" y2="272" gradientUnits="userSpaceOnUse">
+    <linearGradient id="pathSignalGradient" x1="9" y1="8" x2="9" y2="272" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#8CFF43" />
       <stop offset="0.28" stop-color="#F5FF69" />
       <stop offset="0.43" stop-color="#F5FF69" />
@@ -10,7 +10,7 @@
       <stop offset="1" stop-color="#FF4432" />
     </linearGradient>
 
-    <filter id="softSignalGlow" x="-40%" y="-8%" width="180%" height="116%" color-interpolation-filters="sRGB">
+    <filter id="softSignalGlow" x="-95%" y="-8%" width="290%" height="116%" color-interpolation-filters="sRGB">
       <feGaussianBlur stdDeviation="1.1" result="blur" />
       <feColorMatrix
         in="blur"
@@ -28,7 +28,7 @@
       </feMerge>
     </filter>
 
-    <filter id="nodeGlow" x="-120%" y="-120%" width="340%" height="340%" color-interpolation-filters="sRGB">
+    <filter id="nodeGlow" x="-220%" y="-120%" width="540%" height="340%" color-interpolation-filters="sRGB">
       <feGaussianBlur stdDeviation="0.95" result="blur" />
       <feColorMatrix
         in="blur"
@@ -48,18 +48,18 @@
   </defs>
 
   <path
-    d="M21 8V108
-       L16 116
-       L26 124
-       L16 132
-       L26 140
-       L16 148
-       L26 156
-       L16 164
-       L26 172
-       L16 180
-       L26 188
-       L21 200
+    d="M9 8V108
+       L4 116
+       L14 124
+       L4 132
+       L14 140
+       L4 148
+       L14 156
+       L4 164
+       L14 172
+       L4 180
+       L14 188
+       L9 200
        V272"
     stroke="url(#pathSignalGradient)"
     stroke-width="3.4"
@@ -68,6 +68,6 @@
     filter="url(#softSignalGlow)"
   />
 
-  <circle cx="21" cy="8" r="5.9" fill="#FFFFFF" stroke="#8CFF43" stroke-width="2.7" filter="url(#nodeGlow)" />
-  <circle cx="21" cy="272" r="5.9" fill="#FFFFFF" stroke="#FF4432" stroke-width="2.7" filter="url(#nodeGlow)" />
+  <circle cx="9" cy="8" r="5.9" fill="#FFFFFF" stroke="#8CFF43" stroke-width="2.7" filter="url(#nodeGlow)" />
+  <circle cx="9" cy="272" r="5.9" fill="#FFFFFF" stroke="#FF4432" stroke-width="2.7" filter="url(#nodeGlow)" />
 </svg>
