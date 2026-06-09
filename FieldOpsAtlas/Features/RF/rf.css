@@ -1,10 +1,20 @@
+/*
+  FieldOps Atlas RF page styles
+  Version: 1.1.1
+
+  Purpose:
+  - Own only the RF landing page content inside the shared shell.
+  - Style the RF network card, dynamic map, collapsible path pane,
+    recently opened sites, services table, and equipment summary.
+
+  Conversion note:
+  - The generated map class names intentionally match rf-demo-map.js.
+  - Keep dashboard/page-only styles here; shared header/footer styles live in shell.css.
+*/
+
 /* =========================================================
-   RF ATLAS — RF PAGE STYLES
-   Owns only the RF content inside the shell.
-========================================================= */
-
-
-/* 01. RF canvas and layout. */
+   01. RF canvas and layout
+   ========================================================= */
 
 .phone[data-page="rf"] .content-canvas {
   overflow: hidden;
@@ -24,8 +34,9 @@
   flex-direction: column;
 }
 
-
-/* 02. Network title and filter buttons. */
+/* =========================================================
+   02. Network title and filter buttons
+   ========================================================= */
 
 .rf-network {
   flex: 1 1 auto;
@@ -64,21 +75,22 @@
   display: grid;
   place-items: center;
   color: #071c32;
-  background: rgba(255,255,255,0.62);
-  border: 1px solid rgba(130,91,22,0.16);
+  border: 1px solid rgba(130, 91, 22, 0.16);
   border-radius: 8px;
+  background: rgba(255, 255, 255, 0.62);
   font-size: 7.5px;
   font-weight: 900;
   white-space: nowrap;
 }
 
 .rf-tab.is-active {
-  background: rgba(255,222,163,0.85);
-  border-color: rgba(130,91,22,0.30);
+  border-color: rgba(130, 91, 22, 0.30);
+  background: rgba(255, 222, 163, 0.85);
 }
 
-
-/* 03. Network map card. */
+/* =========================================================
+   03. Network map card
+   ========================================================= */
 
 .rf-map-recent {
   min-height: 0;
@@ -98,11 +110,11 @@
   min-height: 0;
   overflow: hidden;
   isolation: isolate;
-  border: 1px solid rgba(130,91,22,0.14);
+  border: 1px solid rgba(130, 91, 22, 0.14);
   border-bottom: 0;
   border-radius: 13px 13px 0 0;
   background:
-    radial-gradient(circle at 50% 40%, rgba(255,255,255,0.72), transparent 44%),
+    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.72), transparent 44%),
     linear-gradient(180deg, #fff8e8, #f8ecd2);
 }
 
@@ -113,20 +125,20 @@
   opacity: 0.30;
   pointer-events: none;
   background-image:
-    radial-gradient(ellipse at 18% 20%, transparent 0 34%, rgba(124,119,104,0.22) 35%, transparent 36%),
-    radial-gradient(ellipse at 72% 48%, transparent 0 36%, rgba(124,119,104,0.18) 37%, transparent 38%),
-    radial-gradient(ellipse at 48% 78%, transparent 0 30%, rgba(124,119,104,0.16) 31%, transparent 32%),
-    linear-gradient(24deg, transparent 0 42%, rgba(7,28,50,0.08) 42.25%, transparent 42.8%),
-    linear-gradient(136deg, transparent 0 54%, rgba(7,28,50,0.07) 54.25%, transparent 54.8%);
+    radial-gradient(ellipse at 18% 20%, transparent 0 34%, rgba(124, 119, 104, 0.22) 35%, transparent 36%),
+    radial-gradient(ellipse at 72% 48%, transparent 0 36%, rgba(124, 119, 104, 0.18) 37%, transparent 38%),
+    radial-gradient(ellipse at 48% 78%, transparent 0 30%, rgba(124, 119, 104, 0.16) 31%, transparent 32%),
+    linear-gradient(24deg, transparent 0 42%, rgba(7, 28, 50, 0.08) 42.25%, transparent 42.8%),
+    linear-gradient(136deg, transparent 0 54%, rgba(7, 28, 50, 0.07) 54.25%, transparent 54.8%);
   background-size: 100% 100%;
 }
 
 .rf-map-stage {
   position: absolute;
   top: 0;
-  left: 0;
-  bottom: 0;
   right: calc(var(--path-pane-width) - var(--path-handle-width));
+  bottom: 0;
+  left: 0;
   z-index: 2;
   overflow: hidden;
   border-radius: 12px 0 0 0;
@@ -144,11 +156,9 @@
   overflow: visible;
 }
 
-
-/* 04. Collapsible path pane.
-   Sleek vertical layout:
-   top/bottom site rows, double-length signal SVG left, frequency/metrics right.
-*/
+/* =========================================================
+   04. Collapsible path pane
+   ========================================================= */
 
 .rf-path-toggle {
   position: absolute;
@@ -168,14 +178,14 @@
   padding-left: var(--path-handle-width);
   overflow: hidden;
   color: #fff;
-  border: 1px solid rgba(237,191,99,0.70);
+  border: 1px solid rgba(237, 191, 99, 0.70);
   border-radius: 0 12px 12px 0;
   background:
-    radial-gradient(circle at 48% 0%, rgba(255,215,115,0.10), transparent 34%),
+    radial-gradient(circle at 48% 0%, rgba(255, 215, 115, 0.10), transparent 34%),
     linear-gradient(180deg, #061f38 0%, #011532 100%);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.10),
-    -6px 0 14px rgba(3,10,20,0.20);
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    -6px 0 14px rgba(3, 10, 20, 0.20);
   transform: translateX(0);
   transition: transform 180ms ease;
 }
@@ -192,11 +202,11 @@
   place-items: center;
   color: var(--gold-soft);
   cursor: pointer;
+  border-right: 1px solid rgba(237, 191, 99, 0.32);
   background:
-    linear-gradient(180deg, rgba(255,255,255,0.07), rgba(255,255,255,0.01)),
-    rgba(4,16,30,0.78);
-  border-right: 1px solid rgba(237,191,99,0.32);
-  box-shadow: inset -1px 0 0 rgba(0,0,0,0.24);
+    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.01)),
+    rgba(4, 16, 30, 0.78);
+  box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.24);
 }
 
 .rf-path-handle svg {
@@ -221,12 +231,12 @@
 
 .rf-path-pane-title {
   min-width: 0;
+  padding-bottom: 3px;
   display: grid;
   grid-template-columns: 18px minmax(0, 1fr);
   align-items: center;
   gap: 4px;
-  padding-bottom: 3px;
-  border-bottom: 1px solid rgba(255,255,255,0.13);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
 }
 
 .rf-path-title-wave {
@@ -242,8 +252,8 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   filter:
-    drop-shadow(0 0 3px rgba(255,255,255,0.34))
-    drop-shadow(0 0 7px rgba(255,225,135,0.20));
+    drop-shadow(0 0 3px rgba(255, 255, 255, 0.34))
+    drop-shadow(0 0 7px rgba(255, 225, 135, 0.20));
 }
 
 .rf-path-pane-title span {
@@ -260,6 +270,10 @@
   text-overflow: clip;
 }
 
+/* =========================================================
+   05. Path pane site rows
+   ========================================================= */
+
 .rf-path-site {
   min-width: 0;
   display: grid;
@@ -274,7 +288,7 @@
   display: grid;
   place-items: center;
   border-radius: 999px;
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .rf-path-mast svg {
@@ -296,14 +310,14 @@
 
 .rf-path-site.is-from .rf-path-mast {
   color: #8cff43;
-  border: 1px solid rgba(140,255,67,0.48);
-  box-shadow: 0 0 8px rgba(140,255,67,0.16);
+  border: 1px solid rgba(140, 255, 67, 0.48);
+  box-shadow: 0 0 8px rgba(140, 255, 67, 0.16);
 }
 
 .rf-path-site.is-to .rf-path-mast {
   color: #ff6a4b;
-  border: 1px solid rgba(255,90,58,0.48);
-  box-shadow: 0 0 8px rgba(255,90,58,0.16);
+  border: 1px solid rgba(255, 90, 58, 0.48);
+  box-shadow: 0 0 8px rgba(255, 90, 58, 0.16);
 }
 
 .rf-path-site-copy {
@@ -315,7 +329,7 @@
 .rf-path-site-copy small {
   display: block;
   margin: 0 0 1px;
-  color: rgba(219,228,242,0.76);
+  color: rgba(219, 228, 242, 0.76);
   font-size: 4.55px;
   font-weight: 800;
   letter-spacing: 0.11em;
@@ -333,8 +347,12 @@
   line-height: 0.94;
   text-transform: uppercase;
   white-space: nowrap;
-  text-shadow: 0 2px 1px rgba(0,0,0,0.55);
+  text-shadow: 0 2px 1px rgba(0, 0, 0, 0.55);
 }
+
+/* =========================================================
+   06. Path signal and metrics
+   ========================================================= */
 
 .rf-path-mid {
   min-width: 0;
@@ -361,8 +379,8 @@
   stroke-linecap: round;
   stroke-linejoin: round;
   filter:
-    drop-shadow(0 0 5px rgba(255,225,70,0.88))
-    drop-shadow(0 0 10px rgba(255,145,55,0.26));
+    drop-shadow(0 0 5px rgba(255, 225, 70, 0.88))
+    drop-shadow(0 0 10px rgba(255, 145, 55, 0.26));
 }
 
 .rf-path-signal-node {
@@ -373,15 +391,15 @@
 .rf-path-signal-node.is-green {
   stroke: #8dff49;
   filter:
-    drop-shadow(0 0 6px rgba(140,255,67,0.90))
-    drop-shadow(0 0 11px rgba(140,255,67,0.26));
+    drop-shadow(0 0 6px rgba(140, 255, 67, 0.90))
+    drop-shadow(0 0 11px rgba(140, 255, 67, 0.26));
 }
 
 .rf-path-signal-node.is-red {
   stroke: #ff4931;
   filter:
-    drop-shadow(0 0 6px rgba(255,68,50,0.90))
-    drop-shadow(0 0 11px rgba(255,68,50,0.28));
+    drop-shadow(0 0 6px rgba(255, 68, 50, 0.90))
+    drop-shadow(0 0 11px rgba(255, 68, 50, 0.28));
 }
 
 .rf-path-frequency {
@@ -398,13 +416,13 @@
   font-size: 7.35px;
   line-height: 1;
   white-space: nowrap;
-  text-shadow: 0 2px 1px rgba(0,0,0,0.55);
+  text-shadow: 0 2px 1px rgba(0, 0, 0, 0.55);
 }
 
 .rf-path-frequency span {
   display: block;
   margin: 2px 0 5px;
-  color: rgba(219,228,242,0.76);
+  color: rgba(219, 228, 242, 0.76);
   font-size: 4.1px;
   font-weight: 850;
   letter-spacing: 0.08em;
@@ -416,22 +434,22 @@
   padding: 0;
   display: grid;
   gap: 0;
-  border-top: 1px solid rgba(255,255,255,0.13);
+  border-top: 1px solid rgba(255, 255, 255, 0.13);
 }
 
 .rf-path-data div {
   min-height: 9px;
   display: grid;
-  grid-template-columns: minmax(0,1fr) auto;
+  grid-template-columns: minmax(0, 1fr) auto;
   align-items: center;
   gap: 3px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
 .rf-path-data dt {
   min-width: 0;
   overflow: hidden;
-  color: rgba(218,226,240,0.76);
+  color: rgba(218, 226, 240, 0.76);
   font-size: 3.95px;
   font-weight: 850;
   letter-spacing: 0.04em;
@@ -454,11 +472,12 @@
   margin-right: 2px;
   border-radius: 999px;
   background: #8cff43;
-  box-shadow: 0 0 6px rgba(140,255,67,0.86);
+  box-shadow: 0 0 6px rgba(140, 255, 67, 0.86);
 }
 
-
-/* 05. Generated demo map. */
+/* =========================================================
+   07. Generated demo map: routes
+   ========================================================= */
 
 .demo-map-bg {
   fill: transparent;
@@ -468,7 +487,7 @@
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
-  filter: drop-shadow(0 1.5px 1px rgba(0,0,0,0.22));
+  filter: drop-shadow(0 1.5px 1px rgba(0, 0, 0, 0.22));
 }
 
 .demo-route.is-main {
@@ -488,8 +507,8 @@
 
 .demo-route.is-selected-path {
   filter:
-    drop-shadow(0 0 4px rgba(255,225,70,0.72))
-    drop-shadow(0 1.5px 1px rgba(0,0,0,0.22));
+    drop-shadow(0 0 4px rgba(255, 225, 70, 0.72))
+    drop-shadow(0 1.5px 1px rgba(0, 0, 0, 0.22));
 }
 
 .demo-link-soft {
@@ -500,7 +519,7 @@
 .demo-route-dot {
   fill: #f7efd3;
   stroke-width: 1.8;
-  filter: drop-shadow(0 1px 1px rgba(0,0,0,0.24));
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.24));
 }
 
 .demo-route-dot.green {
@@ -514,30 +533,34 @@
 .demo-route-dot.red {
   fill: #d72d1e;
   stroke: #fff8e6;
-  filter: drop-shadow(0 0 4px rgba(255,90,49,0.65));
+  filter: drop-shadow(0 0 4px rgba(255, 90, 49, 0.65));
 }
+
+/* =========================================================
+   08. Generated demo map: nodes
+   ========================================================= */
 
 .demo-node .halo {
   opacity: 0.32;
-  filter: drop-shadow(0 0 4px rgba(255,226,146,0.24));
+  filter: drop-shadow(0 0 4px rgba(255, 226, 146, 0.24));
 }
 
 .demo-node.is-selected .selected-halo {
   opacity: 0.34;
   fill: #ffe3a0;
-  filter: drop-shadow(0 0 8px rgba(255,213,80,0.52));
+  filter: drop-shadow(0 0 8px rgba(255, 213, 80, 0.52));
 }
 
 .demo-original-halo {
   pointer-events: none;
   filter:
-    drop-shadow(0 0 4px rgba(255,213,80,0.54))
-    drop-shadow(0 0 10px rgba(255,213,80,0.28));
+    drop-shadow(0 0 4px rgba(255, 213, 80, 0.54))
+    drop-shadow(0 0 10px rgba(255, 213, 80, 0.28));
 }
 
 .demo-original-halo .relay-halo-ring {
   fill: none;
-  stroke: rgba(255,217,105,0.88);
+  stroke: rgba(255, 217, 105, 0.88);
   stroke-width: 1.15;
   opacity: 0.42;
 }
@@ -548,7 +571,7 @@
 
 .demo-original-halo .relay-halo-line {
   fill: none;
-  stroke: rgba(255,217,105,0.95);
+  stroke: rgba(255, 217, 105, 0.95);
   stroke-width: 1.15;
   stroke-linecap: round;
   opacity: 0.36;
@@ -561,12 +584,12 @@
 
 .demo-node.relay .demo-original-halo {
   filter:
-    drop-shadow(0 0 4px rgba(255,93,50,0.58))
-    drop-shadow(0 0 10px rgba(255,93,50,0.30));
+    drop-shadow(0 0 4px rgba(255, 93, 50, 0.58))
+    drop-shadow(0 0 10px rgba(255, 93, 50, 0.30));
 }
 
 .demo-node.relay .demo-original-halo .relay-halo-ring {
-  stroke: rgba(215,59,35,0.92);
+  stroke: rgba(215, 59, 35, 0.92);
   opacity: 0.34;
 }
 
@@ -575,7 +598,7 @@
 }
 
 .demo-node.relay .demo-original-halo .relay-halo-line {
-  stroke: rgba(215,59,35,0.95);
+  stroke: rgba(215, 59, 35, 0.95);
   opacity: 0.36;
 }
 
@@ -597,12 +620,12 @@
 .demo-node .relay {
   fill: #9f231a;
   stroke: #8e575d;
-  filter: drop-shadow(0 0 5px rgba(255,93,50,0.36));
+  filter: drop-shadow(0 0 5px rgba(255, 93, 50, 0.36));
 }
 
 .demo-node .inner-ring {
   fill: none;
-  stroke: rgba(255,247,222,0.64);
+  stroke: rgba(255, 247, 222, 0.64);
   stroke-width: 1.2;
 }
 
@@ -614,10 +637,14 @@
   stroke-width: 1.8;
 }
 
+/* =========================================================
+   09. Generated demo map: labels, compass, and legend
+   ========================================================= */
+
 .demo-label {
   font-family: "Arial Narrow", "Roboto Condensed", "Helvetica Neue Condensed", Arial, sans-serif;
   paint-order: stroke fill;
-  stroke: rgba(239,229,207,0.92);
+  stroke: rgba(239, 229, 207, 0.92);
   stroke-linejoin: round;
   text-transform: uppercase;
 }
@@ -669,10 +696,10 @@
 }
 
 .demo-legend {
-  fill: rgba(252,248,238,0.70);
-  stroke: rgba(200,162,93,0.48);
+  fill: rgba(252, 248, 238, 0.70);
+  stroke: rgba(200, 162, 93, 0.48);
   stroke-width: 1;
-  filter: drop-shadow(0 1px 2px rgba(108,85,41,0.12));
+  filter: drop-shadow(0 1px 2px rgba(108, 85, 41, 0.12));
 }
 
 .demo-legend-text {
@@ -683,8 +710,9 @@
   letter-spacing: 0.2px;
 }
 
-
-/* 06. Recently opened. */
+/* =========================================================
+   10. Recently opened
+   ========================================================= */
 
 .rf-recent {
   position: relative;
@@ -695,7 +723,7 @@
   grid-template-rows: 18px minmax(0, 1fr);
   gap: 5px;
   overflow: hidden;
-  border: 1px solid rgba(130,91,22,0.14);
+  border: 1px solid rgba(130, 91, 22, 0.14);
   border-radius: 14px;
   background: #fcf8ee;
 }
@@ -731,9 +759,9 @@
 .rf-viewall {
   padding: 3px 2px;
   color: #09203a;
-  background: transparent;
   border: 0;
   border-radius: 999px;
+  background: transparent;
   font-size: 7px;
   font-weight: 500;
 }
@@ -750,13 +778,13 @@
   padding: 4px;
   display: grid;
   grid-template-columns: 15px minmax(0, 1fr);
-  gap: 3px;
   align-items: center;
+  gap: 3px;
   overflow: hidden;
   color: #071c32;
-  background: #fff9eb;
-  border: 1px solid rgba(130,91,22,0.12);
+  border: 1px solid rgba(130, 91, 22, 0.12);
   border-radius: 9px;
+  background: #fff9eb;
 }
 
 .rf-recent-card svg {
@@ -781,8 +809,9 @@
   font-weight: 380;
 }
 
-
-/* 07. Services and Equipment. */
+/* =========================================================
+   11. Services and equipment
+   ========================================================= */
 
 .rf-bottom {
   flex: 0 0 18%;
@@ -797,12 +826,12 @@
   min-height: 0;
   padding: 7px;
   overflow: hidden;
-  border: 1px solid rgba(130,91,22,0.20);
+  border: 1px solid rgba(130, 91, 22, 0.20);
   border-radius: 13px;
-  background: rgba(255,255,255,0.45);
+  background: rgba(255, 255, 255, 0.45);
   box-shadow:
-    inset 0 1px 0 rgba(255,255,255,0.65),
-    0 6px 12px rgba(79,56,16,0.07);
+    inset 0 1px 0 rgba(255, 255, 255, 0.65),
+    0 6px 12px rgba(79, 56, 16, 0.07);
 }
 
 .rf-small-title {
@@ -826,11 +855,11 @@
 .rf-table td {
   padding: 3px 2px;
   text-align: left;
-  border-bottom: 1px solid rgba(130,91,22,0.13);
+  border-bottom: 1px solid rgba(130, 91, 22, 0.13);
 }
 
 .rf-table th {
-  color: rgba(7,28,50,0.55);
+  color: rgba(7, 28, 50, 0.55);
   font-size: 5.6px;
   font-weight: 950;
   letter-spacing: 0.05em;
@@ -846,9 +875,9 @@
 .rf-equipment-item {
   padding: 7px 3px;
   text-align: center;
-  border: 1px solid rgba(130,91,22,0.13);
+  border: 1px solid rgba(130, 91, 22, 0.13);
   border-radius: 10px;
-  background: rgba(255,255,255,0.48);
+  background: rgba(255, 255, 255, 0.48);
 }
 
 .rf-equipment-item strong {
@@ -861,14 +890,15 @@
 .rf-equipment-item span {
   display: block;
   margin-top: 3px;
-  color: rgba(7,28,50,0.58);
+  color: rgba(7, 28, 50, 0.58);
   font-size: 6px;
   font-weight: 900;
   text-transform: uppercase;
 }
 
-
-/* 08. Small-screen trim. */
+/* =========================================================
+   12. Small-screen trim
+   ========================================================= */
 
 @media (max-width: 390px) {
   .rf-home {
