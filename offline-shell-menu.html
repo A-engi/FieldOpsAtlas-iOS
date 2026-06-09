@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FieldOps Atlas Offline Shell Menu v17 Stable Toggle</title>
+  <title>FieldOps Atlas Offline Shell Menu v18 Logo Image</title>
   <style>
     /* ==========================================================================
        Tokens
@@ -201,9 +201,6 @@
       --icon-src: url("data/icons/atlas-transmitter-gold.svg");
     }
 
-    .icon--logo {
-      --icon-src: url("data/icons/logo-atlas.svg");
-    }
 
     .icon--map {
       --icon-src: url("data/icons/map.svg");
@@ -500,9 +497,14 @@
       filter: drop-shadow(0 0 8px rgba(61, 151, 255, 0.18));
     }
 
-    .brand-mark .repo-icon {
-      width: 32px;
-      height: 32px;
+    .brand-logo {
+      width: 34px;
+      height: 34px;
+      display: block;
+      object-fit: contain;
+      filter:
+        drop-shadow(0 0 5px rgba(255, 207, 119, 0.22))
+        drop-shadow(0 0 8px rgba(78, 178, 255, 0.16));
     }
 
     .brand-copy {
@@ -1039,7 +1041,7 @@
     <aside class="drawer" aria-label="Main navigation menu">
       <header class="drawer-header">
         <div class="brand-mark" aria-hidden="true">
-          <span class="repo-icon icon--logo" aria-hidden="true"></span>
+          <img class="brand-logo" src="data/icons/logo-atlas.svg" alt="">
         </div>
 
         <div class="brand-copy">
