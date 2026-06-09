@@ -285,8 +285,9 @@
 }
 
 .rf-path-mast img {
-  width: 15px;
-  height: 15px;
+  width: 11px;
+  height: 11px;
+  display: block;
   object-fit: contain;
 }
 
@@ -340,21 +341,24 @@
   min-width: 0;
   min-height: 0;
   display: grid;
-  grid-template-columns: 34px minmax(0, 1fr);
-  align-items: center;
-  gap: 5px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-items: stretch;
+  gap: 6px;
 }
 
 .rf-path-signal-vertical {
-  width: 34px;
-  height: 100%;
-  max-height: 240px;
-  justify-self: start;
-  align-self: center;
+  width: 28px;
+  height: calc(100% - 14px);
+  max-height: none;
+  margin-block: 7px;
+  justify-self: center;
+  align-self: stretch;
   object-fit: contain;
+  object-position: center;
+  transform: translateY(1px);
   filter:
-    drop-shadow(0 0 5px rgba(255, 225, 70, 0.70))
-    drop-shadow(0 0 10px rgba(255, 145, 55, 0.20));
+    drop-shadow(0 0 3px rgba(255, 225, 70, 0.52))
+    drop-shadow(0 0 7px rgba(255, 145, 55, 0.14));
 }
 
 .rf-path-frequency {
