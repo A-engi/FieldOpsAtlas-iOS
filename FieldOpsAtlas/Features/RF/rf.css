@@ -157,7 +157,7 @@
 }
 
 /* =========================================================
-   04. Path pane: datum layout
+   04. Path details pane: anchored rail
    ========================================================= */
 
 .rf-path-toggle {
@@ -177,21 +177,21 @@
   --path-node-size: 22px;
   --path-node-icon-size: 9px;
   --path-node-row-height: 44px;
-  --path-node-edge-offset: 11px;
-  --path-node-gap: 5px;
+  --path-node-edge-y: 33px;
+  --path-node-gap: 4px;
 
-  --path-signal-width: 18px;
+  --path-signal-width: 34px;
   --path-signal-left: 2px;
   --path-signal-top: calc(
+    var(--path-pane-pad-y) +
     var(--path-title-height) +
     var(--path-row-gap) +
-    var(--path-node-edge-offset) +
-    var(--path-node-size) +
+    var(--path-node-edge-y) +
     var(--path-node-gap)
   );
   --path-signal-bottom: calc(
-    var(--path-node-edge-offset) +
-    var(--path-node-size) +
+    var(--path-pane-pad-y) +
+    var(--path-node-edge-y) +
     var(--path-node-gap)
   );
 
@@ -235,14 +235,16 @@
   box-shadow: inset -1px 0 0 rgba(0, 0, 0, 0.24);
 }
 
-.rf-path-handle-icon {
+.rf-path-handle-icon,
+.rf-path-handle svg {
   width: 8px;
   height: 14px;
   object-fit: contain;
   transition: transform 180ms ease;
 }
 
-.rf-path-toggle:not(:checked) ~ .rf-path-pane .rf-path-handle-icon {
+.rf-path-toggle:not(:checked) ~ .rf-path-pane .rf-path-handle-icon,
+.rf-path-toggle:not(:checked) ~ .rf-path-pane .rf-path-handle svg {
   transform: rotate(180deg);
 }
 
@@ -268,7 +270,7 @@
 }
 
 /* =========================================================
-   05. Path pane: title and transmitter rows
+   05. Path details pane: title and nodes
    ========================================================= */
 
 .rf-path-pane-title {
@@ -338,6 +340,23 @@
   object-fit: contain;
 }
 
+.rf-path-mast svg {
+  width: var(--path-node-icon-size);
+  height: var(--path-node-icon-size);
+}
+
+.rf-path-mast path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rf-path-mast circle {
+  fill: currentColor;
+}
+
 .rf-path-site.is-from .rf-path-mast {
   color: #8cff43;
   border: 1px solid rgba(140, 255, 67, 0.48);
@@ -381,7 +400,7 @@
 }
 
 /* =========================================================
-   06. Path pane: signal rail and detail data
+   06. Path details pane: auto-length signal and data
    ========================================================= */
 
 .rf-path-mid {
