@@ -5,13 +5,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>FieldOps Atlas RF v1.1.1</title>
   <link rel="stylesheet" href="../../../shell.css?v=1.1.1-shell-v1.7">
-  <link rel="stylesheet" href="./rf.css?v=1.1.1-rf-integrated-v6">
+  <link rel="stylesheet" href="./rf.css?v=1.1.1-rf-integrated-v7">
 </head>
 <body>
   <main class="phone" data-page="rf" data-nav="rf" data-version="1.1.1">
     <input class="rf-quick-state" type="checkbox" id="rfQuickState" checked aria-hidden="true">
-
-    <label class="rf-quick-backdrop" for="rfQuickState" aria-hidden="true"></label>
 
     <nav class="rf-quick-access" aria-label="RF service shortcuts">
       <a class="rf-quick-chip is-dtt" href="./dtt.html">
@@ -273,7 +271,7 @@
     </section>
   </main>
 
-  <script src="../../../shell.js?v=1.1.1-shell-v1.4" defer></script>
+  <script src="../../../shell.js?v=1.1.1-shell-v1.9" defer></script>
   <script>
     (function () {
       "use strict";
@@ -306,18 +304,38 @@
           return;
         }
 
-        function applyPinned(isPinned, persist) {
-          app.classList.toggle("rf-quick-pinned", isPinned);
-          state.checked = !isPinned;
-          pin.setAttribute("aria-pressed", String(isPinned));
-          pin.setAttribute("aria-label", isPinned ? "Unpin RF shortcuts" : "Pin RF shortcuts open");
+        function isPinned() {
+          return app.classList.contains("rf-quick-pinned");
+        }
+
+        function isOpen() {
+          return !state.checked;
+        }
+
+        function applyPinned(pinned, persist) {
+          app.classList.toggle("rf-quick-pinned", pinned);
+          state.checked = !pinned;
+          pin.setAttribute("aria-pressed", String(pinned));
+          pin.setAttribute("aria-label", pinned ? "Unpin RF shortcuts" : "Pin RF shortcuts open");
 
           if (toggle) {
             toggle.setAttribute("aria-label", state.checked ? "Expand RF service shortcuts" : "Collapse RF service shortcuts");
           }
 
           if (persist) {
-            setStoredPinned(isPinned);
+            setStoredPinned(pinned);
+          }
+        }
+
+        function collapseIfAllowed() {
+          if (isPinned()) {
+            return;
+          }
+
+          state.checked = true;
+
+          if (toggle) {
+            toggle.setAttribute("aria-label", "Expand RF service shortcuts");
           }
         }
 
@@ -334,6 +352,29 @@
             toggle.setAttribute("aria-label", "Collapse RF service shortcuts");
           }
         });
+
+        document.addEventListener("pointerdown", function (event) {
+          if (!isOpen() || isPinned()) {
+            return;
+          }
+
+          if (event.target.closest(".rf-quick-access, .rf-quick-toggle, [data-rf-quick-pin]")) {
+            return;
+          }
+
+          collapseIfAllowed();
+
+          /*
+            Do not call preventDefault() or stopPropagation().
+            The original page/nav button still receives its normal click.
+          */
+        }, true);
+
+        const canvas = document.querySelector(".content-canvas");
+
+        if (canvas) {
+          canvas.addEventListener("scroll", collapseIfAllowed, { passive: true });
+        }
       }
 
       if (document.readyState === "loading") {
