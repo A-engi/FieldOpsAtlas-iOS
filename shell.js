@@ -1,7 +1,7 @@
 /* ============================================================================
    FieldOps Atlas shared shell
    Root file: shell.js
-   Version: 1.1.1-shell-v2.0
+   Version: 1.1.1-shell-v2.1-map-mount
 
    Purpose:
    - Inject shared shell chrome into a .phone root.
@@ -18,7 +18,8 @@
      Configuration
      ======================================================================== */
 
-  const VERSION = "1.1.1-shell-v2.0";
+  const VERSION = "1.1.1-shell-v2.1-map-mount";
+  const SHELL_ROOT_SELECTOR = ".phone, .app-shell";
   const DEFAULT_PAGE = "rf";
   const MAX_SEARCH_RESULTS = 12;
 
@@ -63,8 +64,11 @@
      ======================================================================== */
 
   function normaliseSearchItem(item) {
+    const title = String(item.title || "");
+
     return {
-      title: String(item.title || ""),
+      id: String(item.id || item.href || title),
+      title,
       subtitle: String(item.subtitle || ""),
       href: item.href ? String(item.href) : "",
       keywords: Array.isArray(item.keywords) ? item.keywords.map(String) : []
@@ -129,6 +133,18 @@
 
   function normalisePageKey(pageKey) {
     return pages[pageKey] ? pageKey : DEFAULT_PAGE;
+  }
+
+  function inferPageFromLocation() {
+    const path = window.location.pathname.toLowerCase();
+
+    if (path.includes("/features/map/")) return "map";
+    if (path.includes("/features/rf/")) return "rf";
+    if (path.includes("/features/network/")) return "network";
+    if (path.includes("/features/docs/")) return "docs";
+    if (path.includes("/features/tools/")) return "tools";
+
+    return DEFAULT_PAGE;
   }
 
   function escapeHtml(value) {
@@ -381,6 +397,7 @@
       filterClose: this.shell.querySelector("[data-filter-close]"),
       filterRegionButton: this.shell.querySelector("[data-filter-region]"),
       searchButton: this.shell.querySelector("[data-search-open]"),
+      searchPanel: this.shell.querySelector(".search-panel"),
       searchInput: this.shell.querySelector("[data-search-input]"),
       searchResults: this.shell.querySelector("[data-search-results]"),
       searchEmpty: this.shell.querySelector("[data-search-empty]"),
@@ -453,6 +470,12 @@
         if (event.key === "Escape") {
           controller.setSearchOpen(false);
         }
+      });
+    }
+
+    if (refs.searchResults) {
+      refs.searchResults.addEventListener("click", function (event) {
+        controller.handleSearchResultClick(event);
       });
     }
 
@@ -760,6 +783,39 @@
     this.setFilterOpen(false);
   };
 
+  ShellController.prototype.findSearchItem = function (itemId) {
+    const provider = this.currentSearchProvider();
+
+    if (!provider) {
+      return null;
+    }
+
+    return provider.items.find(function (item) {
+      return item.id === itemId;
+    }) || null;
+  };
+
+  ShellController.prototype.handleSearchResultClick = function (event) {
+    const result = event.target.closest("[data-search-result]");
+
+    if (!result) {
+      return;
+    }
+
+    const item = this.findSearchItem(result.dataset.searchResultId || "");
+
+    if (!item) {
+      return;
+    }
+
+    this.dispatchShellEvent("fieldops:shell-search-select", {
+      source: "search-panel",
+      item
+    });
+
+    this.setSearchOpen(false);
+  };
+
   ShellController.prototype.handlePageButtonClick = function (event, button) {
     const pageName = button.dataset.page;
 
@@ -791,7 +847,7 @@
      ======================================================================== */
 
   function bootFieldOpsShell() {
-    const shell = document.querySelector(".phone");
+    const shell = document.querySelector(SHELL_ROOT_SELECTOR);
 
     if (!shell || shell.dataset.shellReady === "true") {
       return;
