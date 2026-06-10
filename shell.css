@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas shared shell
    Root file: shell.css
-   Version: 1.1.1-shell-v1
+   Version: 1.1.1-shell-v1.5
 
    Purpose:
    - Shared top shell, burger drawer, page selector, and bottom nav.
@@ -22,7 +22,7 @@
       --safe-bottom: env(safe-area-inset-bottom, 0px);
 
       --shell-side: 18px;
-      --shell-surface: #081d34;
+      --shell-surface: #0d2947;
 
       --text: rgba(255, 255, 255, 0.92);
       --text-soft: rgba(226, 241, 255, 0.78);
@@ -102,7 +102,7 @@
       overflow: hidden;
       color: var(--text);
       font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-      background: #050f1c;
+      background: #07182d;
     }
 
     button {
@@ -125,7 +125,7 @@
       border: 0;
       border-radius: 0;
       background:
-        linear-gradient(180deg, #07182d 0%, #061527 48%, #050f1c 100%);
+        linear-gradient(180deg, #0e2a48 0%, #0b213a 48%, #07182d 100%);
       box-shadow: none;
     }
 
@@ -865,6 +865,15 @@
       pointer-events: none;
     }
 
+
+    .phone[data-page="rf"] {
+      --rf-content-side: 7px;
+    }
+
+    .phone[data-page="rf"] .bottom-shell {
+      padding-inline: var(--rf-content-side);
+    }
+
     .bottom-nav {
       height: var(--nav-height);
       display: flex;
@@ -884,6 +893,7 @@
     .nav-button {
       position: relative;
       width: 20%;
+      flex: 0 0 20%;
       min-width: 0;
       height: var(--nav-height);
       padding: 0;
@@ -908,6 +918,7 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.12),
         0 -3px 10px rgba(4, 10, 18, 0.14);
       line-height: 1;
+      text-decoration: none;
     }
 
     .nav-button:first-child,
@@ -931,8 +942,9 @@
 
     .nav-button.is-active {
       z-index: 3;
-      width: calc(20% - (var(--nav-active-gap) * 2));
-      margin-inline: var(--nav-active-gap);
+      width: 20%;
+      flex: 0 0 20%;
+      margin-inline: 0;
       color: var(--gold);
       border: 1px solid var(--gold-border);
       border-radius: var(--inner-radius);
@@ -944,7 +956,7 @@
         inset 0 1px 0 rgba(255, 255, 255, 0.16),
         0 0 0 1px rgba(255, 220, 140, 0.12),
         0 0 10px var(--gold-glow);
-      transform: translateY(-1px);
+      transform: none;
     }
 
     .nav-button.is-active::after {
