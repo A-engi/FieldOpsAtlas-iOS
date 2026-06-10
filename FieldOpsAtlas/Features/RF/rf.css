@@ -1,6 +1,6 @@
 /*
   FieldOps Atlas RF page styles
-  Version: 1.1.1-rf-bg-v1
+  Version: 1.1.1-rf-integrated-v1
 
   Purpose:
   - Own only the RF landing page content inside the shared shell.
@@ -18,8 +18,17 @@
 
 .phone[data-page="rf"] {
   --rf-content-side: 7px;
+  --rf-quick-height: 35px;
+  --rf-quick-gap: 6px;
+  --rf-expanded-top-height: calc(56px + var(--rf-quick-gap) + var(--rf-quick-height));
+  --rf-collapsed-top-height: 56px;
+  --top-height: var(--rf-expanded-top-height);
   --content-gap: var(--rf-content-side);
   --content-radius: 20px;
+}
+
+.phone[data-page="rf"]:has(.rf-quick-state:checked) {
+  --top-height: var(--rf-collapsed-top-height);
 }
 
 .phone[data-page="rf"] .content-canvas {
@@ -70,6 +79,139 @@
   padding: 7px;
   display: flex;
   flex-direction: column;
+}
+
+
+/* =========================================================
+   RF service quick row
+   ========================================================= */
+
+.rf-quick-state {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.rf-quick-access {
+  position: absolute;
+  z-index: 6;
+  top: calc(var(--safe-top) + 56px + var(--rf-quick-gap));
+  right: var(--rf-content-side);
+  left: var(--rf-content-side);
+  height: var(--rf-quick-height);
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--gap);
+  opacity: 1;
+  transform: translateY(0);
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+}
+
+.phone[data-page="rf"]:has(.rf-quick-state:checked) .rf-quick-access {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px);
+}
+
+.rf-quick-chip {
+  min-width: 0;
+  height: var(--rf-quick-height);
+  padding: 0 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  overflow: hidden;
+  color: #fff;
+  border-radius: 8px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 18px rgba(0, 0, 0, 0.15);
+  font-size: clamp(11.5px, 3.25vw, 13.5px);
+  font-weight: 760;
+  letter-spacing: 0.01em;
+  text-decoration: none;
+}
+
+.rf-quick-chip img {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 18px;
+  object-fit: contain;
+}
+
+.rf-quick-chip span {
+  min-width: 0;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.rf-quick-chip.is-dtt {
+  --chip-main: #15733a;
+  --chip-dark: #0d4d2a;
+  --chip-border: rgba(22, 83, 46, 0.70);
+}
+
+.rf-quick-chip.is-dab {
+  --chip-main: #0f5fab;
+  --chip-dark: #0a3975;
+  --chip-border: rgba(14, 64, 120, 0.78);
+}
+
+.rf-quick-chip.is-fm {
+  --chip-main: #733091;
+  --chip-dark: #491962;
+  --chip-border: rgba(83, 33, 105, 0.78);
+}
+
+.rf-quick-chip.is-more {
+  --chip-main: #183350;
+  --chip-dark: #0b1d33;
+  --chip-border: var(--button-border);
+}
+
+.rf-quick-chip {
+  border: 1px solid var(--chip-border);
+  background:
+    radial-gradient(circle at 25% 18%, rgba(255, 255, 255, 0.13), transparent 42%),
+    linear-gradient(135deg, var(--chip-main), var(--chip-dark));
+}
+
+.rf-quick-toggle {
+  position: absolute;
+  z-index: 7;
+  top: calc(var(--safe-top) + var(--top-height) - 4px);
+  left: 50%;
+  width: 84px;
+  height: 12px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  transform: translateX(-50%);
+}
+
+.rf-quick-toggle::before {
+  content: "";
+  width: 54px;
+  height: 5px;
+  border-radius: 999px;
+  background:
+    linear-gradient(180deg, rgba(192, 197, 202, 0.92), rgba(111, 118, 127, 0.88));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.32),
+    0 1px 2px rgba(0, 0, 0, 0.24);
+}
+
+.phone[data-page="rf"]:has(.rf-quick-state:checked) .rf-quick-toggle::before {
+  width: 42px;
+  opacity: 0.86;
 }
 
 /* =========================================================
