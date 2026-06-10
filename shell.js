@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas shared shell
    Root file: shell.js
-   Version: 1.1.1-shell-v1.9
+   Version: 1.1.1-shell-v2.0
 
    Purpose:
    - Inject shared shell chrome into a .phone root.
@@ -11,7 +11,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.1.1-shell-v1.9";
+  const VERSION = "1.1.1-shell-v2.0";
 
   const pages = {
     map: {
@@ -47,6 +47,75 @@
   };
 
   const pageOrder = ["map", "rf", "network", "docs", "tools"];
+
+  const searchProviders = Object.create(null);
+
+  function normaliseSearchItem(item) {
+    return {
+      id: String(item.id || item.title || ""),
+      title: String(item.title || ""),
+      subtitle: String(item.subtitle || ""),
+      href: item.href ? String(item.href) : "",
+      keywords: Array.isArray(item.keywords) ? item.keywords.map(String) : []
+    };
+  }
+
+  function normaliseSearchProvider(provider) {
+    const page = String(provider && provider.page ? provider.page : "").trim();
+
+    if (!page) {
+      return null;
+    }
+
+    return {
+      page,
+      label: String(provider.label || pages[page]?.label || page.toUpperCase()),
+      placeholder: String(provider.placeholder || `Search ${pages[page]?.label || page}...`),
+      emptyText: String(provider.emptyText || "No matches found."),
+      items: Array.isArray(provider.items) ? provider.items.map(normaliseSearchItem).filter((item) => item.title) : []
+    };
+  }
+
+  function registerSearchProvider(provider) {
+    const normalised = normaliseSearchProvider(provider);
+
+    if (!normalised) {
+      return;
+    }
+
+    searchProviders[normalised.page] = normalised;
+
+    if (typeof window.FieldOpsSearchRefresh === "function") {
+      window.FieldOpsSearchRefresh(normalised.page);
+    }
+  }
+
+  window.FieldOpsSearch = {
+    registerPage: registerSearchProvider,
+    register: registerSearchProvider,
+    providers: searchProviders
+  };
+
+  (window.FieldOpsSearchQueue || []).forEach(registerSearchProvider);
+  window.FieldOpsSearchQueue = {
+    push(provider) {
+      registerSearchProvider(provider);
+      return Object.keys(searchProviders).length;
+    }
+  };
+
+  function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, function (character) {
+      return {
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#039;"
+      }[character];
+    });
+  }
+
 
   function getScriptRoot() {
     const scripts = Array.prototype.slice.call(document.querySelectorAll("script[src]"));
@@ -120,7 +189,7 @@
         ${iconSpan("icon--menu")}
       </button>
 
-      <button class="button-surface search-button" type="button" aria-label="Search">
+      <button class="button-surface search-button" type="button" aria-label="Open search" aria-expanded="false" data-search-open>
         <span class="search-lead">
           ${iconSpan("icon--search", "search-icon")}
           <span class="search-query">Find...</span>
@@ -157,6 +226,28 @@
         </span>
         <span class="filter-option__chevron" aria-hidden="true">${chevron()}</span>
       </button>
+    </aside>
+
+
+    <aside class="search-panel" aria-label="Page search" data-search-panel>
+      <header class="search-panel__head">
+        <div class="search-panel__copy">
+          <h2 class="search-panel__title" data-search-title>Search</h2>
+          <p class="search-panel__hint" data-search-hint>Search this page.</p>
+        </div>
+
+        <button class="button-surface search-panel__close" type="button" aria-label="Close search" data-search-close>
+          <span class="css-close" aria-hidden="true"></span>
+        </button>
+      </header>
+
+      <label class="search-field">
+        <span class="repo-icon icon--search" aria-hidden="true"></span>
+        <input class="search-field__input" type="search" autocomplete="off" spellcheck="false" data-search-input>
+      </label>
+
+      <div class="search-results" data-search-results></div>
+      <p class="search-empty" data-search-empty>No matches found.</p>
     </aside>
 
     <aside class="drawer" aria-label="Main navigation menu">
@@ -242,6 +333,7 @@
     shell.dataset.drawerOpen = "false";
     shell.dataset.pagesExpanded = "false";
     shell.dataset.filterOpen = "false";
+    shell.dataset.searchOpen = "false";
     shell.dataset.currentPage = activePage;
 
     shell.insertAdjacentHTML("afterbegin", shellMarkup(activePage));
@@ -250,6 +342,14 @@
     const backdropButton = shell.querySelector("[data-menu-backdrop]");
     const filterButton = shell.querySelector("[data-filter-open-button]");
     const filterClose = shell.querySelector("[data-filter-close]");
+    const searchButton = shell.querySelector("[data-search-open]");
+    const searchClose = shell.querySelector("[data-search-close]");
+    const searchInput = shell.querySelector("[data-search-input]");
+    const searchResults = shell.querySelector("[data-search-results]");
+    const searchEmpty = shell.querySelector("[data-search-empty]");
+    const searchTitle = shell.querySelector("[data-search-title]");
+    const searchHint = shell.querySelector("[data-search-hint]");
+    const searchQueryLabel = shell.querySelector(".search-query");
     const pagesButton = shell.querySelector("[data-pages-toggle]");
     const pagesButtonText = pagesButton ? pagesButton.querySelector(".section-toggle__text") : null;
     const pageOptions = Array.prototype.slice.call(shell.querySelectorAll(".drawer-page-option"));
@@ -268,6 +368,7 @@
 
       if (isOpen) {
         setFilterOpen(false);
+        setSearchOpen(false);
       }
     }
 
@@ -280,8 +381,101 @@
 
       if (isOpen) {
         setDrawerOpen(false);
+        setSearchOpen(false);
       }
     }
+
+
+    function currentSearchProvider() {
+      return searchProviders[activePage] || null;
+    }
+
+    function updateSearchUi() {
+      const provider = currentSearchProvider();
+      const page = pages[activePage] || pages.rf;
+      const placeholder = provider ? provider.placeholder : `Search ${page.label}...`;
+      const title = provider ? `Search ${provider.label}` : `Search ${page.label}`;
+      const hint = provider ? "Page-specific results only." : "Search is not available on this page yet.";
+
+      if (searchInput) {
+        searchInput.placeholder = placeholder;
+      }
+
+      if (searchQueryLabel) {
+        searchQueryLabel.textContent = placeholder;
+      }
+
+      if (searchTitle) {
+        searchTitle.textContent = title;
+      }
+
+      if (searchHint) {
+        searchHint.textContent = hint;
+      }
+
+      renderSearchResults(searchInput ? searchInput.value : "");
+    }
+
+    function resultHref(item) {
+      if (!item.href) {
+        return "#";
+      }
+
+      return new URL(item.href, window.location.href).href;
+    }
+
+    function renderSearchResults(query) {
+      if (!searchResults || !searchEmpty) {
+        return;
+      }
+
+      const provider = currentSearchProvider();
+
+      if (!provider) {
+        searchResults.innerHTML = "";
+        searchEmpty.textContent = "Search is not available on this page yet.";
+        searchEmpty.hidden = false;
+        return;
+      }
+
+      const needle = String(query || "").trim().toLowerCase();
+      const matches = provider.items.filter(function (item) {
+        const haystack = [item.title, item.subtitle].concat(item.keywords).join(" ").toLowerCase();
+        return !needle || haystack.includes(needle);
+      }).slice(0, 12);
+
+      searchResults.innerHTML = matches.map(function (item) {
+        return `
+          <a class="button-surface search-result" href="${escapeHtml(resultHref(item))}">
+            <span class="search-result__title">${escapeHtml(item.title)}</span>
+            <span class="search-result__subtitle">${escapeHtml(item.subtitle)}</span>
+          </a>`;
+      }).join("");
+
+      searchEmpty.textContent = provider.emptyText;
+      searchEmpty.hidden = matches.length > 0;
+    }
+
+    function setSearchOpen(isOpen) {
+      shell.setAttribute("data-search-open", isOpen ? "true" : "false");
+
+      if (searchButton) {
+        searchButton.setAttribute("aria-expanded", isOpen ? "true" : "false");
+      }
+
+      if (isOpen) {
+        setDrawerOpen(false);
+        setFilterOpen(false);
+        updateSearchUi();
+        requestAnimationFrame(function () {
+          if (searchInput) {
+            searchInput.focus();
+            searchInput.select();
+          }
+        });
+      }
+    }
+
 
     function setPagesExpanded(isExpanded) {
       shell.setAttribute("data-pages-expanded", isExpanded ? "true" : "false");
@@ -354,6 +548,7 @@
       updateCurrentPagePill();
       updateBottomNav();
       updatePageOptionVisibility();
+      updateSearchUi();
     }
 
     if (menuButton) {
@@ -378,6 +573,43 @@
         setFilterOpen(false);
       });
     }
+
+
+    if (searchButton) {
+      searchButton.addEventListener("click", function () {
+        setSearchOpen(shell.getAttribute("data-search-open") !== "true");
+      });
+    }
+
+    if (searchClose) {
+      searchClose.addEventListener("click", function () {
+        setSearchOpen(false);
+      });
+    }
+
+    if (searchInput) {
+      searchInput.addEventListener("input", function () {
+        renderSearchResults(searchInput.value);
+      });
+
+      searchInput.addEventListener("keydown", function (event) {
+        if (event.key === "Escape") {
+          setSearchOpen(false);
+        }
+      });
+    }
+
+    document.addEventListener("pointerdown", function (event) {
+      if (shell.getAttribute("data-search-open") !== "true") {
+        return;
+      }
+
+      if (event.target.closest(".search-panel, .search-button")) {
+        return;
+      }
+
+      setSearchOpen(false);
+    }, true);
 
     if (pagesButton) {
       pagesButton.addEventListener("click", function () {
@@ -404,8 +636,15 @@
       });
     });
 
+    window.FieldOpsSearchRefresh = function (page) {
+      if (page === activePage) {
+        updateSearchUi();
+      }
+    };
+
     setDrawerOpen(false);
     setFilterOpen(false);
+    setSearchOpen(false);
     setPagesExpanded(false);
     setActivePage(activePage);
 
@@ -418,6 +657,7 @@
 
       setDrawerOpen(false);
       setFilterOpen(false);
+      setSearchOpen(false);
     });
   }
 
