@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas shared shell
    Root file: shell.css
-   Version: 1.1.1-shell-v2.2-map-drawer-actions
+   Version: 1.1.1-shell-v2.3-map-bottom-visible
 
    Purpose:
    - Shared top shell, burger drawer, page selector, filter panel, search panel,
@@ -137,7 +137,7 @@ button {
 }
 
 .fieldops-shell-root[data-page="map"] .bottom-shell {
-  display: none;
+  z-index: 5002;
 }
 
 
