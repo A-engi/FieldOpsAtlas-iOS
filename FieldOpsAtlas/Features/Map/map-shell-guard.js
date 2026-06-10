@@ -1,7 +1,7 @@
 /* ============================================================================
    FieldOps Atlas map shell guard
    Root file: FieldOpsAtlas/Features/Map/map-shell-guard.js
-   Version: 1.1.1-map-shell-guard-v9
+   Version: 1.1.1-map-shell-guard-v10
 
    Purpose:
    - Load the shared root shell on the map page when index.html has not yet
@@ -21,7 +21,7 @@
 (function () {
   "use strict";
 
-  const VERSION = "1.1.1-map-shell-guard-v9";
+  const VERSION = "1.1.1-map-shell-guard-v10";
   const WORK_ONLINE_KEY = "fieldops-atlas-work-online";
   const MAP_SEARCH_PROVIDER_ID = "map-visible-walks";
 
@@ -35,7 +35,7 @@
     "/shell.js"
   ];
 
-  const SHARED_SHELL_VERSION = "1.1.1-shell-v2.4-map-visible-build";
+  const SHARED_SHELL_VERSION = "1.1.1-shell-v2.5-map-mount-fixes";
 
   const CHROME_ROOT_SELECTORS = [
     ".top-bar",
@@ -156,6 +156,7 @@
   }
 
   function refreshSharedShellState() {
+    removeFallbackShellIfSharedMounted();
     bindChromeRoots();
     registerMapSearchProvider();
     publishWorkOnlineState();
@@ -179,24 +180,51 @@
     });
   }
 
-  function ensureSharedShellScript() {
-    const firstCandidate = SHARED_SHELL_JS_PATHS.map(assetUrl).find(function (src) {
-      return !existingScript(src);
-    });
+  function loadSharedShellScriptCandidate(index) {
+    const path = SHARED_SHELL_JS_PATHS[index];
 
-    if (!firstCandidate) {
+    if (!path) {
+      injectFallbackShellIfNeeded();
+      return;
+    }
+
+    const src = assetUrl(path);
+
+    if (existingScript(src)) {
       window.requestAnimationFrame(refreshSharedShellState);
       return;
     }
 
     const script = document.createElement("script");
+    let settled = false;
 
-    script.src = cacheBust(firstCandidate, SHARED_SHELL_VERSION);
+    function tryNextCandidate() {
+      if (settled) {
+        return;
+      }
+
+      settled = true;
+      script.remove();
+      loadSharedShellScriptCandidate(index + 1);
+    }
+
+    script.src = cacheBust(src, SHARED_SHELL_VERSION);
     script.defer = true;
     script.dataset.fieldopsSharedShell = VERSION;
-    script.addEventListener("load", refreshSharedShellState, { once: true });
+    script.addEventListener("load", function () {
+      settled = true;
+      refreshSharedShellState();
+      removeFallbackShellIfSharedMounted();
+    }, { once: true });
+    script.addEventListener("error", tryNextCandidate, { once: true });
 
     document.body.appendChild(script);
+
+    window.setTimeout(tryNextCandidate, 3500);
+  }
+
+  function ensureSharedShellScript() {
+    loadSharedShellScriptCandidate(0);
   }
 
   function ensureSharedShellAssets() {
@@ -226,7 +254,7 @@
 
   function fallbackShellMarkup() {
     return `
-    <header class="top-shell" aria-label="Map controls" data-map-shell-fallback data-build="v2.4-guard-v9">
+    <header class="top-shell" aria-label="Map controls" data-map-shell-fallback data-build="v2.5-guard-v10">
       <button class="button-surface icon-button" type="button" aria-label="Open menu" aria-expanded="false" data-fallback-menu>
         ${iconMarkup("icon--menu")}
       </button>
@@ -251,8 +279,8 @@
       </button>
     </header>
 
-    <footer class="bottom-shell" data-map-shell-fallback data-build="v2.4-guard-v9">
-      <div class="map-shell-build">v2.4 map shell Â· guard v9</div>
+    <footer class="bottom-shell" data-map-shell-fallback data-build="v2.5-guard-v10">
+      <div class="map-shell-build">v2.5 map shell - guard v10</div>
       <nav class="bottom-nav" aria-label="Primary navigation">
         ${fallbackNavMarkup()}
       </nav>
@@ -565,8 +593,26 @@
     document.head.appendChild(style);
   }
 
+  function removeFallbackShellIfSharedMounted() {
+    if (!hasMountedSharedShell()) {
+      return;
+    }
+
+    document.querySelectorAll("[data-map-shell-fallback]").forEach(function (element) {
+      element.remove();
+    });
+
+    const fallbackStyle = document.getElementById("fieldops-map-fallback-shell-style");
+
+    if (fallbackStyle) {
+      fallbackStyle.remove();
+    }
+  }
+
   function injectFallbackShellIfNeeded() {
     window.setTimeout(function () {
+      removeFallbackShellIfSharedMounted();
+
       const root = shellRoot();
 
       if (hasMountedSharedShell() || document.querySelector("[data-map-shell-fallback]")) {
@@ -576,8 +622,8 @@
       root.classList.add("fieldops-shell-root");
       root.dataset.page = "map";
       root.dataset.currentPage = "map";
-      root.dataset.shellReady = "fallback";
-      root.dataset.shellVersion = VERSION;
+      root.dataset.shellFallbackReady = "true";
+      root.dataset.shellFallbackVersion = VERSION;
 
       injectFallbackShellStyles();
       root.insertAdjacentHTML("afterbegin", fallbackShellMarkup());
@@ -586,7 +632,7 @@
       window.dispatchEvent(new CustomEvent("fieldops:map-shell-fallback-mounted", {
         detail: { version: VERSION }
       }));
-    }, 450);
+    }, 1100);
   }
 
   function injectLegacyShellArchiveStyles() {
@@ -980,6 +1026,8 @@
     bindSharedShellBridge();
     bindMapSearchBridge();
     publishWorkOnlineState();
+
+    window.setTimeout(removeFallbackShellIfSharedMounted, 1800);
 
     window.dispatchEvent(new CustomEvent("fieldops:map-shell-guard-ready", {
       detail: {
