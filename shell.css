@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas shared shell
    Root file: shell.css
-   Version: 1.1.1-shell-v2.1-map-mount
+   Version: 1.1.1-shell-v2.2-map-drawer-actions
 
    Purpose:
    - Shared top shell, burger drawer, page selector, filter panel, search panel,
@@ -817,6 +817,7 @@ button {
 }
 
 .checkbox {
+  position: relative;
   width: 17px;
   height: 17px;
   flex: 0 0 auto;
@@ -824,6 +825,28 @@ button {
   border-radius: 5px;
   background: rgba(8, 21, 39, 0.62);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.online-row[aria-pressed="true"] .checkbox {
+  border-color: var(--gold-border);
+  background:
+    radial-gradient(circle at 50% 28%, rgba(120, 211, 255, 0.35), transparent 46%),
+    linear-gradient(180deg, rgba(33, 83, 135, 0.98), rgba(12, 42, 75, 0.98));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.14),
+    0 0 8px var(--gold-glow);
+}
+
+.online-row[aria-pressed="true"] .checkbox::after {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: 1px;
+  width: 6px;
+  height: 9px;
+  border-right: 2px solid var(--gold);
+  border-bottom: 2px solid var(--gold);
+  transform: rotate(42deg);
 }
 
 .version-row {
