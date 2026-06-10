@@ -625,7 +625,6 @@ button {
   align-items: center;
   overflow: hidden;
   text-align: left;
-  text-decoration: none;
   border-color: rgba(123, 207, 255, 0.64);
   border-radius: var(--outer-radius);
   background:
