@@ -4,12 +4,12 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>FieldOps Atlas RF v1.1.1</title>
-  <link rel="stylesheet" href="../../../shell.css?v=1.1.1-shell-v1.5">
-  <link rel="stylesheet" href="./rf.css?v=1.1.1-rf-integrated-v2">
+  <link rel="stylesheet" href="../../../shell.css?v=1.1.1-shell-v1.6">
+  <link rel="stylesheet" href="./rf.css?v=1.1.1-rf-integrated-v3">
 </head>
 <body>
   <main class="phone" data-page="rf" data-nav="rf" data-version="1.1.1">
-    <input class="rf-quick-state" type="checkbox" id="rfQuickState" aria-hidden="true">
+    <input class="rf-quick-state" type="checkbox" id="rfQuickState" checked aria-hidden="true">
 
     <nav class="rf-quick-access" aria-label="RF service shortcuts">
       <a class="rf-quick-chip is-dtt" href="./dtt.html">
@@ -27,13 +27,16 @@
         <span>FM</span>
       </a>
 
-      <a class="rf-quick-chip is-more" href="./services.html">
-        <img src="../../../data/icons/more.svg" alt="" aria-hidden="true" loading="lazy" decoding="async">
+      <a class="rf-quick-chip is-more" href="./services.html" aria-label="More RF services">
         <span>More</span>
       </a>
+
+      <button class="rf-quick-chip is-pin" type="button" aria-label="Pin RF shortcuts">
+        <span>Pin</span>
+      </button>
     </nav>
 
-    <label class="rf-quick-toggle" for="rfQuickState" aria-label="Collapse RF service shortcuts"></label>
+    <label class="rf-quick-toggle" for="rfQuickState" aria-label="Expand RF service shortcuts"></label>
 
     <section class="content-canvas" aria-label="RF Atlas content">
       <article class="rf-home">
