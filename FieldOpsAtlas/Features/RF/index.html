@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>FieldOps Atlas RF v1.1.1</title>
-  <link rel="stylesheet" href="../../../shell.css?v=1.1.1-shell-v1.7">
+  <link rel="stylesheet" href="../../../shell.css?v=1.1.1-shell-v2.0">
   <link rel="stylesheet" href="./rf.css?v=1.1.1-rf-integrated-v7">
 </head>
 <body>
@@ -271,7 +271,103 @@
     </section>
   </main>
 
-  <script src="../../../shell.js?v=1.1.1-shell-v1.9" defer></script>
+  <script>
+    window.FieldOpsSearchQueue = window.FieldOpsSearchQueue || [];
+    window.FieldOpsSearchQueue.push({
+      page: "rf",
+      label: "RF",
+      placeholder: "Search RF...",
+      emptyText: "No RF matches found.",
+      items: [
+        {
+          id: "rf-overview",
+          title: "RF overview",
+          subtitle: "RF network map and dashboard",
+          href: "./index.html",
+          keywords: ["overview", "dashboard", "network", "map"]
+        },
+        {
+          id: "rf-sites",
+          title: "Sites",
+          subtitle: "RF site directory and status",
+          href: "./sites.html",
+          keywords: ["site", "sites", "transmitter", "relay", "tx"]
+        },
+        {
+          id: "rf-paths",
+          title: "Paths",
+          subtitle: "RF paths and link analysis",
+          href: "./paths.html",
+          keywords: ["path", "paths", "link", "links", "microwave", "frequency"]
+        },
+        {
+          id: "rf-equipment",
+          title: "Equipment",
+          subtitle: "Transmitters, antennas, receivers",
+          href: "./equipment.html",
+          keywords: ["equipment", "tx", "antenna", "receiver", "rack"]
+        },
+        {
+          id: "rf-dtt",
+          title: "DTT services",
+          subtitle: "Digital terrestrial television",
+          href: "./dtt.html",
+          keywords: ["dtt", "mux", "multiplex", "television", "tv"]
+        },
+        {
+          id: "rf-dab",
+          title: "DAB services",
+          subtitle: "Digital audio broadcasting",
+          href: "./dab.html",
+          keywords: ["dab", "radio", "audio", "ensemble"]
+        },
+        {
+          id: "rf-fm",
+          title: "FM services",
+          subtitle: "FM radio services",
+          href: "./fm.html",
+          keywords: ["fm", "radio", "audio"]
+        },
+        {
+          id: "rf-services",
+          title: "All RF services",
+          subtitle: "DTT, DAB, FM and service groups",
+          href: "./services.html",
+          keywords: ["services", "more", "dtt", "dab", "fm"]
+        },
+        {
+          id: "site-hilltop",
+          title: "Hilltop Relay",
+          subtitle: "Recently opened RF relay site",
+          href: "./sites.html#hilltop",
+          keywords: ["hilltop", "relay", "site", "online"]
+        },
+        {
+          id: "site-ridgeway",
+          title: "Ridgeway Relay",
+          subtitle: "Recently opened RF relay site",
+          href: "./sites.html#ridgeway",
+          keywords: ["ridgeway", "relay", "site", "online"]
+        },
+        {
+          id: "site-london-core",
+          title: "London Core",
+          subtitle: "Recently opened core TX site",
+          href: "./sites.html#london-core",
+          keywords: ["london", "core", "tx", "site", "transmitter"]
+        },
+        {
+          id: "path-north-ridge-hilltop",
+          title: "North Ridge to Hilltop",
+          subtitle: "Selected RF path Â· 6.725 GHz",
+          href: "./paths.html#north-ridge-hilltop",
+          keywords: ["north ridge", "hilltop", "6.725", "ghz", "horizontal", "path"]
+        }
+      ]
+    });
+  </script>
+
+  <script src="../../../shell.js?v=1.1.1-shell-v2.0" defer></script>
   <script>
     (function () {
       "use strict";
