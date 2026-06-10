@@ -1,6 +1,6 @@
 /*
   FieldOps Atlas RF page styles
-  Version: 1.1.1-rf-integrated-v2
+  Version: 1.1.1-rf-integrated-v3
 
   Purpose:
   - Own only the RF landing page content inside the shared shell.
@@ -24,6 +24,12 @@
   --rf-content-top: calc(var(--rf-shell-height) + var(--rf-quick-gap) + var(--rf-quick-height));
   --content-gap: var(--rf-content-side);
   --content-radius: 20px;
+}
+
+
+.phone[data-page="rf"] .top-shell {
+  padding-right: var(--rf-content-side);
+  padding-left: var(--rf-content-side);
 }
 
 .phone[data-page="rf"]:has(.rf-quick-state:checked) {
@@ -101,7 +107,7 @@
   left: var(--rf-content-side);
   height: var(--rf-quick-height);
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr)) 0.72fr 0.72fr;
   gap: var(--gap);
   opacity: 1;
   transform: translateY(0);
@@ -178,6 +184,39 @@
   background:
     radial-gradient(circle at 25% 18%, rgba(255, 255, 255, 0.13), transparent 42%),
     linear-gradient(135deg, var(--chip-main), var(--chip-dark));
+}
+
+
+.rf-quick-chip.is-pin,
+.rf-quick-chip.is-more {
+  padding-inline: 4px;
+}
+
+.rf-quick-chip.is-more span {
+  font-size: 0;
+}
+
+.rf-quick-chip.is-more span::before {
+  content: "â¢â¢â¢";
+  font-size: 19px;
+  line-height: 1;
+  letter-spacing: 0.08em;
+}
+
+.rf-quick-chip.is-pin {
+  --chip-main: #183350;
+  --chip-dark: #0b1d33;
+  --chip-border: var(--button-border);
+}
+
+.rf-quick-chip.is-pin span {
+  font-size: 0;
+}
+
+.rf-quick-chip.is-pin span::before {
+  content: "Pin";
+  font-size: clamp(10px, 2.8vw, 12px);
+  line-height: 1;
 }
 
 .rf-quick-toggle {
@@ -980,7 +1019,7 @@
 .rf-recent-grid {
   min-height: 0;
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr)) 0.72fr 0.72fr;
   gap: 5px;
 }
 
