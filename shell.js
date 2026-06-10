@@ -1,7 +1,7 @@
 /* ============================================================================
    FieldOps Atlas shared shell
    Root file: shell.js
-   Version: 1.1.1-shell-v2.5-map-mount-fixes
+   Version: 1.1.1-shell-v2.6-map-button-events
 
    Purpose:
    - Inject shared shell chrome into a .phone root.
@@ -18,7 +18,7 @@
      Configuration
      ======================================================================== */
 
-  const VERSION = "1.1.1-shell-v2.5-map-mount-fixes";
+  const VERSION = "1.1.1-shell-v2.6-map-button-events";
   const SHELL_ROOT_SELECTOR = ".phone, .app-shell";
   const DEFAULT_PAGE = "rf";
   const MAX_SEARCH_RESULTS = 12;
@@ -344,7 +344,7 @@
 
       <div class="button-surface version-row">
         ${iconMarkup("icon--info")}
-        <span>FieldOps Atlas v2.5 map shell</span>
+        <span>FieldOps Atlas v2.6 map shell</span>
       </div>
     </aside>
 
@@ -567,6 +567,19 @@
   };
 
   ShellController.prototype.setFilterOpen = function (isOpen) {
+    if (isOpen && this.activePage === "map") {
+      this.dispatchShellEvent("fieldops:shell-filter-region", { source: "top-filter-button" });
+      this.shell.dataset.filterOpen = "false";
+
+      if (this.refs.filterButton) {
+        this.refs.filterButton.setAttribute("aria-expanded", "false");
+      }
+
+      this.setDrawerOpen(false);
+      this.setSearchOpen(false);
+      return;
+    }
+
     this.shell.dataset.filterOpen = isOpen ? "true" : "false";
 
     if (this.refs.filterButton) {
@@ -592,6 +605,7 @@
       return;
     }
 
+    this.dispatchShellEvent("fieldops:shell-search-open", { source: "top-search-button" });
     this.setDrawerOpen(false);
     this.setFilterOpen(false);
     this.updateSearchUi();
@@ -901,6 +915,15 @@
     }
 
     event.preventDefault();
+
+    if (this.activePage === "map" && pageName === "map") {
+      this.dispatchShellEvent("fieldops:shell-map-tools-toggle", { source: "bottom-nav-map" });
+      this.setDrawerOpen(false);
+      this.setFilterOpen(false);
+      this.setSearchOpen(false);
+      return;
+    }
+
     this.setActivePage(pageName);
     this.setDrawerOpen(false);
     this.setFilterOpen(false);
