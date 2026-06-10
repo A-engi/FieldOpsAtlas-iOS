@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas shared shell
    Root file: shell.css
-   Version: 1.1.1-shell-v1.6
+   Version: 1.1.1-shell-v1.7
 
    Purpose:
    - Shared top shell, burger drawer, page selector, and bottom nav.
@@ -879,7 +879,6 @@
       display: flex;
       align-items: stretch;
       justify-content: center;
-      column-gap: var(--nav-active-gap);
       overflow: visible;
       border: 0;
       background: transparent;
@@ -893,8 +892,8 @@
 
     .nav-button {
       position: relative;
-      width: calc((100% - (var(--nav-active-gap) * 4)) / 5);
-      flex: 0 0 calc((100% - (var(--nav-active-gap) * 4)) / 5);
+      width: 20%;
+      flex: 0 0 20%;
       min-width: 0;
       height: var(--nav-height);
       padding: 0;
@@ -943,9 +942,9 @@
 
     .nav-button.is-active {
       z-index: 3;
-      width: calc((100% - (var(--nav-active-gap) * 4)) / 5);
-      flex: 0 0 calc((100% - (var(--nav-active-gap) * 4)) / 5);
-      margin-inline: 0;
+      width: calc(20% - (var(--nav-active-gap) * 2));
+      flex: 0 0 calc(20% - (var(--nav-active-gap) * 2));
+      margin-inline: var(--nav-active-gap);
       color: var(--gold);
       border: 1px solid var(--gold-border);
       border-radius: var(--inner-radius);
