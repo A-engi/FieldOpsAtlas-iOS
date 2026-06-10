@@ -259,11 +259,9 @@
     </aside>
 
     <aside class="search-panel" aria-label="Page search">
-      <header class="search-panel__head">
-        <div class="search-panel__copy">
-          <h2 class="search-panel__title" data-search-title>Search</h2>
-          <p class="search-panel__hint" data-search-hint>Search this page.</p>
-        </div>
+      <header class="search-panel__copy">
+        <h2 class="search-panel__title" data-search-title>Search</h2>
+        <p class="search-panel__hint" data-search-hint>Search this page.</p>
       </header>
 
       <label class="search-field">
@@ -287,7 +285,7 @@
         </div>
       </header>
 
-      <section class="section-card" aria-label="Page selector">
+      <section aria-label="Page selector">
         <div class="section-toggle">
           <p class="section-label">Pages</p>
           <button class="section-toggle__button" type="button" aria-expanded="false" data-pages-toggle>
@@ -438,6 +436,7 @@
         controller.setSearchOpen(controller.shell.dataset.searchOpen !== "true");
       });
     }
+
     if (refs.searchInput) {
       refs.searchInput.addEventListener("input", function () {
         controller.renderSearchResults(refs.searchInput.value);
@@ -726,11 +725,13 @@
      ======================================================================== */
 
   ShellController.prototype.handleDocumentPointerDown = function (event) {
-    if (this.shell.dataset.searchOpen !== "true") {
+    const target = event.target;
+
+    if (this.shell.dataset.searchOpen !== "true" || !(target instanceof Element)) {
       return;
     }
 
-    if (event.target.closest(".search-panel, .search-button")) {
+    if (target.closest(".search-panel, .search-button")) {
       return;
     }
 
