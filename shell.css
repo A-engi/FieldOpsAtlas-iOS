@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas shared shell
    Root file: shell.css
-   Version: 1.1.3-clear-root-shell
+   Version: 1.1.4-root-controls-clear-shell
 
    Purpose:
    Shared shell layout only.
@@ -9,6 +9,7 @@
    Rules:
    - Root shell does not paint page backgrounds.
    - Root shell does not add top or bottom backing layers.
+   - Individual shell controls keep their own button surfaces.
    - Page and feature files may apply their own colours later.
    - Icon paths resolve from this root CSS file to data/icons/.
    ========================================================================== */
@@ -22,7 +23,8 @@
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
-  --shell-side: 18px;
+  --page-width: 430px;
+  --shell-side: 9px;
   --text: rgba(255, 255, 255, 0.92);
   --text-soft: rgba(226, 241, 255, 0.78);
   --text-muted: rgba(226, 241, 255, 0.66);
@@ -32,26 +34,38 @@
   --gold-border: rgba(255, 207, 119, 0.78);
   --gold-line: rgba(255, 207, 119, 0.40);
 
+  --control-border: rgba(76, 113, 151, 0.72);
+  --control-bg:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.064), rgba(255, 255, 255, 0.018)),
+    rgba(16, 43, 73, 0.96);
+  --control-bg-strong:
+    radial-gradient(circle at 50% 0%, rgba(255, 217, 133, 0.07), transparent 34%),
+    linear-gradient(180deg, #102b49, #0c233d);
+  --control-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 8px 18px rgba(0, 0, 0, 0.15);
+
   --outer-radius: 12px;
   --inner-radius: 10px;
   --panel-radius: 24px;
 
-  --top-height: 56px;
-  --top-pad-y: 7px;
-  --top-control-height: 42px;
-  --top-icon-button-width: 44px;
-  --top-icon-size: 25px;
+  --top-height: 54px;
+  --top-pad-y: 8px;
+  --top-control-height: 38px;
+  --top-icon-button-width: 42px;
+  --top-icon-size: 22px;
 
-  --gap: 5px;
+  --gap: 7px;
   --search-height: var(--top-control-height);
-  --search-icon-size: 25px;
-  --search-edge: 12px;
+  --search-icon-size: 20px;
+  --search-edge: 11px;
   --search-gap: 8px;
-  --search-brand-gap: 9px;
-  --search-cluster-gap: 12px;
+  --search-brand-gap: 7px;
+  --search-cluster-gap: 8px;
 
   --nav-height: 38px;
-  --nav-design-width: 68px;
+  --nav-button-width: 76px;
+  --nav-design-width: 76px;
   --nav-pad-x: calc(var(--nav-design-width) * 0.17);
   --nav-pad-y: calc(var(--nav-height) * 0.17);
   --nav-icon-size: 18px;
@@ -62,7 +76,7 @@
   --drawer-top: calc(var(--safe-top) + var(--top-height) + 8px);
   --drawer-bottom: calc(var(--safe-bottom) + var(--nav-height) + var(--bottom-lift) + 12px);
   --drawer-left: var(--shell-side);
-  --drawer-width: min(318px, calc(100vw - (var(--shell-side) * 2)));
+  --drawer-width: min(318px, calc(min(100vw, var(--page-width)) - (var(--shell-side) * 2)));
   --drawer-padding: 14px;
   --drawer-row-height: 44px;
   --drawer-row-gap: 8px;
@@ -97,7 +111,8 @@ select {
 .phone,
 .app-shell {
   position: relative;
-  width: 100%;
+  width: min(100vw, var(--page-width));
+  margin-inline: auto;
   min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
@@ -106,18 +121,18 @@ select {
 }
 
 .fieldops-shell-root[data-page="map"] {
-  --shell-side: 12px;
-  --gap: 12px;
+  --shell-side: 9px;
+  --gap: 7px;
   --top-pad-y: 8px;
-  --top-control-height: 42px;
-  --top-icon-button-width: 48px;
-  --top-icon-size: 26px;
-  --search-edge: 14px;
-  --search-gap: 12px;
-  --search-brand-gap: 8px;
-  --search-cluster-gap: 12px;
-  --outer-radius: 16px;
-  --inner-radius: 14px;
+  --top-control-height: 38px;
+  --top-icon-button-width: 42px;
+  --top-icon-size: 22px;
+  --search-edge: 11px;
+  --search-gap: 8px;
+  --search-brand-gap: 7px;
+  --search-cluster-gap: 8px;
+  --outer-radius: 12px;
+  --inner-radius: 10px;
 }
 
 
@@ -158,9 +173,10 @@ select {
 .online-row {
   appearance: none;
   -webkit-appearance: none;
-  border: 0;
+  border: 1px solid var(--control-border);
   color: inherit;
-  background: transparent;
+  background: var(--control-bg);
+  box-shadow: var(--control-shadow);
 }
 
 .icon-button {
@@ -170,6 +186,7 @@ select {
   display: grid;
   place-items: center;
   line-height: 1;
+  border-radius: 8px;
 }
 
 .icon-button .repo-icon {
@@ -220,11 +237,13 @@ select {
    ========================================================================== */
 
 .top-shell {
-  position: absolute;
+  position: fixed;
+  width: min(100vw, var(--page-width));
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 5;
   top: 0;
-  right: 0;
-  left: 0;
+  right: auto;
   height: calc(var(--top-height) + var(--safe-top));
   padding: calc(var(--top-pad-y) + var(--safe-top)) var(--shell-side) var(--top-pad-y);
   display: grid;
@@ -259,6 +278,7 @@ select {
 .search-button {
   min-width: 0;
   height: var(--search-height);
+  border-radius: 10px;
   padding: 0 var(--search-edge);
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -656,15 +676,18 @@ select {
    ========================================================================== */
 
 .bottom-shell {
-  position: absolute;
+  position: fixed;
+  width: min(100vw, var(--page-width));
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 5;
-  right: var(--shell-side);
+  right: auto;
   bottom: calc(var(--safe-bottom) + var(--bottom-lift));
-  left: var(--shell-side);
+  padding-inline: 10px;
   height: var(--nav-height);
-  display: grid;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  display: flex;
   align-items: stretch;
+  justify-content: center;
   gap: 0;
   pointer-events: none;
   background: transparent;
@@ -684,7 +707,9 @@ select {
 }
 
 .nav-button {
-  min-width: 0;
+  position: relative;
+  width: var(--nav-button-width);
+  min-width: var(--nav-button-width);
   height: var(--nav-height);
   padding: var(--nav-pad-y) var(--nav-pad-x);
   display: grid;
@@ -693,6 +718,7 @@ select {
   gap: var(--nav-gap);
   color: var(--text-soft);
   text-align: center;
+  background: var(--control-bg-strong);
   text-decoration: none;
 }
 
@@ -711,8 +737,23 @@ select {
   white-space: nowrap;
 }
 
+.nav-button:first-child,
+.nav-button.is-group-start {
+  border-radius: 12px 0 0 12px;
+}
+
+.nav-button:last-child,
+.nav-button.is-group-end {
+  border-radius: 0 12px 12px 0;
+}
+
 .nav-button.is-active {
-  color: var(--text);
+  z-index: 2;
+  margin-inline: 8px;
+  color: var(--gold);
+  border-color: var(--gold-border);
+  border-radius: 10px;
+  background: var(--control-bg-strong);
 }
 
 
