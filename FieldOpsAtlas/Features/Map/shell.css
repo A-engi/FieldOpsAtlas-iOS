@@ -1,14 +1,14 @@
 /* ==========================================================================
    FieldOps Atlas Map shell.css
-   Version: 1.1.1-map-shell-v2.6-map-attached-fade
-   Owner: Map-only chrome backdrop/groove/fade.
+   Version: 1.1.1-map-shell-v2.7-groove-behind-buttons
+   Owner: Map-only backdrop, groove seat, and map-attached fade.
 
    Intent:
-   - Root/shared shell keeps the real menu/search/filter buttons.
-   - Map shell owns only the background layer attached to the map.
-   - The fade starts at the top of the full-bleed map, not underneath the
-     controls, so it no longer appears as a detached strip.
-   - Keep existing HTML, IDs, and behaviours unchanged.
+   - Root/shared shell keeps the actual menu/search/filter button styling.
+   - Map shell owns the Map-only dark top backdrop and fade.
+   - The fade is attached to the top of the full-bleed map.
+   - The groove is no longer drawn on .top-bar-fade, because that made it sit
+     above the chrome. It is now drawn inside .top-shell, behind the controls.
    ========================================================================== */
 
 /* --------------------------------------------------------------------------
@@ -18,10 +18,6 @@
 :root {
   --safe-top: env(safe-area-inset-top, 0px);
 
-  /*
-     Map is full-bleed. This layer sits over the map and below the root shell
-     controls. Keep the nominal shell height aligned with the current root shell.
-  */
   --top-bar-height: 56px;
   --map-shell-top-height: var(--shared-shell-top, var(--top-height, var(--top-bar-height)));
   --map-shell-total-top: calc(var(--safe-top) + var(--map-shell-top-height));
@@ -72,10 +68,9 @@
 }
 
 /* --------------------------------------------------------------------------
-   De-fight the shared shell layer on Map.
-   Root keeps the actual buttons, sizing, and behaviour. The Map page keeps the
-   backdrop/fade. These overrides intentionally do not restyle individual
-   buttons.
+   Shared/root shell compatibility.
+   Keep root-owned controls visually aligned to the root shell palette.
+   Do not restyle individual button/search selectors here.
    -------------------------------------------------------------------------- */
 
 html .fieldops-shell-root[data-page="map"],
@@ -93,6 +88,12 @@ html .fieldops-shell-root[data-current-page="map"] {
     0 8px 20px rgba(0, 0, 0, 0.18) !important;
 }
 
+/* --------------------------------------------------------------------------
+   Top shell: backdrop + groove behind buttons.
+   The groove belongs here, not on .top-bar-fade, so it cannot sit above the
+   menu/search/filter controls.
+   -------------------------------------------------------------------------- */
+
 html .fieldops-shell-root[data-page="map"] .top-shell,
 html .fieldops-shell-root[data-current-page="map"] .top-shell {
   isolation: isolate !important;
@@ -105,33 +106,15 @@ html .fieldops-shell-root[data-current-page="map"] .top-shell {
 }
 
 html .fieldops-shell-root[data-page="map"] .top-shell::before,
-html .fieldops-shell-root[data-current-page="map"] .top-shell::before,
-html .fieldops-shell-root[data-page="map"] .top-shell::after,
-html .fieldops-shell-root[data-current-page="map"] .top-shell::after {
-  content: none !important;
-  display: none !important;
-}
-
-html .fieldops-shell-root[data-page="map"] .top-shell > *,
-html .fieldops-shell-root[data-current-page="map"] .top-shell > * {
-  position: relative;
-  z-index: 2;
-}
-
-/* --------------------------------------------------------------------------
-   Map-attached top fade.
-   This starts at the top of the full-bleed map/viewport, sits above Leaflet,
-   and remains below the root shell controls.
-   -------------------------------------------------------------------------- */
-
-.top-bar-fade {
-  position: fixed !important;
-  z-index: 300 !important;
-  top: 0 !important;
+html .fieldops-shell-root[data-current-page="map"] .top-shell::before {
+  content: "" !important;
+  display: block !important;
+  position: absolute !important;
+  z-index: 0 !important;
+  top: calc(var(--safe-top) * -1) !important;
   right: 0 !important;
   left: 0 !important;
-  height: calc(var(--map-shell-total-top) + var(--map-fade-height)) !important;
-  overflow: hidden !important;
+  height: calc(var(--safe-top) + var(--map-shell-top-height) + 8px) !important;
   pointer-events: none !important;
 
   background:
@@ -140,25 +123,24 @@ html .fieldops-shell-root[data-current-page="map"] .top-shell > * {
       180deg,
       var(--map-navy-top) 0%,
       var(--map-navy-mid) calc(var(--safe-top) + 18px),
-      var(--map-navy-low) var(--map-shell-total-top),
-      var(--map-fade-top) calc(var(--map-shell-total-top) + 18px),
-      var(--map-fade-mid) calc(var(--map-shell-total-top) + 64px),
-      var(--map-fade-bottom) 100%
+      rgba(8, 34, 61, 0.96) calc(var(--safe-top) + var(--map-shell-top-height)),
+      rgba(8, 34, 61, 0.72) 100%
     ) !important;
 
   box-shadow:
     inset 0 -1px 0 rgba(255, 255, 255, 0.035),
     0 10px 24px rgba(0, 0, 0, 0.16) !important;
+
+  -webkit-backdrop-filter: blur(14px) saturate(114%);
+  backdrop-filter: blur(14px) saturate(114%);
 }
 
-/*
-   Groove/tray behind the root shell controls.
-   This is attached to the same map fade layer so it cannot detach below the
-   top controls.
-*/
-.top-bar-fade::before {
+html .fieldops-shell-root[data-page="map"] .top-shell::after,
+html .fieldops-shell-root[data-current-page="map"] .top-shell::after {
   content: "" !important;
+  display: block !important;
   position: absolute !important;
+  z-index: 1 !important;
   top: var(--map-groove-top) !important;
   right: var(--map-groove-x) !important;
   left: var(--map-groove-x) !important;
@@ -185,10 +167,46 @@ html .fieldops-shell-root[data-current-page="map"] .top-shell > * {
     0 14px 26px rgba(0, 0, 0, 0.20) !important;
 }
 
-/*
-   Soft join at the top of the map fade. Because the parent now begins at
-   top: 0, this join reads as part of the map surface, not a separate loose bar.
-*/
+html .fieldops-shell-root[data-page="map"] .top-shell > *,
+html .fieldops-shell-root[data-current-page="map"] .top-shell > * {
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* --------------------------------------------------------------------------
+   Map-attached fade.
+   This is now fade only. No groove lives here.
+   -------------------------------------------------------------------------- */
+
+.top-bar-fade {
+  position: fixed !important;
+  z-index: 300 !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: 0 !important;
+  height: calc(var(--map-shell-total-top) + var(--map-fade-height)) !important;
+  overflow: hidden !important;
+  pointer-events: none !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7, 20, 38, 0.34) 0%,
+      rgba(8, 34, 61, 0.30) var(--map-shell-total-top),
+      var(--map-fade-top) calc(var(--map-shell-total-top) + 18px),
+      var(--map-fade-mid) calc(var(--map-shell-total-top) + 64px),
+      var(--map-fade-bottom) 100%
+    ) !important;
+
+  box-shadow: none !important;
+}
+
+/* The old groove pseudo-element is deliberately killed here. */
+.top-bar-fade::before {
+  content: none !important;
+  display: none !important;
+}
+
 .top-bar-fade::after {
   content: "" !important;
   position: absolute !important;
@@ -201,16 +219,16 @@ html .fieldops-shell-root[data-current-page="map"] .top-shell > * {
   background:
     linear-gradient(
       180deg,
-      rgba(6, 21, 39, 0.58) 0%,
-      rgba(12, 50, 82, 0.40) var(--map-ribbon-height),
+      rgba(6, 21, 39, 0.50) 0%,
+      rgba(12, 50, 82, 0.36) var(--map-ribbon-height),
       rgba(43, 132, 171, 0.20) 54%,
       rgba(7, 11, 18, 0) 100%
     ) !important;
 
   box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.045),
-    inset 0 -1px 0 rgba(98, 176, 231, 0.22),
-    0 10px 22px rgba(0, 0, 0, 0.12) !important;
+    inset 0 1px 0 rgba(255, 255, 255, 0.040),
+    inset 0 -1px 0 rgba(98, 176, 231, 0.18),
+    0 10px 22px rgba(0, 0, 0, 0.10) !important;
 
   -webkit-backdrop-filter: blur(1.5px);
   backdrop-filter: blur(1.5px);
