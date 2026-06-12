@@ -3,6 +3,35 @@
   --top-fade-height: clamp(180px, 20vw, 562px);
 }
 
+html,
+body {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  position: relative;
+  overflow-x: hidden;
+}
+
+.fieldops-shell-root {
+  position: relative;
+  z-index: 1;
+}
+
+.background-item {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  isolation: isolate;
+}
+
 .atlas-top-fade {
   position: absolute;
   top: 0;
@@ -52,6 +81,12 @@
     ),
     linear-gradient(0deg, rgba(255, 255, 255, 0.86), transparent 90%);
   filter: blur(5px);
+}
+
+.atlas-bottom-fade {
+  top: auto;
+  bottom: 0;
+  transform: scaleY(-1);
 }
 
 @media (max-width: 760px) {
