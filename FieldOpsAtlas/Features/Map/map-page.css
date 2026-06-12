@@ -1,11 +1,11 @@
-/* FieldOps Atlas map-page.css v1.1.1-map-page-clean
+/* FieldOps Atlas map-page.css v1.1.4-map-canvas-clear
    Map page layout, canvas, Leaflet, weather panels, walk panels, forms, legend, toast, and local overlays.
    Root shell owns app chrome. shell.css owns map shell compatibility.
    This file does not touch data, region JSON, markers, or map state.
  */
 
 :root {
-  --bg-main: #070b12;
+  --bg-main: transparent;
   --bg-panel: rgba(8, 15, 28, 0.94);
   --bg-panel-strong: rgba(5, 14, 28, 0.97);
   --border-soft: rgba(255, 255, 255, 0.10);
@@ -33,7 +33,7 @@ body {
   margin: 0;
   overflow: hidden;
   color: var(--text-main);
-  background: var(--bg-main);
+  background: transparent;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
@@ -47,7 +47,7 @@ button { cursor: pointer; }
   position: fixed;
   inset: 0;
   overflow: hidden;
-  background: var(--bg-main);
+  background: transparent;
 }
 
 /* Map tools menu exposed by the bridge only when active Map is pressed. */
@@ -114,7 +114,7 @@ button { cursor: pointer; }
 .leaflet-container {
   width: 100%;
   height: 100%;
-  background: #08101a;
+  background: transparent;
   font-family: inherit;
 }
 
