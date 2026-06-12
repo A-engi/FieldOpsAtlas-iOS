@@ -25,7 +25,7 @@ body {
 
 .osmmaps-page {
   position: relative;
-  min-height: 0;
+  min-height: 100dvh;
 }
 
 .osmmaps-canvas {
@@ -39,43 +39,53 @@ body {
   filter: invert(0.88) hue-rotate(178deg) saturate(0.86) brightness(0.78) contrast(1.08);
 }
 
-.osmmaps-panel {
+.osmmaps-region-overlay {
   position: fixed;
-  z-index: 30;
-  top: 0;
-  right: 0;
-  left: 0;
-  width: min(100vw, var(--page-width, 430px));
-  max-height: 100dvh;
-  margin: 0 auto;
-  padding: calc(112px + env(safe-area-inset-top)) 12px calc(104px + env(safe-area-inset-bottom));
-  overflow-y: auto;
+  inset: 0;
+  z-index: 35;
   pointer-events: none;
 }
 
-.osmmaps-panel > * {
+.osmmaps-region-overlay[hidden] {
+  display: none;
+}
+
+.osmmaps-overlay-backdrop {
+  position: absolute;
+  inset: 0;
+  border: 0;
+  background: rgba(2, 9, 20, 0.24);
+  cursor: pointer;
   pointer-events: auto;
+  backdrop-filter: blur(10px) saturate(120%);
+  -webkit-backdrop-filter: blur(10px) saturate(120%);
 }
 
-.osmmaps-header,
-.osmmaps-region-card,
-.osmmaps-details {
-  border: 1px solid rgba(184, 226, 255, 0.18);
+.osmmaps-filter-card {
+  position: absolute;
+  top: calc(96px + env(safe-area-inset-top));
+  right: max(12px, calc((100vw - min(100vw, var(--page-width, 430px))) / 2 + 12px));
+  width: min(360px, calc(100vw - 24px));
+  max-height: calc(100dvh - 190px);
+  overflow: hidden auto;
+  padding: 14px;
+  border: 1px solid rgba(184, 226, 255, 0.20);
+  border-radius: 28px;
   background:
-    linear-gradient(180deg, rgba(8, 31, 58, 0.76), rgba(5, 18, 36, 0.58)),
-    rgba(7, 22, 42, 0.46);
-  box-shadow: 0 24px 52px rgba(0, 14, 32, 0.26);
-  backdrop-filter: blur(18px) saturate(130%);
-  -webkit-backdrop-filter: blur(18px) saturate(130%);
+    linear-gradient(180deg, rgba(9, 34, 63, 0.84), rgba(5, 18, 36, 0.72)),
+    rgba(7, 22, 42, 0.74);
+  box-shadow: 0 24px 54px rgba(0, 12, 28, 0.32);
+  pointer-events: auto;
+  backdrop-filter: blur(20px) saturate(135%);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
 }
 
-.osmmaps-header {
+.osmmaps-filter-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 14px;
-  padding: 16px;
-  border-radius: 28px;
+  gap: 12px;
+  margin-bottom: 10px;
 }
 
 .osmmaps-kicker {
@@ -87,17 +97,23 @@ body {
   text-transform: uppercase;
 }
 
-.osmmaps-header h1 {
+.osmmaps-filter-header h1 {
   margin: 0;
   color: rgba(246, 252, 255, 0.98);
-  font-size: 32px;
+  font-size: 28px;
   line-height: 1;
   letter-spacing: -0.055em;
 }
 
-.osmmaps-pill-button,
+.osmmaps-filter-note {
+  margin: 0 0 12px;
+  color: rgba(205, 234, 255, 0.74);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.osmmaps-small-button,
 .osmmaps-region-button,
-.osmmaps-text-button,
 .osmmaps-weather-button {
   border: 1px solid rgba(184, 226, 255, 0.18);
   color: rgba(239, 249, 255, 0.94);
@@ -111,58 +127,27 @@ body {
   cursor: pointer;
 }
 
-.osmmaps-pill-button {
-  min-height: 40px;
-  padding: 0 14px;
-  border-radius: 999px;
-}
-
-.osmmaps-region-card {
-  margin-top: 10px;
-  padding: 10px;
-  border-radius: 22px;
-}
-
-.osmmaps-region-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  margin-bottom: 9px;
-  color: rgba(215, 238, 255, 0.80);
-  font-size: 13px;
-  font-weight: 800;
-}
-
-.osmmaps-text-button {
-  min-height: 30px;
+.osmmaps-small-button {
+  min-height: 36px;
   padding: 0 12px;
   border-radius: 999px;
-  font-size: 12px;
 }
 
 .osmmaps-region-list {
-  display: flex;
+  display: grid;
   gap: 8px;
-  overflow-x: auto;
-  padding-bottom: 2px;
-  overscroll-behavior-x: contain;
-  scrollbar-width: none;
-}
-
-.osmmaps-region-list::-webkit-scrollbar {
-  display: none;
 }
 
 .osmmaps-region-button {
-  min-height: 40px;
-  flex: 0 0 auto;
-  display: inline-flex;
+  min-height: 48px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
-  gap: 8px;
-  padding: 0 12px;
-  border-radius: 999px;
-  white-space: nowrap;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 12px;
+  border-radius: 18px;
+  text-align: left;
 }
 
 .osmmaps-region-button[aria-pressed="true"] {
@@ -173,31 +158,63 @@ body {
 }
 
 .osmmaps-region-dot {
-  width: 10px;
-  height: 10px;
-  flex: 0 0 auto;
+  width: 11px;
+  height: 11px;
   border-radius: 999px;
   background: var(--region-color, #7dd3fc);
-  box-shadow: 0 0 0 4px rgba(125, 211, 252, 0.18);
+  box-shadow: 0 0 0 5px rgba(125, 211, 252, 0.16);
+}
+
+.osmmaps-region-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.osmmaps-region-count {
+  color: rgba(205, 234, 255, 0.62);
+  font-size: 12px;
 }
 
 .osmmaps-details {
-  margin-top: 10px;
+  position: fixed;
+  right: max(12px, calc((100vw - min(100vw, var(--page-width, 430px))) / 2 + 12px));
+  bottom: calc(96px + env(safe-area-inset-bottom));
+  left: max(12px, calc((100vw - min(100vw, var(--page-width, 430px))) / 2 + 12px));
+  z-index: 30;
   padding: 13px 14px;
+  border: 1px solid rgba(184, 226, 255, 0.18);
   border-radius: 22px;
+  background:
+    linear-gradient(180deg, rgba(8, 31, 58, 0.76), rgba(5, 18, 36, 0.58)),
+    rgba(7, 22, 42, 0.54);
+  box-shadow: 0 24px 52px rgba(0, 14, 32, 0.26);
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+}
+
+.osmmaps-details[hidden] {
+  display: none;
 }
 
 .osmmaps-empty {
   margin: 0;
-  color: rgba(205, 234, 255, 0.72);
+  color: rgba(205, 234, 255, 0.74);
   font-size: 13px;
   line-height: 1.35;
+}
+
+.osmmaps-selected-header {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: start;
+  gap: 10px;
 }
 
 .osmmaps-selected-title {
   margin: 0 0 5px;
   color: rgba(246, 252, 255, 0.98);
-  font-size: 18px;
+  font-size: 17px;
   line-height: 1.15;
   letter-spacing: -0.03em;
 }
@@ -215,11 +232,9 @@ body {
   margin-top: 7px;
 }
 
-.osmmaps-weather-row {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  align-items: center;
-  gap: 10px;
+.osmmaps-actions {
+  display: flex;
+  gap: 8px;
   margin-top: 12px;
 }
 
@@ -233,8 +248,7 @@ body {
   color: #102842;
 }
 
-.osmmaps-page[data-theme="light"] .osmmaps-header,
-.osmmaps-page[data-theme="light"] .osmmaps-region-card,
+.osmmaps-page[data-theme="light"] .osmmaps-filter-card,
 .osmmaps-page[data-theme="light"] .osmmaps-details {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.86), rgba(235, 246, 255, 0.70)),
@@ -242,22 +256,22 @@ body {
 }
 
 .osmmaps-page[data-theme="light"] .osmmaps-kicker,
-.osmmaps-page[data-theme="light"] .osmmaps-region-head,
+.osmmaps-page[data-theme="light"] .osmmaps-filter-note,
 .osmmaps-page[data-theme="light"] .osmmaps-selected-meta,
 .osmmaps-page[data-theme="light"] .osmmaps-selected-line,
 .osmmaps-page[data-theme="light"] .osmmaps-weather-output,
-.osmmaps-page[data-theme="light"] .osmmaps-empty {
+.osmmaps-page[data-theme="light"] .osmmaps-empty,
+.osmmaps-page[data-theme="light"] .osmmaps-region-count {
   color: rgba(22, 52, 82, 0.64);
 }
 
-.osmmaps-page[data-theme="light"] .osmmaps-header h1,
+.osmmaps-page[data-theme="light"] .osmmaps-filter-header h1,
 .osmmaps-page[data-theme="light"] .osmmaps-selected-title {
   color: #0a2038;
 }
 
-.osmmaps-page[data-theme="light"] .osmmaps-pill-button,
+.osmmaps-page[data-theme="light"] .osmmaps-small-button,
 .osmmaps-page[data-theme="light"] .osmmaps-region-button,
-.osmmaps-page[data-theme="light"] .osmmaps-text-button,
 .osmmaps-page[data-theme="light"] .osmmaps-weather-button {
   color: #102842;
   background:
@@ -321,12 +335,12 @@ body {
 }
 
 @media (max-width: 380px) {
-  .osmmaps-panel {
-    padding-right: 9px;
-    padding-left: 9px;
+  .osmmaps-filter-card {
+    right: 9px;
+    width: calc(100vw - 18px);
   }
 
-  .osmmaps-header h1 {
-    font-size: 29px;
+  .osmmaps-filter-header h1 {
+    font-size: 26px;
   }
 }
