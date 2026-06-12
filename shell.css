@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas shared shell
    Root file: shell.css
-   Version: 1.1.14-clean-root-shell
+   Version: 1.1.15-rf-width-root-shell
 
    Purpose:
    One shared root shell for every page.
@@ -12,6 +12,10 @@
    - Root shell does not add page-wide top or bottom backing layers.
    - Individual controls keep the RF gold/navy button look.
    - Page files own page content backgrounds and feature visuals.
+
+   Width decision:
+   - Use an actual side inset token, not a percentage.
+   - Root shell controls align to the RF content panel by sharing a 7px inset.
    ========================================================================== */
 
 
@@ -25,7 +29,7 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 
   --page-width: 430px;
-  --shell-side: 9px;
+  --shell-side: 7px;
   --shell-gap: 7px;
 
   /* Text */
@@ -143,8 +147,10 @@ select {
 }
 
 .fieldops-shell-root[data-page="map"],
-.fieldops-shell-root[data-current-page="map"] {
-  --shell-side: 9px;
+.fieldops-shell-root[data-current-page="map"],
+.app-shell[data-page="map"],
+.phone[data-page="map"] {
+  --shell-side: 7px;
   --shell-gap: 7px;
 }
 
@@ -740,7 +746,7 @@ select {
   left: 50%;
   width: min(100vw, var(--page-width));
   height: var(--nav-height);
-  padding-inline: 10px;
+  padding-inline: var(--shell-side);
   display: flex;
   align-items: stretch;
   justify-content: center;
