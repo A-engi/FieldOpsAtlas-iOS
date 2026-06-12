@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.0.3-panes
+   Version: 1.0.4-collapsed-pane
    Purpose:
    - UK-only free OSM map rendered through Leaflet.
    - Load region buckets from data/regions.json.
@@ -12,7 +12,8 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.0.3-panes";
+  var VERSION = "1.0.4-collapsed-pane";
+  var REGION_TOAST_MS = 3000;
   var DATA_FILES = {
     regions: "../../../data/regions.json",
     regionWalks: function regionWalks(regionId) {
@@ -37,7 +38,8 @@
     regionCache: new Map(),
     weatherCache: new Map(),
     markerRefs: new Map(),
-    theme: "dark"
+    theme: "dark",
+    paneHideTimer: 0
   };
 
   function panes() {
@@ -198,6 +200,28 @@
     }) || null;
   }
 
+  function selectedPanel() {
+    return qs("[data-selected-panel]");
+  }
+
+  function clearPaneTimer() {
+    if (state.paneHideTimer) {
+      window.clearTimeout(state.paneHideTimer);
+      state.paneHideTimer = 0;
+    }
+  }
+
+  function schedulePaneHide() {
+    clearPaneTimer();
+    state.paneHideTimer = window.setTimeout(function hideToast() {
+      var paneRenderer = panes();
+
+      if (paneRenderer && !state.selectedWalkId) {
+        paneRenderer.hide(selectedPanel());
+      }
+    }, REGION_TOAST_MS);
+  }
+
   function loadJson(url, fallback) {
     return fetch(url + "?v=" + Date.now(), {
       cache: "no-store",
@@ -301,8 +325,9 @@
   }
 
   function showMapError(message) {
-    var panel = qs("[data-selected-panel]");
+    var panel = selectedPanel();
     if (panel) {
+      clearPaneTimer();
       panel.hidden = false;
       panel.innerHTML = '<p class="osmpanes-empty">' + escapeHtml(message) + '</p>';
     }
@@ -341,7 +366,7 @@
 
       marker.bindPopup(panes() ? panes().popupHtml(walk) : escapeHtml(walk.name));
       marker.on("click", function onMarkerClick() {
-        selectWalk(walk.id, true);
+        selectWalk(walk.id, true, false);
       });
 
       marker.addTo(state.markerLayer);
@@ -364,31 +389,43 @@
     });
   }
 
-  function renderPane(walk) {
-    var panel = qs("[data-selected-panel]");
+  function renderRegionToast() {
     var region = selectedRegion();
     var paneRenderer = panes();
 
-    if (!panel || !paneRenderer) {
+    if (!region || !paneRenderer) {
       return;
     }
 
-    if (!region) {
-      paneRenderer.renderEmpty(panel);
+    paneRenderer.renderRegionToast(selectedPanel(), region, state.walks.length);
+    schedulePaneHide();
+  }
+
+  function renderCollapsedPane(walk) {
+    var paneRenderer = panes();
+
+    if (!paneRenderer) {
       return;
     }
 
-    if (!walk) {
-      paneRenderer.renderRegion(panel, region, state.walks.length);
+    clearPaneTimer();
+    paneRenderer.renderCollapsed(selectedPanel(), walk);
+  }
+
+  function renderFullDetailsPane(walk) {
+    var paneRenderer = panes();
+
+    if (!paneRenderer) {
       return;
     }
 
-    paneRenderer.renderDetails(panel, walk, region, {
+    clearPaneTimer();
+    paneRenderer.renderDetails(selectedPanel(), walk, {
       walkCount: state.walks.length
     });
   }
 
-  function selectWalk(walkId, openPopup) {
+  function selectWalk(walkId, openPopup, expandDetails) {
     var walk = state.walks.find(function findWalk(walkItem) {
       return walkItem.id === walkId;
     });
@@ -398,7 +435,12 @@
     }
 
     state.selectedWalkId = walk.id;
-    renderPane(walk);
+
+    if (expandDetails) {
+      renderFullDetailsPane(walk);
+    } else {
+      renderCollapsedPane(walk);
+    }
 
     var marker = state.markerRefs.get(walk.id);
     if (marker && state.map) {
@@ -443,9 +485,9 @@
 
     state.selectedRegionId = regionId;
     safeLocalSet(STORAGE_KEYS.region, regionId);
+    clearPaneTimer();
     clearMarkers();
     renderRegions();
-    renderPane(null);
     closeRegionOverlay();
 
     return loadRegionWalks(regionId)
@@ -453,7 +495,7 @@
         state.walks = walks;
         renderMarkers();
         renderRegions();
-        renderPane(null);
+        renderRegionToast();
         fitVisible();
         registerSearch();
       })
@@ -475,7 +517,9 @@
         return selectRegion(storedRegion);
       }
 
-      renderPane(null);
+      if (panes()) {
+        panes().hide(selectedPanel());
+      }
       openRegionOverlay();
       return Promise.resolve();
     });
@@ -597,6 +641,7 @@
           id: walk.id,
           title: walk.name,
           subtitle: selectedRegion() ? selectedRegion().name : "",
+          href: "#",
           keywords: [walk.siteType, walk.status, walk.gridRef, walk.what3words].filter(Boolean)
         };
       })
@@ -628,7 +673,7 @@
       }
 
       if (detailsButton) {
-        selectWalk(detailsButton.getAttribute("data-open-details"), false);
+        selectWalk(detailsButton.getAttribute("data-open-details"), false, true);
         return;
       }
 
