@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas shared shell
    Root file: shell.js
-   Version: 1.1.18-root-editor
+   Version: 1.1.19-settings-editor-fix
    Purpose:
    - Inject one shared root shell into the current page root.
    - Root shell owns menu, top controls, search, filter, bottom nav.
@@ -12,7 +12,7 @@
 (function fieldOpsSharedShell() {
   "use strict";
 
-  var VERSION = "1.1.18-root-editor";
+  var VERSION = "1.1.19-settings-editor-fix";
   var ROOT_SELECTOR = ".phone, .app-shell, .fieldops-shell-root";
   var CHROME_SELECTOR = [
     ":scope > .top-shell",
@@ -317,33 +317,6 @@
       '</div>',
       '</section>',
 
-      '<section class="drawer-section">',
-      '<h3 class="drawer-section__title">Editor</h3>',
-      '<div class="drawer-actions">',
-      '<button class="drawer-row editor-row-button" type="button" data-shell-editor-key>',
-      icon("icon--settings"),
-      '<span class="drawer-row__copy">',
-      '<span class="drawer-row__eyebrow">GitHub</span>',
-      '<span class="drawer-row__title">Editor key</span>',
-      '</span>',
-      '<span class="drawer-row__chevron">',
-      chevron(),
-      '</span>',
-      '</button>',
-      '<button class="drawer-row editor-row-button" type="button" data-shell-online aria-pressed="false">',
-      icon("icon--info"),
-      '<span class="drawer-row__copy">',
-      '<span class="drawer-row__eyebrow">Mode</span>',
-      '<span class="drawer-row__title" data-editor-mode-label>Offline</span>',
-      '</span>',
-      '<span class="drawer-row__chevron">',
-      chevron(),
-      '</span>',
-      '</button>',
-      '</div>',
-      '<p class="editor-mode-note" data-editor-status>Local edits only.</p>',
-      '</section>',
-
       '<section class="drawer-section drawer-footer">',
       '<h3 class="drawer-section__title">User</h3>',
       '<div class="drawer-actions">',
@@ -383,11 +356,11 @@
       '</div>',
       '</section>',
 
-      '<section class="editor-panel" data-fieldops-shell-chrome aria-label="GitHub editor settings">',
+      '<section class="editor-panel" data-fieldops-shell-chrome aria-label="Settings">',
       '<header class="editor-panel__header">',
       '<div>',
-      '<h2 class="panel-heading">GitHub editor</h2>',
-      '<p class="panel-subtext">Used by pages that create, delete, or change files.</p>',
+      '<h2 class="panel-heading">Settings</h2>',
+      '<p class="panel-subtext">GitHub editor key and edit mode.</p>',
       '</div>',
       '<button class="panel-close-button" type="button" data-editor-close>Close</button>',
       '</header>',
@@ -411,6 +384,7 @@
       '</div>',
       '<div class="editor-actions">',
       '<button class="panel-close-button" type="button" data-editor-save-key>Save key</button>',
+      '<button class="panel-close-button" type="button" data-editor-toggle-online>Go online</button>',
       '<button class="panel-close-button" type="button" data-editor-clear-key>Clear key</button>',
       '</div>',
       '<p class="editor-mode-note" data-editor-panel-status></p>',
@@ -703,6 +677,7 @@
     this.refs.editorPanel = this.root.querySelector(".editor-panel");
     this.refs.editorClose = this.root.querySelector("[data-editor-close]");
     this.refs.editorSaveKey = this.root.querySelector("[data-editor-save-key]");
+    this.refs.editorOnlineToggle = this.root.querySelector("[data-editor-toggle-online]");
     this.refs.editorClearKey = this.root.querySelector("[data-editor-clear-key]");
     this.refs.editorToken = this.root.querySelector("[data-editor-token]");
     this.refs.editorOwner = this.root.querySelector("[data-editor-owner]");
@@ -793,10 +768,7 @@
 
     if (this.refs.settingsButton) {
       this.refs.settingsButton.addEventListener("click", function settingsClick() {
-        controller.dispatch("fieldops:shell-settings", {
-          source: "drawer"
-        });
-        controller.setDrawerOpen(false);
+        controller.setEditorOpen(true);
       });
     }
 
@@ -824,6 +796,15 @@
     if (this.refs.editorSaveKey) {
       this.refs.editorSaveKey.addEventListener("click", function saveKeyClick() {
         controller.saveEditorConfig();
+      });
+    }
+
+    if (this.refs.editorOnlineToggle) {
+      this.refs.editorOnlineToggle.addEventListener("click", function toggleOnlineClick() {
+        editorState.online = editorMode() !== "online";
+        localSet(EDITOR_KEYS.online, editorState.online ? "true" : "false");
+        controller.syncEditorUi();
+        dispatchEditorChange();
       });
     }
 
@@ -1149,6 +1130,11 @@
       this.refs.onlineButton.setAttribute("aria-pressed", mode === "online" ? "true" : "false");
     }
 
+    if (this.refs.editorOnlineToggle) {
+      this.refs.editorOnlineToggle.textContent = mode === "online" ? "Go offline" : "Go online";
+      this.refs.editorOnlineToggle.setAttribute("aria-pressed", mode === "online" ? "true" : "false");
+    }
+
     if (this.refs.editorModeLabel) {
       this.refs.editorModeLabel.textContent = label;
     }
@@ -1157,7 +1143,7 @@
       this.refs.editorStatus.textContent = editorStatusText();
     }
 
-    if (this.refs.editorPanelStatus && !this.refs.editorPanelStatus.textContent) {
+    if (this.refs.editorPanelStatus) {
       this.refs.editorPanelStatus.textContent = editorStatusText();
     }
   };
