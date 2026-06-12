@@ -1,21 +1,18 @@
 /* ==========================================================================
- FieldOps Atlas shared shell
- Root file: shell.js
- Version: 1.1.13-one-root-shell
- Purpose:
- Inject one shared shell into the current page root.
- Rules:
- - One root shell only.
- - One top shell only.
- - One bottom shell only.
- - Page files own page content.
- - Feature files own feature panels and data logic.
- ========================================================================== */
+   FieldOps Atlas shared shell
+   Root file: shell.js
+   Version: 1.1.18-root-editor
+   Purpose:
+   - Inject one shared root shell into the current page root.
+   - Root shell owns menu, top controls, search, filter, bottom nav.
+   - Root shell owns editor mode, GitHub key/config, and GitHub file writes.
+   - Page files own page content and page-specific edit forms.
+   ========================================================================== */
 
 (function fieldOpsSharedShell() {
   "use strict";
 
-  var VERSION = "1.1.13-one-root-shell";
+  var VERSION = "1.1.18-root-editor";
   var ROOT_SELECTOR = ".phone, .app-shell, .fieldops-shell-root";
   var CHROME_SELECTOR = [
     ":scope > .top-shell",
@@ -24,6 +21,7 @@
     ":scope > .map-dim",
     ":scope > .search-panel",
     ":scope > .filter-panel",
+    ":scope > .editor-panel",
     ":scope > [data-fieldops-shell-chrome]"
   ].join(", ");
 
@@ -62,6 +60,23 @@
 
   var pageOrder = ["map", "rf", "network", "docs", "tools"];
   var searchProviders = Object.create(null);
+  var editorProviders = Object.create(null);
+
+  var EDITOR_KEYS = {
+    token: "fieldops.editor.github.token",
+    owner: "fieldops.editor.github.owner",
+    repo: "fieldops.editor.github.repo",
+    branch: "fieldops.editor.github.branch",
+    online: "fieldops.editor.github.online"
+  };
+
+  var editorState = {
+    token: localGet(EDITOR_KEYS.token),
+    owner: localGet(EDITOR_KEYS.owner) || "A-engi",
+    repo: localGet(EDITOR_KEYS.repo) || "FieldOpsAtlas-iOS",
+    branch: localGet(EDITOR_KEYS.branch) || "main",
+    online: localGet(EDITOR_KEYS.online) === "true"
+  };
 
   function scriptRoot() {
     var scripts = Array.prototype.slice.call(document.querySelectorAll("script[src]"));
@@ -83,15 +98,39 @@
   }
 
   function escapeHtml(value) {
-    return String(value).replace(/[&<>"']/g, function replaceCharacter(character) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function replaceCharacter(character) {
       return {
         "&": "&amp;",
         "<": "&lt;",
         ">": "&gt;",
-        "\"": "&quot;",
+        '"': "&quot;",
         "'": "&#39;"
       }[character];
     });
+  }
+
+  function localGet(key) {
+    try {
+      return window.localStorage.getItem(key) || "";
+    } catch (error) {
+      return "";
+    }
+  }
+
+  function localSet(key, value) {
+    try {
+      window.localStorage.setItem(key, String(value || ""));
+    } catch (error) {
+      // Storage can be blocked inside previews/webviews.
+    }
+  }
+
+  function localRemove(key) {
+    try {
+      window.localStorage.removeItem(key);
+    } catch (error) {
+      // Storage can be blocked inside previews/webviews.
+    }
   }
 
   function normalisePage(page) {
@@ -101,7 +140,7 @@
   function inferPage() {
     var path = window.location.pathname.toLowerCase();
 
-    if (path.indexOf("/features/map/") !== -1) {
+    if (path.indexOf("/features/maps/") !== -1 || path.indexOf("/features/map/") !== -1) {
       return "map";
     }
 
@@ -151,13 +190,23 @@
     var hidden = pageKey === activePage ? " hidden" : "";
 
     return [
-      '<a class="drawer-page-option drawer-row" data-page="', pageKey, '" data-page-button href="', pageHref(pageKey), '"', hidden, '>',
+      '<a class="drawer-page-option drawer-row" data-page-button data-page="',
+      escapeHtml(pageKey),
+      '" href="',
+      escapeHtml(pageHref(pageKey)),
+      '"',
+      hidden,
+      '>',
       icon(page.icon),
       '<span class="drawer-row__copy">',
       '<span class="drawer-row__eyebrow">Page</span>',
-      '<span class="drawer-row__title">', escapeHtml(page.label), '</span>',
+      '<span class="drawer-row__title">',
+      escapeHtml(page.label),
       '</span>',
-      '<span class="drawer-row__chevron">', chevron(), '</span>',
+      '</span>',
+      '<span class="drawer-row__chevron">',
+      chevron(),
+      '</span>',
       '</a>'
     ].join("");
   }
@@ -179,11 +228,19 @@
     }
 
     return [
-      '<a class="', classes.join(" "), '" data-page="', pageKey, '" data-nav-button href="', pageHref(pageKey), '"',
+      '<a class="',
+      classes.join(" "),
+      '" data-nav-button data-page="',
+      escapeHtml(pageKey),
+      '" href="',
+      escapeHtml(pageHref(pageKey)),
+      '"',
       pageKey === activePage ? ' aria-current="page"' : "",
       '>',
       icon(page.icon),
-      '<span class="nav-label">', escapeHtml(page.navLabel), '</span>',
+      '<span class="nav-label">',
+      escapeHtml(page.navLabel),
+      '</span>',
       '</a>'
     ].join("");
   }
@@ -194,7 +251,6 @@
     var activeIndex = Math.max(0, pageOrder.indexOf(active));
 
     return [
-      '<button class="map-dim" type="button" data-menu-backdrop data-fieldops-shell-chrome aria-label="Close menu"></button>',
       '<header class="top-shell" data-fieldops-shell-chrome>',
       '<button class="icon-button" type="button" data-menu-open aria-label="Open menu" aria-expanded="false">',
       icon("icon--menu"),
@@ -202,66 +258,164 @@
       '<button class="search-button" type="button" data-search-open aria-label="Search" aria-expanded="false">',
       '<span class="search-lead">',
       icon("icon--search", "search-icon"),
-      '<span class="search-query">Search ', escapeHtml(page.label), '</span>',
+      '<span class="search-query">Search ',
+      escapeHtml(page.label),
       '</span>',
-      '<span class="search-brand">',
-      '<span class="search-divider" aria-hidden="true"></span>',
-      '<span class="atlas-logo">', icon("icon--atlas"), '<span class="atlas-mini-word">ATLAS</span></span>',
+      '</span>',
+      '<span class="search-brand" aria-hidden="true">',
+      '<span class="search-divider"></span>',
+      '<span class="atlas-logo">',
+      icon("icon--atlas"),
+      '<span class="atlas-mini-word">ATLAS</span>',
+      '</span>',
       '</span>',
       '</button>',
       '<button class="icon-button" type="button" data-filter-open-button aria-label="Filter" aria-expanded="false">',
       icon("icon--filter"),
       '</button>',
       '</header>',
-      '<aside class="drawer" data-fieldops-shell-chrome aria-label="FieldOps menu">',
-      '<div class="drawer-header">',
-      '<div class="drawer-brand-mark">', icon("icon--atlas"), '</div>',
-      '<div><h2 class="drawer-title">FieldOps ATLAS</h2><p class="drawer-subtitle">UK Network Toolkit</p></div>',
+
+      '<button class="map-dim" type="button" data-menu-backdrop data-fieldops-shell-chrome aria-label="Close menu"></button>',
+
+      '<aside class="drawer" data-fieldops-shell-chrome aria-label="Menu">',
+      '<header class="drawer-header">',
+      '<span class="drawer-brand-mark">',
+      icon("icon--atlas"),
+      '</span>',
+      '<div>',
+      '<h2 class="drawer-title">FieldOps ATLAS</h2>',
+      '<p class="drawer-subtitle">UK Network Toolkit</p>',
       '</div>',
+      '</header>',
+
       '<section class="drawer-section">',
       '<div class="section-toggle">',
       '<h3 class="drawer-section__title">Pages</h3>',
       '<button class="section-toggle__button" type="button" data-pages-toggle aria-expanded="false">',
       '<span class="section-toggle__text">All</span>',
-      '<span class="section-toggle__chevron">', chevron(), '</span>',
+      '<span class="section-toggle__chevron">',
+      chevron(),
+      '</span>',
       '</button>',
       '</div>',
       '<button class="current-page-card" type="button" data-current-page-card aria-expanded="false">',
       icon(page.icon),
       '<span class="current-page-card__copy">',
       '<span class="current-page-card__eyebrow">Current page</span>',
-      '<span class="current-page-card__title" data-current-page-title>', escapeHtml(page.label), '</span>',
+      '<span class="current-page-card__title" data-current-page-title>',
+      escapeHtml(page.label),
       '</span>',
-      '<span class="current-page-card__chevron">', chevron(), '</span>',
+      '</span>',
+      '<span class="current-page-card__chevron">',
+      chevron(),
+      '</span>',
       '</button>',
-      '<div class="drawer-pages">', pageOrder.map(function mapOption(pageKey) {
+      '<div class="drawer-pages">',
+      pageOrder.map(function mapOption(pageKey) {
         return pageOption(pageKey, active);
-      }).join(""), '</div>',
+      }).join(""),
+      '</div>',
       '</section>',
+
       '<section class="drawer-section">',
+      '<h3 class="drawer-section__title">Editor</h3>',
+      '<div class="drawer-actions">',
+      '<button class="drawer-row editor-row-button" type="button" data-shell-editor-key>',
+      icon("icon--settings"),
+      '<span class="drawer-row__copy">',
+      '<span class="drawer-row__eyebrow">GitHub</span>',
+      '<span class="drawer-row__title">Editor key</span>',
+      '</span>',
+      '<span class="drawer-row__chevron">',
+      chevron(),
+      '</span>',
+      '</button>',
+      '<button class="drawer-row editor-row-button" type="button" data-shell-online aria-pressed="false">',
+      icon("icon--info"),
+      '<span class="drawer-row__copy">',
+      '<span class="drawer-row__eyebrow">Mode</span>',
+      '<span class="drawer-row__title" data-editor-mode-label>Offline</span>',
+      '</span>',
+      '<span class="drawer-row__chevron">',
+      chevron(),
+      '</span>',
+      '</button>',
+      '</div>',
+      '<p class="editor-mode-note" data-editor-status>Local edits only.</p>',
+      '</section>',
+
+      '<section class="drawer-section drawer-footer">',
       '<h3 class="drawer-section__title">User</h3>',
       '<div class="drawer-actions">',
-      '<button class="drawer-row" type="button" data-shell-profile aria-label="Profile">', icon("icon--profile"), '<span class="drawer-row__title">Profile</span></button>',
-      '<button class="drawer-row" type="button" data-shell-settings aria-label="Settings">', icon("icon--settings"), '<span class="drawer-row__title">Settings</span></button>',
+      '<button class="drawer-row" type="button" data-shell-profile>',
+      icon("icon--profile"),
+      '<span class="drawer-row__copy">',
+      '<span class="drawer-row__title">Profile</span>',
+      '</span>',
+      '</button>',
+      '<button class="drawer-row" type="button" data-shell-settings>',
+      icon("icon--settings"),
+      '<span class="drawer-row__copy">',
+      '<span class="drawer-row__title">Settings</span>',
+      '</span>',
+      '</button>',
       '</div>',
+      '<p class="drawer-version">FieldOps Atlas ',
+      VERSION,
+      '</p>',
       '</section>',
-      '<div class="drawer-footer">',
-      '<button class="online-row" type="button" data-shell-online aria-pressed="false">', icon("icon--info"), '<span class="drawer-row__title">Work online</span></button>',
-      '<p class="drawer-subtitle">FieldOps Atlas ', VERSION, '</p>',
-      '</div>',
       '</aside>',
-      '<aside class="search-panel" data-fieldops-shell-chrome aria-label="Search panel">',
-      '<h2 class="panel-heading" data-search-title>Search ', escapeHtml(page.label), '</h2>',
+
+      '<section class="search-panel" data-fieldops-shell-chrome aria-label="Search panel">',
+      '<h2 class="panel-heading" data-search-title>Search ',
+      escapeHtml(page.label),
+      '</h2>',
       '<p class="panel-subtext" data-search-hint>Page-specific results only.</p>',
-      '<input class="search-input" type="search" data-search-input placeholder="Search ', escapeHtml(page.label), '">',
+      '<input class="search-input" type="search" data-search-input autocomplete="off">',
       '<div class="search-results" data-search-results></div>',
       '<p class="search-empty" data-search-empty>No matches found.</p>',
-      '</aside>',
-      '<aside class="filter-panel" data-fieldops-shell-chrome aria-label="Filter panel">',
+      '</section>',
+
+      '<section class="filter-panel" data-fieldops-shell-chrome aria-label="Filter panel">',
       '<h2 class="panel-heading">Filter</h2>',
-      '<p class="panel-subtext">Region</p>',
-      '<button class="filter-region-button" type="button" data-filter-region>All regions ', chevron(), '</button>',
-      '</aside>',
+      '<div class="filter-region-list">',
+      '<button class="filter-region-button" type="button" data-filter-region>Region</button>',
+      '</div>',
+      '</section>',
+
+      '<section class="editor-panel" data-fieldops-shell-chrome aria-label="GitHub editor settings">',
+      '<header class="editor-panel__header">',
+      '<div>',
+      '<h2 class="panel-heading">GitHub editor</h2>',
+      '<p class="panel-subtext">Used by pages that create, delete, or change files.</p>',
+      '</div>',
+      '<button class="panel-close-button" type="button" data-editor-close>Close</button>',
+      '</header>',
+      '<label class="editor-field">',
+      '<span>Token / key</span>',
+      '<input type="password" data-editor-token autocomplete="off" placeholder="GitHub fine-grained token">',
+      '</label>',
+      '<div class="editor-field-grid">',
+      '<label class="editor-field">',
+      '<span>Owner</span>',
+      '<input type="text" data-editor-owner autocomplete="off">',
+      '</label>',
+      '<label class="editor-field">',
+      '<span>Repo</span>',
+      '<input type="text" data-editor-repo autocomplete="off">',
+      '</label>',
+      '<label class="editor-field">',
+      '<span>Branch</span>',
+      '<input type="text" data-editor-branch autocomplete="off">',
+      '</label>',
+      '</div>',
+      '<div class="editor-actions">',
+      '<button class="panel-close-button" type="button" data-editor-save-key>Save key</button>',
+      '<button class="panel-close-button" type="button" data-editor-clear-key>Clear key</button>',
+      '</div>',
+      '<p class="editor-mode-note" data-editor-panel-status></p>',
+      '</section>',
+
       '<nav class="bottom-shell" data-fieldops-shell-chrome aria-label="Primary navigation">',
       pageOrder.map(function mapNav(pageKey, index) {
         return navButton(pageKey, active, activeIndex, index);
@@ -274,7 +428,6 @@
     root.querySelectorAll(CHROME_SELECTOR).forEach(function removeChrome(node) {
       node.remove();
     });
-
     root.dataset.shellReady = "false";
   }
 
@@ -292,7 +445,6 @@
       emptyText: String(provider.emptyText || "No matches found."),
       items: Array.isArray(provider.items) ? provider.items.map(function normaliseItem(item) {
         var title = String(item.title || "");
-
         return {
           id: String(item.id || item.href || title),
           title: title,
@@ -320,6 +472,134 @@
     }
   }
 
+  function editorMode() {
+    return editorState.online && editorState.token ? "online" : "offline";
+  }
+
+  function editorStatusText() {
+    if (editorMode() === "online") {
+      return "Online edits write to GitHub.";
+    }
+
+    if (editorState.online && !editorState.token) {
+      return "Add a GitHub key to edit online.";
+    }
+
+    return "Local edits only.";
+  }
+
+  function githubApi(path) {
+    return "https://api.github.com/repos/" +
+      encodeURIComponent(editorState.owner) +
+      "/" +
+      encodeURIComponent(editorState.repo) +
+      "/contents/" +
+      path.split("/").map(encodeURIComponent).join("/");
+  }
+
+  function encodeBase64(text) {
+    var bytes = new TextEncoder().encode(text);
+    var binary = "";
+    bytes.forEach(function appendByte(byte) {
+      binary += String.fromCharCode(byte);
+    });
+    return window.btoa(binary);
+  }
+
+  function decodeBase64(text) {
+    var binary = window.atob(String(text || "").replace(/\n/g, ""));
+    var bytes = new Uint8Array(binary.length);
+    for (var index = 0; index < binary.length; index += 1) {
+      bytes[index] = binary.charCodeAt(index);
+    }
+    return new TextDecoder().decode(bytes);
+  }
+
+  function githubFetch(path, options) {
+    var headers = Object.assign({
+      Accept: "application/vnd.github+json",
+      "X-GitHub-Api-Version": "2022-11-28"
+    }, options && options.headers ? options.headers : {});
+
+    if (editorState.token) {
+      headers.Authorization = "Bearer " + editorState.token;
+    }
+
+    return fetch(githubApi(path) + (options && options.query ? options.query : ""), Object.assign({}, options || {}, {
+      headers: headers
+    }));
+  }
+
+  function readGitHubFile(path) {
+    if (editorMode() !== "online") {
+      return Promise.reject(new Error("GitHub editor is offline."));
+    }
+
+    return githubFetch(path, {
+      method: "GET",
+      query: "?ref=" + encodeURIComponent(editorState.branch)
+    }).then(function handleResponse(response) {
+      if (response.status === 404) {
+        return null;
+      }
+
+      if (!response.ok) {
+        throw new Error("GitHub read failed: " + response.status);
+      }
+
+      return response.json();
+    });
+  }
+
+  function readJsonFile(path, fallback) {
+    return readGitHubFile(path).then(function handleFile(file) {
+      if (!file) {
+        return fallback;
+      }
+
+      return JSON.parse(decodeBase64(file.content || ""));
+    });
+  }
+
+  function saveJsonFile(path, data, message) {
+    if (editorMode() !== "online") {
+      return Promise.reject(new Error("GitHub editor is offline."));
+    }
+
+    return readGitHubFile(path).then(function handleCurrent(file) {
+      var body = {
+        message: message || "Update " + path,
+        content: encodeBase64(JSON.stringify(data, null, 2) + "\n"),
+        branch: editorState.branch
+      };
+
+      if (file && file.sha) {
+        body.sha = file.sha;
+      }
+
+      return githubFetch(path, {
+        method: "PUT",
+        body: JSON.stringify(body)
+      });
+    }).then(function handleSave(response) {
+      if (!response.ok) {
+        return response.text().then(function fail(text) {
+          throw new Error("GitHub save failed: " + response.status + " " + text);
+        });
+      }
+
+      return response.json();
+    });
+  }
+
+  function registerEditorProvider(provider) {
+    if (!provider || !provider.page) {
+      return;
+    }
+
+    editorProviders[String(provider.page)] = provider;
+  }
+
   window.FieldOpsSearch = {
     register: registerSearchProvider,
     registerPage: registerSearchProvider,
@@ -327,13 +607,47 @@
   };
 
   (window.FieldOpsSearchQueue || []).forEach(registerSearchProvider);
-
   window.FieldOpsSearchQueue = {
     push: function pushProvider(provider) {
       registerSearchProvider(provider);
       return Object.keys(searchProviders).length;
     }
   };
+
+  window.FieldOpsEditor = {
+    version: VERSION,
+    register: registerEditorProvider,
+    registerPage: registerEditorProvider,
+    providers: editorProviders,
+    getMode: editorMode,
+    isOnline: function isOnline() {
+      return editorMode() === "online";
+    },
+    hasKey: function hasKey() {
+      return Boolean(editorState.token);
+    },
+    getConfig: function getConfig() {
+      return {
+        owner: editorState.owner,
+        repo: editorState.repo,
+        branch: editorState.branch,
+        online: editorState.online,
+        hasKey: Boolean(editorState.token),
+        mode: editorMode()
+      };
+    },
+    openSettings: function openSettings() {
+      window.dispatchEvent(new CustomEvent("fieldops:editor-open-settings"));
+    },
+    readJsonFile: readJsonFile,
+    saveJsonFile: saveJsonFile
+  };
+
+  function dispatchEditorChange() {
+    window.dispatchEvent(new CustomEvent("fieldops:editor-mode-change", {
+      detail: window.FieldOpsEditor.getConfig()
+    }));
+  }
 
   function ShellController(root) {
     this.root = root;
@@ -352,10 +666,12 @@
     this.root.dataset.pagesExpanded = "false";
     this.root.dataset.searchOpen = "false";
     this.root.dataset.filterOpen = "false";
+    this.root.dataset.editorOpen = "false";
     this.root.insertAdjacentHTML("afterbegin", shellMarkup(this.page));
     this.cache();
     this.bind();
     this.setActivePage(this.page);
+    this.syncEditorUi();
   };
 
   ShellController.prototype.cache = function cache() {
@@ -380,6 +696,18 @@
     this.refs.profileButton = this.root.querySelector("[data-shell-profile]");
     this.refs.settingsButton = this.root.querySelector("[data-shell-settings]");
     this.refs.onlineButton = this.root.querySelector("[data-shell-online]");
+    this.refs.editorKeyButton = this.root.querySelector("[data-shell-editor-key]");
+    this.refs.editorModeLabel = this.root.querySelector("[data-editor-mode-label]");
+    this.refs.editorStatus = this.root.querySelector("[data-editor-status]");
+    this.refs.editorPanelStatus = this.root.querySelector("[data-editor-panel-status]");
+    this.refs.editorPanel = this.root.querySelector(".editor-panel");
+    this.refs.editorClose = this.root.querySelector("[data-editor-close]");
+    this.refs.editorSaveKey = this.root.querySelector("[data-editor-save-key]");
+    this.refs.editorClearKey = this.root.querySelector("[data-editor-clear-key]");
+    this.refs.editorToken = this.root.querySelector("[data-editor-token]");
+    this.refs.editorOwner = this.root.querySelector("[data-editor-owner]");
+    this.refs.editorRepo = this.root.querySelector("[data-editor-repo]");
+    this.refs.editorBranch = this.root.querySelector("[data-editor-branch]");
   };
 
   ShellController.prototype.bind = function bind() {
@@ -405,7 +733,9 @@
 
     if (this.refs.filterRegion) {
       this.refs.filterRegion.addEventListener("click", function regionClick() {
-        controller.dispatch("fieldops:shell-filter-region", { source: "filter-panel" });
+        controller.dispatch("fieldops:shell-filter-region", {
+          source: "filter-panel"
+        });
         controller.setFilterOpen(false);
       });
     }
@@ -454,37 +784,68 @@
 
     if (this.refs.profileButton) {
       this.refs.profileButton.addEventListener("click", function profileClick() {
-        controller.dispatch("fieldops:shell-profile", { source: "drawer" });
+        controller.dispatch("fieldops:shell-profile", {
+          source: "drawer"
+        });
         controller.setDrawerOpen(false);
       });
     }
 
     if (this.refs.settingsButton) {
       this.refs.settingsButton.addEventListener("click", function settingsClick() {
-        controller.dispatch("fieldops:shell-settings", { source: "drawer" });
+        controller.dispatch("fieldops:shell-settings", {
+          source: "drawer"
+        });
         controller.setDrawerOpen(false);
       });
     }
 
     if (this.refs.onlineButton) {
       this.refs.onlineButton.addEventListener("click", function onlineClick() {
-        var next = controller.refs.onlineButton.getAttribute("aria-pressed") !== "true";
-        controller.refs.onlineButton.setAttribute("aria-pressed", next ? "true" : "false");
-        controller.dispatch("fieldops:shell-work-online-toggle", { source: "drawer", online: next });
+        editorState.online = editorMode() !== "online";
+        localSet(EDITOR_KEYS.online, editorState.online ? "true" : "false");
+        controller.syncEditorUi();
+        dispatchEditorChange();
+      });
+    }
+
+    if (this.refs.editorKeyButton) {
+      this.refs.editorKeyButton.addEventListener("click", function editorKeyClick() {
+        controller.setEditorOpen(true);
+      });
+    }
+
+    if (this.refs.editorClose) {
+      this.refs.editorClose.addEventListener("click", function editorCloseClick() {
+        controller.setEditorOpen(false);
+      });
+    }
+
+    if (this.refs.editorSaveKey) {
+      this.refs.editorSaveKey.addEventListener("click", function saveKeyClick() {
+        controller.saveEditorConfig();
+      });
+    }
+
+    if (this.refs.editorClearKey) {
+      this.refs.editorClearKey.addEventListener("click", function clearKeyClick() {
+        controller.clearEditorConfig();
       });
     }
 
     document.addEventListener("pointerdown", function documentPointer(event) {
-      if (controller.root.dataset.searchOpen !== "true") {
-        return;
+      if (controller.root.dataset.searchOpen === "true" && !event.target.closest(".search-panel, .search-button")) {
+        controller.setSearchOpen(false);
       }
 
-      if (event.target.closest(".search-panel, .search-button")) {
-        return;
+      if (controller.root.dataset.editorOpen === "true" && !event.target.closest(".editor-panel, [data-shell-editor-key]")) {
+        controller.setEditorOpen(false);
       }
-
-      controller.setSearchOpen(false);
     }, true);
+
+    window.addEventListener("fieldops:editor-open-settings", function openSettingsEvent() {
+      controller.setEditorOpen(true);
+    });
 
     window.FieldOpsSearchRefresh = function refreshSearch(page) {
       if (page === controller.page) {
@@ -512,6 +873,7 @@
     if (open) {
       this.setSearchOpen(false);
       this.setFilterOpen(false);
+      this.setEditorOpen(false);
     }
   };
 
@@ -525,12 +887,48 @@
     if (open) {
       this.setDrawerOpen(false);
       this.setSearchOpen(false);
+      this.setEditorOpen(false);
+    }
+  };
+
+  ShellController.prototype.setEditorOpen = function setEditorOpen(open) {
+    this.root.dataset.editorOpen = open ? "true" : "false";
+
+    if (!open) {
+      return;
+    }
+
+    if (this.refs.editorToken) {
+      this.refs.editorToken.value = editorState.token;
+    }
+
+    if (this.refs.editorOwner) {
+      this.refs.editorOwner.value = editorState.owner;
+    }
+
+    if (this.refs.editorRepo) {
+      this.refs.editorRepo.value = editorState.repo;
+    }
+
+    if (this.refs.editorBranch) {
+      this.refs.editorBranch.value = editorState.branch;
+    }
+
+    this.setDrawerOpen(false);
+    this.setSearchOpen(false);
+    this.setFilterOpen(false);
+    this.syncEditorUi();
+
+    if (this.refs.editorToken) {
+      this.refs.editorToken.focus();
     }
   };
 
   ShellController.prototype.handleFilterClick = function handleFilterClick() {
     if (this.page === "map") {
-      this.dispatch("fieldops:shell-filter-region", { source: "top-filter-button" });
+      this.dispatch("fieldops:shell-filter-region", {
+        source: "top-filter-button"
+      });
       this.setDrawerOpen(false);
       this.setSearchOpen(false);
       return;
@@ -550,9 +948,12 @@
       return;
     }
 
-    this.dispatch("fieldops:shell-search-open", { source: "top-search-button" });
+    this.dispatch("fieldops:shell-search-open", {
+      source: "top-search-button"
+    });
     this.setDrawerOpen(false);
     this.setFilterOpen(false);
+    this.setEditorOpen(false);
     this.updateSearchUi();
 
     if (this.refs.searchInput) {
@@ -566,9 +967,7 @@
 
     if (this.refs.pagesButton) {
       this.refs.pagesButton.setAttribute("aria-expanded", open ? "true" : "false");
-
       var text = this.refs.pagesButton.querySelector(".section-toggle__text");
-
       if (text) {
         text.textContent = open ? "Hide" : "All";
       }
@@ -596,9 +995,7 @@
 
     this.refs.navButtons.forEach(function updateNav(button) {
       var active = button.dataset.page === this.page;
-
       button.classList.toggle("is-active", active);
-
       if (active) {
         button.setAttribute("aria-current", "page");
       } else {
@@ -620,7 +1017,9 @@
     event.preventDefault();
 
     if (this.page === "map" && page === "map") {
-      this.dispatch("fieldops:shell-map-tools-toggle", { source: "bottom-nav-map" });
+      this.dispatch("fieldops:shell-map-tools-toggle", {
+        source: "bottom-nav-map"
+      });
       this.setDrawerOpen(false);
       this.setSearchOpen(false);
       this.setFilterOpen(false);
@@ -683,17 +1082,84 @@
 
     this.refs.searchResults.innerHTML = matches.map(function renderItem(item) {
       var href = item.href ? new URL(item.href, window.location.href).href : "#";
-
       return [
-        '<a class="search-result" href="', href, '" data-search-result="', escapeHtml(item.id), '">',
-        '<strong>', escapeHtml(item.title), '</strong>',
-        item.subtitle ? '<span>' + escapeHtml(item.subtitle) + '</span>' : "",
+        '<a class="search-result" href="',
+        escapeHtml(href),
+        '" data-search-result-id="',
+        escapeHtml(item.id),
+        '">',
+        '<span>',
+        escapeHtml(item.title),
+        '</span>',
+        item.subtitle ? '<small>' + escapeHtml(item.subtitle) + '</small>' : "",
         '</a>'
       ].join("");
     }).join("");
 
     this.refs.searchEmpty.hidden = matches.length > 0;
     this.refs.searchEmpty.textContent = provider.emptyText;
+  };
+
+  ShellController.prototype.saveEditorConfig = function saveEditorConfig() {
+    editorState.token = this.refs.editorToken ? this.refs.editorToken.value.trim() : editorState.token;
+    editorState.owner = this.refs.editorOwner ? this.refs.editorOwner.value.trim() || "A-engi" : editorState.owner;
+    editorState.repo = this.refs.editorRepo ? this.refs.editorRepo.value.trim() || "FieldOpsAtlas-iOS" : editorState.repo;
+    editorState.branch = this.refs.editorBranch ? this.refs.editorBranch.value.trim() || "main" : editorState.branch;
+    editorState.online = Boolean(editorState.token);
+
+    localSet(EDITOR_KEYS.token, editorState.token);
+    localSet(EDITOR_KEYS.owner, editorState.owner);
+    localSet(EDITOR_KEYS.repo, editorState.repo);
+    localSet(EDITOR_KEYS.branch, editorState.branch);
+    localSet(EDITOR_KEYS.online, editorState.online ? "true" : "false");
+
+    this.syncEditorUi();
+
+    if (this.refs.editorPanelStatus) {
+      this.refs.editorPanelStatus.textContent = editorState.token ? "Key saved. Online editing enabled." : "No key saved.";
+    }
+
+    dispatchEditorChange();
+  };
+
+  ShellController.prototype.clearEditorConfig = function clearEditorConfig() {
+    editorState.token = "";
+    editorState.online = false;
+    localRemove(EDITOR_KEYS.token);
+    localSet(EDITOR_KEYS.online, "false");
+
+    if (this.refs.editorToken) {
+      this.refs.editorToken.value = "";
+    }
+
+    this.syncEditorUi();
+
+    if (this.refs.editorPanelStatus) {
+      this.refs.editorPanelStatus.textContent = "Key removed. Local editing only.";
+    }
+
+    dispatchEditorChange();
+  };
+
+  ShellController.prototype.syncEditorUi = function syncEditorUi() {
+    var mode = editorMode();
+    var label = mode === "online" ? "Online" : "Offline";
+
+    if (this.refs.onlineButton) {
+      this.refs.onlineButton.setAttribute("aria-pressed", mode === "online" ? "true" : "false");
+    }
+
+    if (this.refs.editorModeLabel) {
+      this.refs.editorModeLabel.textContent = label;
+    }
+
+    if (this.refs.editorStatus) {
+      this.refs.editorStatus.textContent = editorStatusText();
+    }
+
+    if (this.refs.editorPanelStatus && !this.refs.editorPanelStatus.textContent) {
+      this.refs.editorPanelStatus.textContent = editorStatusText();
+    }
   };
 
   function boot() {
@@ -704,10 +1170,14 @@
     roots.forEach(function bootRoot(root) {
       new ShellController(root).boot();
     });
+
+    dispatchEditorChange();
   }
 
   if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", boot, { once: true });
+    document.addEventListener("DOMContentLoaded", boot, {
+      once: true
+    });
   } else {
     boot();
   }
