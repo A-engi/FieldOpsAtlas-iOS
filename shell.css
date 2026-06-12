@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas shared shell
    Root file: shell.css
-   Version: 1.1.18-root-editor
+   Version: 1.1.19-bottom-nav-edge-radii
    Purpose:
    - One shared root shell for every page.
    - Root shell owns top buttons, search, drawer, filter, and bottom nav.
@@ -990,4 +990,20 @@ select {
   .editor-field-grid {
     grid-template-columns: 1fr;
   }
+}
+
+
+/* ==========================================================================
+   12. Bottom nav edge-single radius fix
+   ========================================================================== */
+
+/*
+   When the active page is second from either end, the edge item beside it is
+   visually a single isolated button. It needs all four corners rounded:
+   - RF active: Map is first-child + is-group-end.
+   - Docs active: Tools is last-child + is-group-start.
+*/
+.nav-button:first-child.is-group-end,
+.nav-button:last-child.is-group-start {
+  border-radius: 12px;
 }
