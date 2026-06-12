@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas shared shell
    Root file: shell.css
-   Version: 1.1.16-rf-width-root-shell-bars
+   Version: 1.1.17-rf-width-bottom-nav
    Purpose:
    - One shared root shell for every page.
    - Root shell owns top buttons, search, drawer, filter, and bottom nav.
@@ -73,7 +73,7 @@
 
   /* Bottom nav */
   --nav-height: 38px;
-  --nav-button-width: 76px;
+  --nav-button-width: calc((min(100vw, var(--page-width)) - (var(--shell-side) * 2) - (var(--nav-active-gap) * 2)) / 5);
   --nav-pad-x: 8px;
   --nav-pad-y: 6px;
   --nav-icon-size: 16px;
@@ -858,4 +858,30 @@ select {
   width: min(100vw, var(--page-width));
   padding-right: var(--shell-side);
   padding-left: var(--shell-side);
+}
+
+
+/* ==========================================================================
+   10. Bottom nav RF content-width fill
+   ========================================================================== */
+
+/*
+   The top shell only needs the frame/padding fix. The bottom rail also has
+   five fixed-width buttons plus active-button margins, so the button width
+   must be calculated from the same RF content frame:
+   430px page - 7px left - 7px right = 416px content width.
+   416px - 16px active margins = 400px.
+   400px / 5 nav items = 80px each on the normal phone frame.
+*/
+.bottom-shell,
+.fieldops-shell-root[data-page] .bottom-shell,
+.fieldops-shell-root[data-current-page] .bottom-shell,
+.phone[data-page] .bottom-shell,
+.app-shell[data-page] .bottom-shell {
+  justify-content: flex-start;
+}
+
+.nav-button {
+  width: var(--nav-button-width);
+  min-width: var(--nav-button-width);
 }
