@@ -4,67 +4,41 @@
    Version: 1.1.1-map-shell-clean-rewrite
 
    Purpose:
-   Map-page shell compatibility and visual fade only.
+   Minimal map-page shell compatibility.
 
    Ownership:
-   - Shared/root shell owns top buttons, drawer, search, filter, and bottom nav.
+   - Root shell owns app chrome.
    - Map owns map canvas, Leaflet, regions, markers, selected walk, panels, and tools.
-   - This file does not create shell UI.
-   - This file does not inject fallback UI.
+   - This file does not create shell controls.
+   - This file does not inject fallback controls.
    - This file does not touch data, region JSON, markers, or map state.
    ========================================================================== */
 
 
 /* ==========================================================================
-   1. Map shell constants
+   1. Settings
    ========================================================================== */
 
 :root {
-  --map-safe-top: env(safe-area-inset-top, 0px);
   --map-safe-bottom: env(safe-area-inset-bottom, 0px);
-
-  --map-top-shell-height: var(--shared-shell-top, var(--top-height, 56px));
   --map-bottom-shell-height: var(--nav-height, 38px);
   --map-bottom-lift: var(--bottom-lift, 8px);
 
-  --map-layer-map-fade: 5001;
   --map-layer-shell: 5002;
   --map-layer-dim: 5003;
   --map-layer-drawer: 5006;
   --map-layer-panel: 5007;
   --map-layer-tools: 5008;
 
-  --map-top-backdrop-top: rgba(11, 35, 53, 1);
-  --map-top-backdrop-mid: rgba(11, 35, 53, 1);
-  --map-top-backdrop-bottom: rgba(11, 35, 53, 0.70);
-  --map-top-backdrop-shadow: 0 10px 26px rgba(0, 0, 0, 0.16);
-  --map-top-backdrop-blur: 14px;
-
-  --map-top-fade-height: 90px;
-  --map-top-fade-ribbon-height: 30px;
-  --map-top-ribbon-top: rgba(11, 35, 53, 0.70);
-  --map-top-ribbon-bottom: rgba(11, 35, 53, 0.46);
-  --map-top-fade-top: rgba(11, 35, 53, 0.42);
-  --map-top-fade-mid: rgba(43, 132, 171, 0.24);
-  --map-top-fade-clear: rgba(7, 11, 18, 0);
-
-  --map-bottom-fade-clear: rgba(7, 11, 18, 0);
-  --map-bottom-fade-soft: rgba(7, 19, 34, 0.68);
-  --map-bottom-fade-solid: rgba(8, 29, 52, 0.94);
-  --map-bottom-fade-base: #0d2947;
-
-  --map-control-border: var(--button-border, rgba(76, 113, 151, 0.74));
-  --map-control-top: var(--button-top, #15395e);
-  --map-control-bottom: var(--button-bottom, #102c4c);
-  --map-control-text: var(--text-main, rgba(255, 255, 255, 0.94));
-  --map-control-glow:
-    0 0 0 1px rgba(255, 227, 173, 0.04),
-    0 8px 20px rgba(0, 0, 0, 0.18);
+  --map-bottom-clear: rgba(7, 11, 18, 0);
+  --map-bottom-soft: rgba(7, 19, 34, 0.68);
+  --map-bottom-solid: rgba(8, 29, 52, 0.94);
+  --map-bottom-base: #0d2947;
 }
 
 
 /* ==========================================================================
-   2. Retired Map-owned chrome
+   2. Map shell cleanup
    ========================================================================== */
 
 .top-bar,
@@ -73,286 +47,63 @@
 .side-rail,
 .top-filter-menu,
 .top-region-tree,
-.site-search-results {
-  display: none !important;
-}
-
+.site-search-results,
 .rail-tools-menu {
-  display: none !important;
-}
-
-.sr-only {
-  position: absolute !important;
-  width: 1px !important;
-  height: 1px !important;
-  padding: 0 !important;
-  margin: -1px !important;
-  overflow: hidden !important;
-  white-space: nowrap !important;
-  border: 0 !important;
-  clip: rect(0, 0, 0, 0) !important;
+  display: none;
 }
 
 
 /* ==========================================================================
-   3. Shared shell mount targets
+   3. Placement
    ========================================================================== */
 
-.fieldops-shell-root[data-page="map"],
-.fieldops-shell-root[data-current-page="map"],
-.app-shell[data-page="map"],
-.app-shell[data-current-page="map"],
-.phone[data-page="map"],
-.phone[data-current-page="map"] {
-  --chrome-control-border: var(--map-control-border) !important;
-  --chrome-control-bg: var(--map-control-bottom) !important;
-  --chrome-control-bg-top: var(--map-control-top) !important;
-  --chrome-control-bg-bottom: var(--map-control-bottom) !important;
-  --chrome-control-glow: var(--map-control-glow) !important;
+.top-shell {
+  z-index: var(--map-layer-shell);
+  background: rgb(11, 35, 53);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
 }
 
+.bottom-shell {
+  z-index: var(--map-layer-shell);
+  isolation: isolate;
+}
 
-/* ==========================================================================
-   4. Top shell backdrop
+.map-dim {
+  z-index: var(--map-layer-dim);
+}
 
-   The original Map top visual had two separate pieces:
-   - a dark/glowy blurred top-bar backdrop behind the buttons;
-   - a lower fade ribbon below the buttons.
+.drawer {
+  z-index: var(--map-layer-drawer);
+}
 
-   The backdrop belongs on the real shared .top-shell here. Do not hide it with
-   a transparent override and do not rely on a negative pseudo-element.
-   ========================================================================== */
+:is(.filter-panel, .search-panel) {
+  z-index: var(--map-layer-panel);
+}
 
-.fieldops-shell-root .top-shell,
-.app-shell .top-shell,
-.phone .top-shell,
-.fieldops-shell-root[data-page="map"] .top-shell,
-.fieldops-shell-root[data-current-page="map"] .top-shell,
-.app-shell[data-page="map"] .top-shell,
-.app-shell[data-current-page="map"] .top-shell,
-.phone[data-page="map"] .top-shell,
-.phone[data-current-page="map"] .top-shell {
-  z-index: var(--map-layer-shell) !important;
-  isolation: isolate !important;
-  overflow: visible !important;
-  border-bottom: 0 !important;
+.bottom-shell::before {
+  content: "";
+  position: absolute;
+  right: 0;
+  bottom: calc((var(--map-bottom-lift) + var(--map-safe-bottom)) * -1);
+  left: 0;
+  z-index: -1;
+  height: calc(var(--map-bottom-shell-height) + var(--map-bottom-lift) + var(--map-safe-bottom) + 44px);
+  pointer-events: none;
   background:
     linear-gradient(
       180deg,
-      var(--map-top-backdrop-top) 0%,
-      var(--map-top-backdrop-mid) 54%,
-      var(--map-top-backdrop-bottom) 100%
-    ) !important;
-  box-shadow: var(--map-top-backdrop-shadow) !important;
-  -webkit-backdrop-filter: blur(var(--map-top-backdrop-blur)) !important;
-  backdrop-filter: blur(var(--map-top-backdrop-blur)) !important;
+      var(--map-bottom-clear) 0%,
+      var(--map-bottom-soft) 17%,
+      var(--map-bottom-solid) 52%,
+      var(--map-bottom-base) 100%
+    );
 }
-
-.fieldops-shell-root .top-shell::before,
-.fieldops-shell-root .top-shell::after,
-.app-shell .top-shell::before,
-.app-shell .top-shell::after,
-.phone .top-shell::before,
-.phone .top-shell::after {
-  content: none !important;
-  display: none !important;
-}
-
-.fieldops-shell-root .top-shell > *,
-.app-shell .top-shell > *,
-.phone .top-shell > * {
-  position: relative;
-  z-index: 2;
-}
-
-
-/* ==========================================================================
-   5. Shared top shell controls
-   ========================================================================== */
-
-.fieldops-shell-root[data-page="map"] :is(.top-shell .icon-button, .top-shell .search-button),
-.fieldops-shell-root[data-current-page="map"] :is(.top-shell .icon-button, .top-shell .search-button),
-.app-shell[data-page="map"] :is(.top-shell .icon-button, .top-shell .search-button),
-.app-shell[data-current-page="map"] :is(.top-shell .icon-button, .top-shell .search-button),
-.phone[data-page="map"] :is(.top-shell .icon-button, .top-shell .search-button),
-.phone[data-current-page="map"] :is(.top-shell .icon-button, .top-shell .search-button) {
-  height: var(--top-control-height, 38px);
-  min-height: var(--top-control-height, 38px);
-  border: 1px solid var(--map-control-border);
-  border-radius: 14px;
-  color: var(--map-control-text);
-  background-color: var(--map-control-bottom);
-  background-image: linear-gradient(180deg, var(--map-control-top), var(--map-control-bottom));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    var(--map-control-glow);
-  -webkit-backdrop-filter: blur(10px);
-  backdrop-filter: blur(10px);
-}
-
-.fieldops-shell-root[data-page="map"] :is(.top-shell .icon-button:active, .top-shell .search-button:active),
-.fieldops-shell-root[data-current-page="map"] :is(.top-shell .icon-button:active, .top-shell .search-button:active),
-.app-shell[data-page="map"] :is(.top-shell .icon-button:active, .top-shell .search-button:active),
-.app-shell[data-current-page="map"] :is(.top-shell .icon-button:active, .top-shell .search-button:active),
-.phone[data-page="map"] :is(.top-shell .icon-button:active, .top-shell .search-button:active),
-.phone[data-current-page="map"] :is(.top-shell .icon-button:active, .top-shell .search-button:active) {
-  transform: scale(0.98);
-}
-
-
-/* ==========================================================================
-   6. Top lower fade/ribbon
-   ========================================================================== */
-
-.top-bar-fade {
-  position: fixed !important;
-  z-index: var(--map-layer-map-fade) !important;
-  top: calc(var(--map-safe-top) + var(--map-top-shell-height) - 2px) !important;
-  right: 0 !important;
-  left: 0 !important;
-  height: var(--map-top-fade-height) !important;
-  overflow: hidden !important;
-  pointer-events: none !important;
-  background:
-    linear-gradient(
-      180deg,
-      var(--map-top-ribbon-top) 0%,
-      var(--map-top-ribbon-bottom) var(--map-top-fade-ribbon-height),
-      var(--map-top-fade-top) calc(var(--map-top-fade-ribbon-height) + 8px),
-      var(--map-top-fade-mid) 58%,
-      var(--map-top-fade-clear) 100%
-    ) !important;
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.04),
-    inset 0 -1px 0 rgba(98, 176, 231, 0.14),
-    0 10px 22px rgba(0, 0, 0, 0.10) !important;
-  -webkit-backdrop-filter: blur(1.5px);
-  backdrop-filter: blur(1.5px);
-}
-
-.top-bar-fade::before,
-.top-bar-fade::after {
-  content: none !important;
-  display: none !important;
-}
-
-
-/* ==========================================================================
-   7. Shared shell stacking above Leaflet
-   ========================================================================== */
-
-.fieldops-shell-root[data-page="map"] .map-dim,
-.fieldops-shell-root[data-current-page="map"] .map-dim,
-.app-shell[data-page="map"] .map-dim,
-.app-shell[data-current-page="map"] .map-dim,
-.phone[data-page="map"] .map-dim,
-.phone[data-current-page="map"] .map-dim {
-  z-index: var(--map-layer-dim) !important;
-}
-
-.fieldops-shell-root[data-page="map"] .bottom-shell,
-.fieldops-shell-root[data-current-page="map"] .bottom-shell,
-.app-shell[data-page="map"] .bottom-shell,
-.app-shell[data-current-page="map"] .bottom-shell,
-.phone[data-page="map"] .bottom-shell,
-.phone[data-current-page="map"] .bottom-shell {
-  z-index: var(--map-layer-shell) !important;
-  isolation: isolate !important;
-}
-
-.fieldops-shell-root[data-page="map"] .drawer,
-.fieldops-shell-root[data-current-page="map"] .drawer,
-.app-shell[data-page="map"] .drawer,
-.app-shell[data-current-page="map"] .drawer,
-.phone[data-page="map"] .drawer,
-.phone[data-current-page="map"] .drawer {
-  z-index: var(--map-layer-drawer) !important;
-}
-
-.fieldops-shell-root[data-page="map"] .filter-panel,
-.fieldops-shell-root[data-current-page="map"] .filter-panel,
-.fieldops-shell-root[data-page="map"] .search-panel,
-.fieldops-shell-root[data-current-page="map"] .search-panel,
-.app-shell[data-page="map"] .filter-panel,
-.app-shell[data-current-page="map"] .filter-panel,
-.app-shell[data-page="map"] .search-panel,
-.app-shell[data-current-page="map"] .search-panel,
-.phone[data-page="map"] .filter-panel,
-.phone[data-current-page="map"] .filter-panel,
-.phone[data-page="map"] .search-panel,
-.phone[data-current-page="map"] .search-panel {
-  z-index: var(--map-layer-panel) !important;
-}
-
-
-/* ==========================================================================
-   8. Bottom shell fade
-   ========================================================================== */
-
-.fieldops-shell-root[data-page="map"] .bottom-shell::before,
-.fieldops-shell-root[data-current-page="map"] .bottom-shell::before,
-.app-shell[data-page="map"] .bottom-shell::before,
-.app-shell[data-current-page="map"] .bottom-shell::before,
-.phone[data-page="map"] .bottom-shell::before,
-.phone[data-current-page="map"] .bottom-shell::before {
-  content: "" !important;
-  position: absolute !important;
-  right: 0 !important;
-  bottom: calc((var(--map-bottom-lift) + var(--map-safe-bottom)) * -1) !important;
-  left: 0 !important;
-  z-index: -1 !important;
-  height: calc(var(--map-bottom-shell-height) + var(--map-bottom-lift) + var(--map-safe-bottom) + 44px) !important;
-  pointer-events: none !important;
-  background:
-    linear-gradient(
-      180deg,
-      var(--map-bottom-fade-clear) 0%,
-      var(--map-bottom-fade-soft) 17%,
-      var(--map-bottom-fade-solid) 52%,
-      var(--map-bottom-fade-base) 100%
-    ) !important;
-}
-
-
-/* ==========================================================================
-   9. Map tools panel
-
-   This styles map-owned tools UI if the guard exposes it. It is not a shell
-   fallback and does not create or replace top/bottom chrome.
-   ========================================================================== */
 
 .map-tools-panel {
-  z-index: var(--map-layer-tools) !important;
-  right: 12px !important;
-  bottom: calc(var(--map-safe-bottom) + var(--map-bottom-lift) + var(--map-bottom-shell-height) + 12px) !important;
-  left: 12px !important;
-  border: 1px solid rgba(255, 207, 119, 0.78) !important;
-  color: rgba(255, 255, 255, 0.92) !important;
-  background:
-    radial-gradient(circle at 18% 4%, rgba(95, 181, 255, 0.24), transparent 30%),
-    radial-gradient(circle at 100% 100%, rgba(255, 207, 119, 0.13), transparent 34%),
-    linear-gradient(180deg, rgba(13, 42, 72, 0.985), rgba(6, 20, 38, 0.985)) !important;
-  box-shadow:
-    0 0 0 1px rgba(255, 228, 166, 0.12),
-    0 14px 30px rgba(0, 0, 0, 0.38),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10) !important;
-  -webkit-backdrop-filter: blur(16px) saturate(122%) !important;
-  backdrop-filter: blur(16px) saturate(122%) !important;
-}
-
-.map-tools-panel[hidden] {
-  display: none !important;
-}
-
-
-/* ==========================================================================
-   10. Mobile tuning
-   ========================================================================== */
-
-@media (max-width: 720px) {
-  :root {
-    --map-top-shell-height: var(--shared-shell-top, var(--top-height, 56px));
-    --map-top-fade-height: 88px;
-    --map-top-fade-ribbon-height: 28px;
-  }
+  z-index: var(--map-layer-tools);
+  right: 12px;
+  bottom: calc(var(--map-safe-bottom) + var(--map-bottom-lift) + var(--map-bottom-shell-height) + 12px);
+  left: 12px;
 }
