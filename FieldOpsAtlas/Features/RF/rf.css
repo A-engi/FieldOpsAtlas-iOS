@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF page
    File: FieldOpsAtlas/Features/RF/rf.css
-   Version: 1.1.27-rf-pane-css-split
+   Version: 1.1.28-map-stage-tracks-pane
 
    Ownership:
    - Root shell owns top buttons, search, drawer, filter, and bottom nav.
@@ -207,6 +207,10 @@
   overflow: hidden;
   border-radius: 12px 0 0 0;
   transition: right 180ms ease;
+}
+
+.rf-path-toggle:not(:checked) ~ .rf-map-stage {
+  right: var(--path-handle-width);
 }
 
 /* ==========================================================================
