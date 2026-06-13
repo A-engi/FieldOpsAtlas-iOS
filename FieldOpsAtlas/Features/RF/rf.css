@@ -1,7 +1,7 @@
 /* ========================================================================== 
    FieldOps Atlas RF page
    File: FieldOpsAtlas/Features/RF/rf.css
-   Version: 1.1.14-rf-current-background-buttons
+   Version: 1.1.20-background-split
    Purpose: RF landing page content only.
 
    Ownership:
@@ -11,13 +11,8 @@
    ========================================================================== */
 
 /* ========================================================================== 
-   0. RF page background
+   0. RF page variables
    ========================================================================== */
-
-html,
-body {
-  background: #061a3a;
-}
 
 .phone[data-page="rf"] {
   --rf-content-side: 7px;
@@ -25,7 +20,6 @@ body {
   --rf-content-radius: 20px;
   --rf-content-top: calc(var(--top-height, 54px) + 8px);
   --rf-bottom-space: calc(var(--safe-bottom, 0px) + var(--nav-height, 38px) + var(--bottom-lift, 8px) + var(--rf-content-gap));
-  --rf-bg-navy: #061a3a;
   --rf-button-text: #f5fbff;
   --rf-button-blue-top: #1887ff;
   --rf-button-blue-mid: #0d66d8;
@@ -35,11 +29,6 @@ body {
   --rf-button-cyan-border: rgba(128, 221, 255, 0.46);
   --rf-button-gold-border: rgba(255, 207, 105, 0.78);
   --rf-button-gold-strong: #ffcf69;
-  background-color: var(--rf-bg-navy);
-  background-image: url("../../../data/icons/rf-current-background.svg");
-  background-position: center;
-  background-size: cover;
-  background-repeat: no-repeat;
 }
 
 /* ========================================================================== 
