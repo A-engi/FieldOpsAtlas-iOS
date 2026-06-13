@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF network map renderer
    File: FieldOpsAtlas/Features/RF/rf-network-map.js
-   Version: 1.1.44-restore-map-node-circles
+   Version: 1.1.47-one-circle-no-route-dots
 
    Purpose:
    - Render only the foreground RF network SVG.
@@ -12,7 +12,8 @@
    - Apply clearer top/left map insets and explicit node radius rules.
    - Own the static RF map key so no extra key script is needed.
    - Place the key in the reserved strip below the graph, not over graph content.
-   - Draw node circles from one visible radius rule and halos from one halo rule.
+   - Draw each RF map node as one SVG circle only.
+   - Do not draw selected-path route dot circles.
    - Fit graph coordinates into a taller map area, reserving bottom-left room for the standalone key.
    - Accept future graph input with normalized node coordinates.
    ========================================================================== */
@@ -20,7 +21,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.44-restore-map-node-circles";
+  const VERSION = "1.1.47-one-circle-no-route-dots";
   const SVG_NS = ["http:", "", "www.w3.org", "2000", "svg"].join("/");
   const GRAPH_URL = "../../../data/rf-network-map.json";
 
@@ -43,11 +44,6 @@
     large: 21
   };
 
-  const NODE_HALO_RADIUS = {
-    default: 23,
-    relay: 25,
-    large: 31
-  };
 
   const MAP_KEY_TEMPLATE = String.raw`
 <aside class="rf-map-key" aria-label="RF map key" data-rf-map-key>
@@ -325,18 +321,6 @@
     return NODE_RADIUS.default;
   }
 
-  function markerHaloRadius(node) {
-    if (node.size === "large") {
-      return NODE_HALO_RADIUS.large;
-    }
-
-    if (node.type === "relay") {
-      return NODE_HALO_RADIUS.relay;
-    }
-
-    return NODE_HALO_RADIUS.default;
-  }
-
   function linkGeometry(from, to) {
     const dx = to.x - from.x;
     const dy = to.y - from.y;
@@ -392,33 +376,6 @@
       graph.links.find((link) => link.type === "alert") ||
       graph.links[0]
     );
-  }
-
-  function makeMast(x, y, scale = 1) {
-    return svg("g", { class: "mast", transform: `translate(${x} ${y}) scale(${scale})` }, [
-      svg("path", { d: "M0 -10v22M-7 12L0-10l7 22M-6 3H6M-4-4H4" }),
-      svg("circle", { cx: 0, cy: -12, r: 2.2, fill: "currentColor", stroke: "none" }),
-      svg("path", { d: "M-6-14C-12-8-12 0-6 6M6-14C12-8 12 0 6 6" }),
-      svg("path", { d: "M-11-19C-21-9-21 5-11 15M11-19C21-9 21 5 11 15", opacity: 0.82 })
-    ]);
-  }
-
-  function makeSelectedHalo(radius) {
-    const scale = clamp((radius + 22) / 54, 0.72, 0.90);
-
-    return svg("g", { class: "demo-original-halo", transform: `scale(${scale})` }, [
-      svg("circle", { class: "relay-halo-ring", r: 51 }),
-      svg("circle", { class: "relay-halo-ring", r: 61 }),
-      svg("circle", { class: "relay-halo-ring is-outer", r: 72 }),
-      svg("path", {
-        class: "relay-halo-line",
-        d: "M42.3 7.5L72.9 12.8 M40.4 14.7L69.5 25.3 M32.9 27.6L56.7 47.6 M27.6 32.9L47.6 56.7 M14.7 40.4L25.3 69.5 M7.5 42.3L12.8 72.9 M-7.5 42.3L-12.8 72.9 M-14.7 40.4L-25.3 69.5 M-27.6 32.9L-47.6 56.7 M-32.9 27.6L-56.7 47.6 M-40.4 14.7L-69.5 25.3 M-42.3 7.5L-72.9 12.8 M-42.3 -7.5L-72.9 -12.8 M-40.4 -14.7L-69.5 -25.3 M-32.9 -27.6L-56.7 -47.6 M-27.6 -32.9L-47.6 -56.7 M-14.7 -40.4L-25.3 -69.5 M-7.5 -42.3L-12.8 -72.9 M7.5 -42.3L12.8 -72.9 M14.7 -40.4L25.3 -69.5 M27.6 -32.9L47.6 -56.7 M32.9 -27.6L56.7 -47.6 M40.4 -14.7L69.5 -25.3 M42.3 -7.5L72.9 -12.8"
-      }),
-      svg("path", {
-        class: "relay-halo-line strong",
-        d: "M38 0L82 0 M32.9 19L71 41 M19 32.9L41 71 M0 38L0 82 M-19 32.9L-41 71 M-32.9 19L-71 41 M-38 0L-82 0 M-32.9 -19L-71 -41 M-19 -32.9L-41 -71 M0 -38L0 -82 M19 -32.9L41 -71 M32.9 -19L71 -41 M-82 0L82 0 M0 -82L0 82"
-      })
-    ]);
   }
 
   function makeLabel(node, tight, viewBox) {
@@ -491,8 +448,6 @@
 
     const linksSoftGroup = svg("g", { class: "demo-links-soft" });
     const linksGroup = svg("g", { class: "demo-links" });
-    const routeDotsGroup = svg("g", { class: "demo-route-dots" });
-    const halosGroup = svg("g", { class: "demo-node-halos" });
     const nodesGroup = svg("g", { class: "demo-nodes" });
     const labelsGroup = svg("g", { class: "demo-labels" });
 
@@ -515,48 +470,21 @@
         "vector-effect": "non-scaling-stroke"
       }));
 
-      if (isSelected) {
-        [0.30, 0.50, 0.70].forEach((t, index) => {
-          const point = cubicPoint(geometry, t);
-          routeDotsGroup.append(svg("circle", {
-            class: `demo-route-dot ${index === 1 ? "red" : "green"}`,
-            cx: point.x,
-            cy: point.y,
-            r: index === 1 ? 6.8 : 5.8,
-            "vector-effect": "non-scaling-stroke"
-          }));
-        });
-      }
     });
 
     graph.nodes.forEach((node) => {
       const radius = markerRadius(node);
       const selected = selectedNodeIds.has(node.id);
-      const halo = svg("circle", {
-        class: `halo ${node.type || "site"}`,
-        cx: node.x,
-        cy: node.y,
-        r: radius + (selected ? 13 : 8)
-      });
-
-      halosGroup.append(halo);
-
-      if (selected) {
-        halosGroup.append(svg("g", { transform: `translate(${node.x} ${node.y})` }, [
-          makeSelectedHalo(radius)
-        ]));
-      }
-
       const nodeGroup = svg("g", {
         class: `demo-node ${selected ? "is-selected" : ""}`,
         transform: `translate(${node.x} ${node.y})`
       });
 
-      nodeGroup.append(
-        svg("circle", { class: node.type || "site", r: radius, "vector-effect": "non-scaling-stroke" }),
-        svg("circle", { class: "inner-ring", r: Math.max(4, radius - 6), "vector-effect": "non-scaling-stroke" }),
-        makeMast(0, 2, node.size === "large" ? 0.72 : 0.62)
-      );
+      nodeGroup.append(svg("circle", {
+        class: node.type || "site",
+        r: radius,
+        "vector-effect": "non-scaling-stroke"
+      }));
 
       nodesGroup.append(nodeGroup);
       labelsGroup.append(makeLabel(node, tight, viewBox));
@@ -565,8 +493,6 @@
     root.append(
       linksSoftGroup,
       linksGroup,
-      halosGroup,
-      routeDotsGroup,
       nodesGroup,
       labelsGroup
     );
