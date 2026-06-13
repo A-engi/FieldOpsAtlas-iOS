@@ -1,28 +1,27 @@
 /* ==========================================================================
    FieldOps Atlas RF network map renderer
    File: FieldOpsAtlas/Features/RF/rf-network-map.js
-   Version: 1.1.21-rf-network-map-split
+   Version: 1.1.25-pane-reflow-listener-moved
 
    Purpose:
    - Render only the foreground RF network SVG.
-   - Keep the decorative RF map background as a separate asset.
+   - Keep RF backgrounds and static compass decoration out of the dynamic SVG.
    - Keep a stable viewBox so page resizing does not flatten paths or circles.
+   - Reflow when the RF path pane changes the map holder size.
    - Accept future graph input with normalized node coordinates.
    ========================================================================== */
 
 (() => {
   "use strict";
 
-  const VERSION = "1.1.21-rf-network-map-split";
+  const VERSION = "1.1.25-pane-reflow-listener-moved";
   const SVG_NS = ["http:", "", "www.w3.org", "2000", "svg"].join("/");
   const GRAPH_URL = "../../../data/rf-network-map.json";
 
   const VIEWBOX = {
     width: 1000,
     height: 650,
-    padX: 86,
-    padTop: 62,
-    padBottom: 66
+    safeEdge: 28
   };
 
   const FALLBACK_GRAPH = {
@@ -188,24 +187,21 @@
   }
 
   function projectNode(node) {
-    const usableWidth = VIEWBOX.width - VIEWBOX.padX * 2;
-    const usableHeight = VIEWBOX.height - VIEWBOX.padTop - VIEWBOX.padBottom;
-
     const sourceX = Number.isFinite(Number(node.x)) ? Number(node.x) : 0.5;
     const sourceY = Number.isFinite(Number(node.y)) ? Number(node.y) : 0.5;
 
     const x = sourceX >= 0 && sourceX <= 1
-      ? VIEWBOX.padX + sourceX * usableWidth
+      ? sourceX * VIEWBOX.width
       : sourceX;
 
     const y = sourceY >= 0 && sourceY <= 1
-      ? VIEWBOX.padTop + sourceY * usableHeight
+      ? sourceY * VIEWBOX.height
       : sourceY;
 
     return {
       ...node,
-      x: clamp(x, 28, VIEWBOX.width - 28),
-      y: clamp(y, 28, VIEWBOX.height - 28)
+      x: clamp(x, VIEWBOX.safeEdge, VIEWBOX.width - VIEWBOX.safeEdge),
+      y: clamp(y, VIEWBOX.safeEdge, VIEWBOX.height - VIEWBOX.safeEdge)
     };
   }
 
@@ -332,29 +328,6 @@
     return labelText;
   }
 
-  function makeCompass() {
-    const x = VIEWBOX.width - 72;
-    const y = 65;
-
-    return svg("g", { class: "demo-compass", transform: `translate(${x} ${y})` }, [
-      svg("path", { d: "M0 -27V27M-27 0H27M0 -27l-7 15M0 -27l7 15" }),
-      svg("text", { x: 0, y: -34, "text-anchor": "middle" }, [text("N")])
-    ]);
-  }
-
-  function makeLegend() {
-    const x = 38;
-    const y = VIEWBOX.height - 78;
-
-    return svg("g", { transform: `translate(${x} ${y})` }, [
-      svg("rect", { class: "demo-legend", x: 0, y: 0, width: 184, height: 46, rx: 14 }),
-      svg("path", { class: "demo-route is-main", d: "M18 16H52", "vector-effect": "non-scaling-stroke" }),
-      svg("text", { class: "demo-legend-text", x: 62, y: 19 }, [text("Primary path")]),
-      svg("path", { class: "demo-route is-backup", d: "M18 32H52", "vector-effect": "non-scaling-stroke" }),
-      svg("text", { class: "demo-legend-text", x: 62, y: 35 }, [text("Backup / relay")])
-    ]);
-  }
-
   function normaliseGraph(graph) {
     const nodes = graph.nodes.map(projectNode);
     const nodeById = new Map(nodes.map((node) => [node.id, node]));
@@ -473,9 +446,7 @@
       halosGroup,
       routeDotsGroup,
       nodesGroup,
-      labelsGroup,
-      makeCompass(),
-      makeLegend()
+      labelsGroup
     );
 
     mount.replaceChildren(root);
@@ -488,6 +459,40 @@
         selectedPathId: selectedLink ? selectedLink.id : null
       }
     }));
+  }
+
+  /* ==========================================================================
+     8. Mount resize and path-pane reflow
+
+     Ownership:
+     - The path pane markup stays in index.html.
+     - The pane open/close movement stays in rf.css.
+     - This renderer only listens for holder shape changes so the SVG redraws
+       cleanly when the pane changes the available map area.
+     ========================================================================== */
+
+  function bindMapReflowTriggers(mount, scheduleRender) {
+    bindMapReflowTriggers(mount, scheduleRender);
+
+    const mapPaper = mount.closest(".rf-map-paper");
+    const paneToggle = mapPaper ? mapPaper.querySelector(".rf-path-toggle") : null;
+    const pathPane = mapPaper ? mapPaper.querySelector(".rf-path-pane") : null;
+
+    if (paneToggle) {
+      paneToggle.addEventListener("change", () => {
+        scheduleRender();
+        window.requestAnimationFrame(scheduleRender);
+        window.setTimeout(scheduleRender, 220);
+      });
+    }
+
+    if (pathPane) {
+      pathPane.addEventListener("transitionend", (event) => {
+        if (event.propertyName === "transform" || event.propertyName === "right") {
+          scheduleRender();
+        }
+      });
+    }
   }
 
   function initMount(mount) {
@@ -533,7 +538,7 @@
 
   function initAll(root = document) {
     root
-      .querySelectorAll("[data-rf-network-map], [data-demo-map]")
+      .querySelectorAll("[data-rf-network-map]")
       .forEach(initMount);
   }
 
