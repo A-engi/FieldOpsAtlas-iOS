@@ -1,8 +1,12 @@
 /* ==========================================================================
    FieldOps Atlas RF background
    File: FieldOpsAtlas/Features/RF/background.css
-   Version: 1.1.19-css-current-background-mirrored-gold-blue
-   Purpose: RF page background only.
+   Version: 1.1.21-rf-page-and-map-pane-backgrounds
+   Purpose: RF page and RF network map pane backgrounds only.
+   ========================================================================== */
+
+/* ==========================================================================
+   1. RF page actual background
    ========================================================================== */
 
 html,
@@ -81,4 +85,29 @@ body {
     100% 100%;
 
   background-repeat: no-repeat;
+}
+
+/* ==========================================================================
+   2. RF network map pane actual background
+   ========================================================================== */
+
+.rf-map-paper {
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.72), transparent 44%),
+    linear-gradient(180deg, #fff8e8, #f8ecd2);
+}
+
+.rf-map-paper::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.30;
+  pointer-events: none;
+  background-image:
+    radial-gradient(ellipse at 18% 20%, transparent 0 34%, rgba(124, 119, 104, 0.22) 35%, transparent 36%),
+    radial-gradient(ellipse at 72% 48%, transparent 0 36%, rgba(124, 119, 104, 0.18) 37%, transparent 38%),
+    radial-gradient(ellipse at 48% 78%, transparent 0 30%, rgba(124, 119, 104, 0.16) 31%, transparent 32%),
+    linear-gradient(24deg, transparent 0 42%, rgba(7, 28, 50, 0.08) 42.25%, transparent 42.8%),
+    linear-gradient(136deg, transparent 0 54%, rgba(7, 28, 50, 0.07) 54.25%, transparent 54.8%);
+  background-size: 100% 100%;
 }
