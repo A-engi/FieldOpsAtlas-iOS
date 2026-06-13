@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF background
    File: FieldOpsAtlas/Features/RF/background.css
-   Version: 1.1.38-compass-and-key-background
+   Version: 1.1.48-compass-left-edge
    Purpose: RF page background and RF network map pane background only.
    ========================================================================== */
 
@@ -98,7 +98,7 @@ body {
     radial-gradient(circle at 50% 40%, rgba(255, 255, 255, 0.72), transparent 44%),
     linear-gradient(180deg, #fff8e8, #f8ecd2);
   background-position:
-    left 54px bottom 24px,
+    left 0 bottom 22px,
     center,
     center;
   background-size:
