@@ -1,24 +1,25 @@
 /* ==========================================================================
    FieldOps Atlas RF network map renderer
    File: FieldOpsAtlas/Features/RF/rf-network-map.js
-   Version: 1.1.25-pane-reflow-listener-moved
+   Version: 1.1.29-adaptive-viewbox-height-fill
 
    Purpose:
    - Render only the foreground RF network SVG.
    - Keep RF backgrounds and static compass decoration out of the dynamic SVG.
    - Keep a stable viewBox so page resizing does not flatten paths or circles.
    - Reflow when the RF path pane changes the map holder size.
+   - Match the SVG viewBox to the holder aspect ratio so the map fills vertically without flattening.
    - Accept future graph input with normalized node coordinates.
    ========================================================================== */
 
 (() => {
   "use strict";
 
-  const VERSION = "1.1.25-pane-reflow-listener-moved";
+  const VERSION = "1.1.29-adaptive-viewbox-height-fill";
   const SVG_NS = ["http:", "", "www.w3.org", "2000", "svg"].join("/");
   const GRAPH_URL = "../../../data/rf-network-map.json";
 
-  const VIEWBOX = {
+  const BASE_VIEWBOX = {
     width: 1000,
     height: 650,
     safeEdge: 28
@@ -186,22 +187,40 @@
     return Math.max(min, Math.min(max, value));
   }
 
-  function projectNode(node) {
+  function getViewBoxForMount(mount) {
+    const rect = mount.getBoundingClientRect();
+    const width = BASE_VIEWBOX.width;
+    const measuredWidth = rect.width || width;
+    const measuredHeight = rect.height || BASE_VIEWBOX.height;
+    const aspect = measuredWidth > 0 && measuredHeight > 0
+      ? measuredWidth / measuredHeight
+      : BASE_VIEWBOX.width / BASE_VIEWBOX.height;
+
+    const height = clamp(Math.round(width / aspect), 520, 980);
+
+    return {
+      width,
+      height,
+      safeEdge: BASE_VIEWBOX.safeEdge
+    };
+  }
+
+  function projectNode(node, viewBox) {
     const sourceX = Number.isFinite(Number(node.x)) ? Number(node.x) : 0.5;
     const sourceY = Number.isFinite(Number(node.y)) ? Number(node.y) : 0.5;
 
     const x = sourceX >= 0 && sourceX <= 1
-      ? sourceX * VIEWBOX.width
+      ? sourceX * viewBox.width
       : sourceX;
 
     const y = sourceY >= 0 && sourceY <= 1
-      ? sourceY * VIEWBOX.height
+      ? sourceY * viewBox.height
       : sourceY;
 
     return {
       ...node,
-      x: clamp(x, VIEWBOX.safeEdge, VIEWBOX.width - VIEWBOX.safeEdge),
-      y: clamp(y, VIEWBOX.safeEdge, VIEWBOX.height - VIEWBOX.safeEdge)
+      x: clamp(x, viewBox.safeEdge, viewBox.width - viewBox.safeEdge),
+      y: clamp(y, viewBox.safeEdge, viewBox.height - viewBox.safeEdge)
     };
   }
 
@@ -301,15 +320,15 @@
     ]);
   }
 
-  function makeLabel(node, tight) {
+  function makeLabel(node, tight, viewBox) {
     const radius = markerRadius(node);
     const label = tight && node.labelTight ? node.labelTight : (node.label || {});
-    const fallbackSide = node.x > VIEWBOX.width * 0.72 ? -1 : 1;
+    const fallbackSide = node.x > viewBox.width * 0.72 ? -1 : 1;
     const anchor = label.anchor || (fallbackSide < 0 ? "end" : "start");
     const dx = Number.isFinite(Number(label.dx)) ? Number(label.dx) : fallbackSide * (radius + 24);
     const dy = Number.isFinite(Number(label.dy)) ? Number(label.dy) : -10;
-    const labelX = clamp(node.x + dx, 12, VIEWBOX.width - 12);
-    const labelY = clamp(node.y + dy, 18, VIEWBOX.height - 18);
+    const labelX = clamp(node.x + dx, 12, viewBox.width - 12);
+    const labelY = clamp(node.y + dy, 18, viewBox.height - 18);
 
     const labelText = svg("text", {
       class: `demo-label ${node.type || "site"}${tight ? " hide-type" : ""}`,
@@ -328,8 +347,8 @@
     return labelText;
   }
 
-  function normaliseGraph(graph) {
-    const nodes = graph.nodes.map(projectNode);
+  function normaliseGraph(graph, viewBox) {
+    const nodes = graph.nodes.map((node) => projectNode(node, viewBox));
     const nodeById = new Map(nodes.map((node) => [node.id, node]));
     const links = graph.links
       .map((link) => ({
@@ -348,7 +367,8 @@
   }
 
   function renderMount(mount, sourceGraph) {
-    const graph = normaliseGraph(sourceGraph);
+    const viewBox = getViewBoxForMount(mount);
+    const graph = normaliseGraph(sourceGraph, viewBox);
     const tight = mount.getBoundingClientRect().width < 340;
     const selectedLink = findSelectedLink(graph);
     const selectedNodeIds = new Set();
@@ -360,7 +380,7 @@
 
     const root = svg("svg", {
       class: "rf-network-map-svg",
-      viewBox: `0 0 ${VIEWBOX.width} ${VIEWBOX.height}`,
+      viewBox: `0 0 ${viewBox.width} ${viewBox.height}`,
       preserveAspectRatio: "xMidYMid meet",
       role: "img",
       "aria-label": mount.getAttribute("aria-label") || "RF network map",
@@ -437,7 +457,7 @@
       );
 
       nodesGroup.append(nodeGroup);
-      labelsGroup.append(makeLabel(node, tight));
+      labelsGroup.append(makeLabel(node, tight, viewBox));
     });
 
     root.append(
@@ -465,8 +485,8 @@
      8. Mount resize and path-pane reflow
 
      Ownership:
-     - The path pane markup stays in index.html.
-     - The pane open/close movement stays in rf.css.
+     - The path pane markup stays in rf-panes.js.
+     - The pane open/close movement stays in rf.css/rf-pane.css.
      - This renderer only listens for holder shape changes so the SVG redraws
        cleanly when the pane changes the available map area.
      ========================================================================== */
