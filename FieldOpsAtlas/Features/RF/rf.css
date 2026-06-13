@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF page
    File: FieldOpsAtlas/Features/RF/rf.css
-   Version: 1.1.28-map-stage-tracks-pane
+   Version: 1.1.39-network-key-styles
 
    Ownership:
    - Root shell owns top buttons, search, drawer, filter, and bottom nav.
@@ -677,4 +677,93 @@
   .rf-equipment-item {
     min-height: 42px;
   }
+}
+
+/* ==========================================================================
+   RF map key
+   ========================================================================== */
+
+.rf-map-key {
+  position: absolute;
+  left: 16px;
+  bottom: 12px;
+  z-index: 5;
+  width: 118px;
+  padding: 7px 8px 8px;
+  color: rgba(7, 31, 56, 0.84);
+  border: 1px solid rgba(130, 91, 22, 0.22);
+  border-radius: 10px;
+  background: rgba(255, 248, 232, 0.66);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.45),
+    0 4px 10px rgba(28, 18, 6, 0.08);
+  pointer-events: none;
+}
+
+.rf-map-key-title {
+  margin: 0 0 5px;
+  color: rgba(7, 31, 56, 0.78);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  line-height: 1;
+  text-transform: uppercase;
+}
+
+.rf-map-key-list {
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+  list-style: none;
+}
+
+.rf-map-key-list li {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: center;
+  gap: 5px;
+  color: rgba(7, 31, 56, 0.72);
+  font-size: 6.5px;
+  font-weight: 800;
+  letter-spacing: 0.015em;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.rf-map-key-swatch {
+  width: 10px;
+  height: 10px;
+  justify-self: center;
+  border-radius: 50%;
+  display: block;
+}
+
+.rf-map-key-swatch.is-core {
+  background: rgba(0, 130, 150, 0.84);
+  box-shadow: 0 0 0 2px rgba(0, 130, 150, 0.16);
+}
+
+.rf-map-key-swatch.is-relay {
+  background: rgba(210, 128, 28, 0.86);
+  box-shadow: 0 0 0 2px rgba(210, 128, 28, 0.16);
+}
+
+.rf-map-key-line {
+  width: 16px;
+  height: 0;
+  justify-self: center;
+  display: block;
+  border-top: 2px solid rgba(7, 31, 56, 0.54);
+}
+
+.rf-map-key-line.is-selected {
+  border-top-color: rgba(201, 126, 28, 0.88);
+}
+
+.rf-map-key-line.is-standby {
+  border-top-style: dashed;
+  border-top-color: rgba(7, 31, 56, 0.44);
 }
