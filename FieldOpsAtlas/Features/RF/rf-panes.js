@@ -1,11 +1,13 @@
 /* ==========================================================================
    FieldOps Atlas RF panes
    File: FieldOpsAtlas/Features/RF/rf-panes.js
-   Version: 1.1.28-pane-attaches-to-map-paper
+   Version: 1.1.30-pane-shell-first-details-after-map
 
    Purpose:
    - Own RF pane markup that should not live in index.html.
-   - Attach the path details pane directly inside .rf-map-paper.
+   - Attach the path details pane shell directly inside .rf-map-paper before the
+     dynamic network map renders.
+   - Load path details content only after the dynamic network map has rendered.
    - Keep the pane out of normal layout flow so it never pushes the map down.
    - Leave pane styling and open/close behaviour in rf-pane.css.
    ========================================================================== */
@@ -13,9 +15,9 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.28-pane-attaches-to-map-paper";
+  const VERSION = "1.1.30-pane-shell-first-details-after-map";
 
-  const PATH_DETAILS_TEMPLATE = String.raw`
+  const PATH_TOGGLE_TEMPLATE = String.raw`
 <input
                 class="rf-path-toggle"
                 id="rfPathPaneToggle"
@@ -23,7 +25,9 @@
                 checked
                 aria-label="Toggle path details"
               >
+`;
 
+  const PATH_PANE_SHELL_TEMPLATE = String.raw`
 <aside class="rf-path-pane" aria-label="Selected RF path details">
                 <label class="rf-path-handle" for="rfPathPaneToggle" aria-label="Collapse path details">
                   <img
@@ -36,7 +40,12 @@
                   >
                 </label>
 
-                <div class="rf-path-pane-body">
+                <div class="rf-path-pane-body" data-rf-path-details-body hidden></div>
+              </aside>
+`;
+
+  const PATH_DETAILS_BODY_TEMPLATE = String.raw`
+<div class="rf-path-pane-body">
                   <header class="rf-path-pane-title">
                     <img
                       class="rf-path-title-wave"
@@ -123,12 +132,11 @@
                     </span>
                   </section>
                 </div>
-              </aside>
 `;
 
-  function createPathPaneFragment() {
+  function makeFragment(html) {
     const template = document.createElement("template");
-    template.innerHTML = PATH_DETAILS_TEMPLATE.trim();
+    template.innerHTML = html.trim();
     return template.content.cloneNode(true);
   }
 
@@ -136,6 +144,47 @@
     root
       .querySelectorAll("[data-rf-path-pane-mount]")
       .forEach((mount) => mount.remove());
+  }
+
+  function loadPathDetailsBody(mapPaper) {
+    const bodyMount = mapPaper.querySelector("[data-rf-path-details-body]");
+    if (!bodyMount || bodyMount.dataset.rfDetailsLoaded === "true") {
+      return;
+    }
+
+    const fragment = makeFragment(PATH_DETAILS_BODY_TEMPLATE);
+    const body = fragment.querySelector(".rf-path-pane-body");
+
+    if (!body) {
+      return;
+    }
+
+    body.removeAttribute("hidden");
+    body.dataset.rfDetailsLoaded = "true";
+    bodyMount.replaceWith(body);
+
+    mapPaper.dispatchEvent(new CustomEvent("fieldops:rf-path-details-ready", {
+      bubbles: true,
+      detail: {
+        version: VERSION,
+        pane: "path-details"
+      }
+    }));
+  }
+
+  function bindDetailsAfterMap(mapPaper) {
+    const mapStage = mapPaper.querySelector(".rf-map-stage");
+
+    if (mapStage?.dataset.rfNetworkMapLoaded === "true") {
+      window.requestAnimationFrame(() => loadPathDetailsBody(mapPaper));
+      return;
+    }
+
+    mapPaper.addEventListener("fieldops:rf-network-map-rendered", () => {
+      window.requestAnimationFrame(() => loadPathDetailsBody(mapPaper));
+    }, { once: true });
+
+    window.setTimeout(() => loadPathDetailsBody(mapPaper), 1200);
   }
 
   function initPathPane(mapPaper) {
@@ -150,9 +199,11 @@
 
     mapPaper.dataset.rfPaneInit = "true";
 
-    const fragment = createPathPaneFragment();
-    const toggle = fragment.querySelector(".rf-path-toggle");
-    const pane = fragment.querySelector(".rf-path-pane");
+    const toggleFragment = makeFragment(PATH_TOGGLE_TEMPLATE);
+    const shellFragment = makeFragment(PATH_PANE_SHELL_TEMPLATE);
+
+    const toggle = toggleFragment.querySelector(".rf-path-toggle");
+    const pane = shellFragment.querySelector(".rf-path-pane");
 
     if (!toggle || !pane) {
       return;
@@ -161,13 +212,15 @@
     mapPaper.insertBefore(toggle, mapStage);
     mapStage.insertAdjacentElement("afterend", pane);
 
-    mapPaper.dispatchEvent(new CustomEvent("fieldops:rf-pane-ready", {
+    mapPaper.dispatchEvent(new CustomEvent("fieldops:rf-pane-shell-ready", {
       bubbles: true,
       detail: {
         version: VERSION,
         pane: "path-details"
       }
     }));
+
+    bindDetailsAfterMap(mapPaper);
   }
 
   function initAll(root = document) {
@@ -180,7 +233,8 @@
 
   window.FieldOpsRFPanes = {
     VERSION,
-    initAll
+    initAll,
+    loadPathDetailsBody
   };
 
   if (document.readyState === "loading") {
