@@ -1,19 +1,19 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.js
-   Version: 1.1.82-restore-map-filters
+   Version: 1.1.83-graph-hook
 
    Purpose:
    - Own the RF interface shell and static RF UI.
    - Create the RF title, RF/IP/MW/All graph filter controls, map holder, recent cards, Services panel, Equipment panel, and path pane shell.
-   - Leave topology/graph drawing to rf-topology.js.
+   - Leave graph drawing to rf-graph.js.
    - Leave selected path data/body rendering to rf-path-builder.js.
    ========================================================================== */
 
 (() => {
   "use strict";
 
-  const VERSION = "1.1.82-restore-map-filters";
+  const VERSION = "1.1.83-graph-hook";
 
   const HOME_SELECTOR = ".rf-home";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
@@ -46,9 +46,9 @@
       <div
         class="rf-map-stage"
         id="rfMapStage"
-        data-rf-topology
+        data-rf-graph
         role="img"
-        aria-label="RF topology graph"
+        aria-label="RF graph"
       ></div>
     </div>
 
