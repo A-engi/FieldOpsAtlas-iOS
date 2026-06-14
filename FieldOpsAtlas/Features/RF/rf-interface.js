@@ -1,34 +1,21 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.js
-   Version: 1.1.83-graph-hook
+   Version: 1.1.85-snipsnip-checked
 
    Purpose:
-   - Own the RF interface shell and static RF UI.
-   - Create the RF title, RF/IP/MW/All graph filter controls, map holder, recent cards, Services panel, Equipment panel, and path pane shell.
+   - Own the visible RF interface shell and static RF UI.
+   - Create the RF title, RF/IP/MW/All graph filter controls, map holder,
+     recent cards, Services panel, and Equipment panel.
    - Leave graph drawing to rf-graph.js.
-   - Leave selected path data/body rendering to rf-path-builder.js.
+   - Do not create the archived path-details pane, hidden toggle, or handle.
    ========================================================================== */
 
 (() => {
   "use strict";
 
-  const VERSION = "1.1.83-graph-hook";
-
+  const VERSION = "1.1.85-snipsnip-checked";
   const HOME_SELECTOR = ".rf-home";
-  const MAP_PAPER_SELECTOR = ".rf-map-paper";
-  const MAP_STAGE_SELECTOR = ".rf-map-stage";
-  const PANE_READY_EVENT = "fieldops:rf-pane-shell-ready";
-
-  const PATH_TOGGLE_TEMPLATE = String.raw`
-<input
-  class="rf-path-toggle"
-  id="rfPathPaneToggle"
-  type="checkbox"
-  checked
-  aria-label="Toggle path details"
->
-`;
 
   const MAIN_INTERFACE_TEMPLATE = String.raw`
 <section class="rf-network" aria-labelledby="rfNetworkTitle" data-rf-interface-main>
@@ -41,6 +28,7 @@
       <button class="rf-tab" type="button">All</button>
     </div>
   </div>
+
   <div class="rf-map-recent">
     <div class="rf-map-paper">
       <div
@@ -148,21 +136,6 @@
 </section>
 `;
 
-  const PATH_PANE_SHELL_TEMPLATE = String.raw`
-<aside class="rf-path-pane" aria-label="Selected RF path details" data-rf-path-pane>
-  <label class="rf-path-handle" for="rfPathPaneToggle" aria-label="Collapse path details">
-    <img
-      class="rf-path-handle-icon"
-      src="../../../data/icons/path-pane-chevron-gold.svg"
-      alt=""
-      aria-hidden="true"
-      loading="lazy"
-      decoding="async"
-    >
-  </label>
-</aside>
-`;
-
   function makeFragment(html) {
     const template = document.createElement("template");
     template.innerHTML = html.trim();
@@ -190,54 +163,9 @@
     home.dataset.rfInterfaceInit = "true";
   }
 
-  function resetPathPane(mapPaper) {
-    mapPaper
-      .querySelectorAll(":scope > .rf-path-toggle, :scope > .rf-path-pane")
-      .forEach((node) => node.remove());
-    delete mapPaper.dataset.rfInterfacePathPane;
-  }
-
-  function attachPathPane(mapPaper) {
-    if (!mapPaper || mapPaper.dataset.rfInterfacePathPane === "true") {
-      return;
-    }
-
-    const mapStage = mapPaper.querySelector(MAP_STAGE_SELECTOR);
-    if (!mapStage) {
-      return;
-    }
-
-    resetPathPane(mapPaper);
-
-    const toggleFragment = makeFragment(PATH_TOGGLE_TEMPLATE);
-    const paneFragment = makeFragment(PATH_PANE_SHELL_TEMPLATE);
-    const toggle = toggleFragment.querySelector(".rf-path-toggle");
-    const pane = paneFragment.querySelector(".rf-path-pane");
-
-    if (!toggle || !pane) {
-      return;
-    }
-
-    mapPaper.insertBefore(toggle, mapStage);
-    mapStage.insertAdjacentElement("afterend", pane);
-    mapPaper.dataset.rfInterfacePathPane = "true";
-
-    mapPaper.dispatchEvent(new CustomEvent(PANE_READY_EVENT, {
-      bubbles: true,
-      detail: {
-        version: VERSION,
-        pane: "path-details"
-      }
-    }));
-  }
-
   function initAll(root = document) {
     resetHome(root);
     attachMainInterface(root);
-
-    root
-      .querySelectorAll(MAP_PAPER_SELECTOR)
-      .forEach(attachPathPane);
   }
 
   window.FieldOpsRFInterface = {
@@ -252,4 +180,4 @@
   }
 })();
 
-/* End of FieldOpsAtlas/Features/RF/rf-interface.js */
+/* End of FieldOpsAtlas/Features/RF/rf-interface.js | bottom/end of file */
