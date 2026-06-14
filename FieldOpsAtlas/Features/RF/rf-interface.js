@@ -1,19 +1,20 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.js
-   Version: 1.1.87-visible-boxes
+   Version: 1.1.89-slot-text-cleanup
 
    Purpose:
    - Own the RF interface shell and static RF UI.
-   - Create the RF title, RF/IP/MW/All graph filter controls, map holder, recent cards, Services panel, Equipment panel, and visible path pane shell and visible path-details slot marker.
+   - Create the RF title, RF/IP/MW/All graph filter controls, map holder, recent cards, Services panel, Equipment panel, and path pane shell.
    - Leave graph drawing to rf-graph.js.
    - Leave selected path data/body rendering to rf-path-builder.js; this interface file does not fetch path data.
+   - Keep only a plain slot text marker until rf-path-builder.js replaces it.
    ========================================================================== */
 
 (() => {
   "use strict";
 
-  const VERSION = "1.1.87-visible-boxes";
+  const VERSION = "1.1.89-slot-text-cleanup";
 
   const HOME_SELECTOR = ".rf-home";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
@@ -163,16 +164,11 @@
     class="rf-path-details-slot"
     data-rf-path-details
     role="group"
-    aria-label="Path details content"
+    aria-label="Path details slot"
   >
-    <div
-      class="rf-path-placeholder"
-      data-rf-path-placeholder
-      aria-label="Visible interface placeholder for path-builder content"
-    >
-      <strong>Interface path box</strong>
-      <span>Visible slot â builder fills below</span>
-    </div>
+    <span class="rf-path-slot-text" data-rf-path-placeholder>
+      Path details slot
+    </span>
   </div>
 </aside>
 `;
@@ -219,7 +215,7 @@
 
     pane
       .querySelectorAll(
-        ":scope > .rf-path-pane-body, :scope > [data-rf-path-builder-mount], :scope > [data-rf-path-builder-body]"
+        ":scope > .rf-path-pane-body, :scope > [data-rf-path-builder-mount], :scope > [data-rf-path-builder-body], :scope > .rf-path-placeholder"
       )
       .forEach((node) => node.remove());
   }
