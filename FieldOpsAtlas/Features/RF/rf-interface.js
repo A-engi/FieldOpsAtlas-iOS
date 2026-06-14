@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.js
-   Version: 1.1.85-path-toggle-button
+   Version: 1.1.86-path-slot-visible
 
    Purpose:
    - Own the RF interface shell and static RF UI.
@@ -13,7 +13,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.85-path-toggle-button";
+  const VERSION = "1.1.86-path-slot-visible";
 
   const HOME_SELECTOR = ".rf-home";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
@@ -158,6 +158,18 @@
       decoding="async"
     >
   </button>
+
+  <div
+    class="rf-path-details-slot"
+    data-rf-path-details
+    role="group"
+    aria-label="Path details content"
+  >
+    <div class="rf-path-placeholder" data-rf-path-placeholder>
+      <strong>Path details</strong>
+      <span>Waiting for path builder</span>
+    </div>
+  </div>
 </aside>
 `;
 
@@ -194,6 +206,18 @@
       .forEach((node) => node.remove());
     delete mapPaper.dataset.rfInterfacePathPane;
     mapPaper.classList.remove(PANE_COLLAPSED_CLASS);
+  }
+
+  function removeLegacyPathContent(pane) {
+    if (!pane) {
+      return;
+    }
+
+    pane
+      .querySelectorAll(
+        ":scope > .rf-path-pane-body, :scope > [data-rf-path-builder-mount], :scope > [data-rf-path-builder-body]"
+      )
+      .forEach((node) => node.remove());
   }
 
   function syncPathHandleState(mapPaper, handle) {
@@ -248,6 +272,7 @@
     }
 
     mapStage.insertAdjacentElement("afterend", pane);
+    removeLegacyPathContent(pane);
     bindPathHandle(mapPaper, pane);
     mapPaper.dataset.rfInterfacePathPane = "true";
 
