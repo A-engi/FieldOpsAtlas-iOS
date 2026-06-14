@@ -1,28 +1,28 @@
 /* ==========================================================================
-   FieldOps Atlas RF topology renderer
-   File: FieldOpsAtlas/Features/RF/rf-topology.js
-   Version: 1.1.73-exact-new-file-names
+   FieldOps Atlas RF graph renderer
+   File: FieldOpsAtlas/Features/RF/rf-graph.js
+   Version: 1.1.83-rename-graph-files
 
    Purpose:
-   - Render only the foreground RF topology SVG.
+   - Render only the foreground RF graph SVG.
    - Keep RF backgrounds and static compass decoration out of the dynamic SVG.
    - Keep a stable viewBox so page resizing does not flatten paths or circles.
    - Reflow when the RF path pane changes the map holder size.
-   - Match the SVG viewBox to the holder aspect ratio so the topology fills vertically without flattening.
+   - Match the SVG viewBox to the holder aspect ratio so the graph fills vertically without flattening.
    - Apply clearer top/left map insets and explicit node radius rules.
-   - Own the static RF topology key so no extra key script is needed.
+   - Own the static RF graph key so no extra key script is needed.
    - Place the key in the reserved strip below the graph, not over graph content.
-   - Draw each RF topology node as one SVG circle only.
+   - Draw each RF graph node as one SVG circle only.
    - Restore only the original selected-node mesh/radar halo.
    - Do not draw plain blob halos, transmitter/mast icons, inner rings, or route dots.
-   - Fit graph coordinates into a taller topology area, reserving bottom-left room for the standalone key.
+   - Fit graph coordinates into a taller graph area, reserving bottom-left room for the standalone key.
    - Accept future graph input with normalized node coordinates.
    ========================================================================== */
 
 (() => {
   "use strict";
 
-  const VERSION = "1.1.73-exact-new-file-names";
+  const VERSION = "1.1.83-rename-graph-files";
   const SVG_NS = ["http:", "", "www.w3.org", "2000", "svg"].join("/");
   const GRAPH_URL = "../../../data/rf-network-map.json";
 
@@ -47,23 +47,23 @@
 
 
   const TOPOLOGY_KEY_TEMPLATE = String.raw`
-<aside class="rf-topology-key" aria-label="RF topology key" data-rf-topology-key>
-  <div class="rf-topology-key-title">Key</div>
-  <ul class="rf-topology-key-list">
+<aside class="rf-graph-key" aria-label="RF graph key" data-rf-graph-key>
+  <div class="rf-graph-key-title">Key</div>
+  <ul class="rf-graph-key-list">
     <li>
-      <span class="rf-topology-key-swatch is-core" aria-hidden="true"></span>
+      <span class="rf-graph-key-swatch is-core" aria-hidden="true"></span>
       <span>Core site</span>
     </li>
     <li>
-      <span class="rf-topology-key-swatch is-relay" aria-hidden="true"></span>
+      <span class="rf-graph-key-swatch is-relay" aria-hidden="true"></span>
       <span>Relay site</span>
     </li>
     <li>
-      <span class="rf-topology-key-line is-selected" aria-hidden="true"></span>
+      <span class="rf-graph-key-line is-selected" aria-hidden="true"></span>
       <span>Selected path</span>
     </li>
     <li>
-      <span class="rf-topology-key-line is-standby" aria-hidden="true"></span>
+      <span class="rf-graph-key-line is-standby" aria-hidden="true"></span>
       <span>Standby path</span>
     </li>
   </ul>
@@ -457,12 +457,12 @@
     }
 
     const root = svg("svg", {
-      class: "rf-topology-svg",
+      class: "rf-graph-svg",
       viewBox: `0 0 ${viewBox.width} ${viewBox.height}`,
       preserveAspectRatio: "xMidYMid meet",
       role: "img",
-      "aria-label": mount.getAttribute("aria-label") || "RF topology",
-      "data-rf-topology-version": VERSION
+      "aria-label": mount.getAttribute("aria-label") || "RF graph",
+      "data-rf-graph-version": VERSION
     });
 
     const linksSoftGroup = svg("g", { class: "demo-links-soft" });
@@ -526,9 +526,9 @@
     );
 
     mount.replaceChildren(root);
-    mount.dataset.rfTopologyLoaded = "true";
+    mount.dataset.rfGraphLoaded = "true";
 
-    mount.dispatchEvent(new CustomEvent("fieldops:rf-topology-rendered", {
+    mount.dispatchEvent(new CustomEvent("fieldops:rf-graph-rendered", {
       bubbles: true,
       detail: {
         version: VERSION,
@@ -537,7 +537,7 @@
     }));
   }
 
-  function attachTopologyKey(mount) {
+  function attachGraphKey(mount) {
     const mapPaper = mount.closest(".rf-map-paper");
 
     if (!mapPaper) {
@@ -545,24 +545,24 @@
     }
 
     mapPaper
-      .querySelectorAll(":scope > .rf-topology-key")
+      .querySelectorAll(":scope > .rf-graph-key")
       .forEach((key) => key.remove());
 
-    if (mapPaper.dataset.rfTopologyKeyInit === "true") {
-      mapPaper.dataset.rfTopologyKeyInit = "false";
+    if (mapPaper.dataset.rfGraphKeyInit === "true") {
+      mapPaper.dataset.rfGraphKeyInit = "false";
     }
 
     const fragment = makeFragment(TOPOLOGY_KEY_TEMPLATE);
-    const key = fragment.querySelector(".rf-topology-key");
+    const key = fragment.querySelector(".rf-graph-key");
 
     if (!key) {
       return;
     }
 
     mapPaper.appendChild(key);
-    mapPaper.dataset.rfTopologyKeyInit = "true";
+    mapPaper.dataset.rfGraphKeyInit = "true";
 
-    mapPaper.dispatchEvent(new CustomEvent("fieldops:rf-topology-key-ready", {
+    mapPaper.dispatchEvent(new CustomEvent("fieldops:rf-graph-key-ready", {
       bubbles: true,
       detail: {
         version: VERSION
@@ -578,11 +578,11 @@
      - The interface shell stays in rf-interface.js.
      - Pane movement and styling stay in rf-interface.css.
      - This renderer only listens for holder shape changes so the SVG redraws
-       cleanly when the pane changes the available topology area.
+       cleanly when the pane changes the available graph area.
      ========================================================================== */
 
-  function bindTopologyReflowTriggers(mount, scheduleRender) {
-    bindTopologyReflowTriggers(mount, scheduleRender);
+  function bindGraphReflowTriggers(mount, scheduleRender) {
+    bindGraphReflowTriggers(mount, scheduleRender);
 
     const mapPaper = mount.closest(".rf-map-paper");
     const paneToggle = mapPaper ? mapPaper.querySelector(".rf-path-toggle") : null;
@@ -606,11 +606,11 @@
   }
 
   function initMount(mount) {
-    if (!mount || mount.dataset.rfTopologyInit === "true") {
+    if (!mount || mount.dataset.rfGraphInit === "true") {
       return;
     }
 
-    mount.dataset.rfTopologyInit = "true";
+    mount.dataset.rfGraphInit = "true";
 
     const state = {
       graph: null,
@@ -631,7 +631,7 @@
     getGraphData().then((graph) => {
       state.graph = graph;
       renderMount(mount, state.graph);
-      attachTopologyKey(mount);
+      attachGraphKey(mount);
     });
 
     const toggle = mount.closest(".rf-map-paper")?.querySelector(".rf-path-toggle");
@@ -649,11 +649,11 @@
 
   function initAll(root = document) {
     root
-      .querySelectorAll("[data-rf-topology]")
+      .querySelectorAll("[data-rf-graph]")
       .forEach(initMount);
   }
 
-  window.FieldOpsRFTopology = {
+  window.FieldOpsRFGraph = {
     VERSION,
     init: initMount,
     initAll
@@ -665,3 +665,5 @@
     initAll();
   }
 })();
+
+/* End of FieldOpsAtlas/Features/RF/rf-graph.js */
