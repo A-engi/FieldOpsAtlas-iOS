@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF network map renderer
    File: FieldOpsAtlas/Features/RF/rf-network-map.js
-   Version: 1.1.48-restore-original-plain-halo
+   Version: 1.1.49-restore-original-mesh-halo
 
    Purpose:
    - Render only the foreground RF network SVG.
@@ -13,8 +13,8 @@
    - Own the static RF map key so no extra key script is needed.
    - Place the key in the reserved strip below the graph, not over graph content.
    - Draw each RF map node as one SVG circle only.
-   - Restore only the original plain halo circle behind each node.
-   - Do not draw transmitter/mast icons, inner rings, selected starbursts, or route dots.
+   - Restore only the original selected-node mesh/radar halo.
+   - Do not draw plain blob halos, transmitter/mast icons, inner rings, or route dots.
    - Fit graph coordinates into a taller map area, reserving bottom-left room for the standalone key.
    - Accept future graph input with normalized node coordinates.
    ========================================================================== */
@@ -22,7 +22,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.48-restore-original-plain-halo";
+  const VERSION = "1.1.49-restore-original-mesh-halo";
   const SVG_NS = ["http:", "", "www.w3.org", "2000", "svg"].join("/");
   const GRAPH_URL = "../../../data/rf-network-map.json";
 
@@ -379,6 +379,24 @@
     );
   }
 
+  function makeSelectedHalo(radius) {
+    const scale = clamp((radius + 22) / 54, 0.72, 0.90);
+
+    return svg("g", { class: "demo-original-halo", transform: `scale(${scale})` }, [
+      svg("circle", { class: "relay-halo-ring", r: 51 }),
+      svg("circle", { class: "relay-halo-ring", r: 61 }),
+      svg("circle", { class: "relay-halo-ring is-outer", r: 72 }),
+      svg("path", {
+        class: "relay-halo-line",
+        d: "M42.3 7.5L72.9 12.8 M40.4 14.7L69.5 25.3 M32.9 27.6L56.7 47.6 M27.6 32.9L47.6 56.7 M14.7 40.4L25.3 69.5 M7.5 42.3L12.8 72.9 M-7.5 42.3L-12.8 72.9 M-14.7 40.4L-25.3 69.5 M-27.6 32.9L-47.6 56.7 M-32.9 27.6L-56.7 47.6 M-40.4 14.7L-69.5 25.3 M-42.3 7.5L-72.9 12.8 M-42.3 -7.5L-72.9 -12.8 M-40.4 -14.7L-69.5 -25.3 M-32.9 -27.6L-56.7 -47.6 M-27.6 -32.9L-47.6 -56.7 M-14.7 -40.4L-25.3 -69.5 M-7.5 -42.3L-12.8 -72.9 M7.5 -42.3L12.8 -72.9 M14.7 -40.4L25.3 -69.5 M27.6 -32.9L47.6 -56.7 M32.9 -27.6L56.7 -47.6 M40.4 -14.7L69.5 -25.3 M42.3 -7.5L72.9 -12.8"
+      }),
+      svg("path", {
+        class: "relay-halo-line strong",
+        d: "M38 0L82 0 M32.9 19L71 41 M19 32.9L41 71 M0 38L0 82 M-19 32.9L-41 71 M-32.9 19L-71 41 M-38 0L-82 0 M-32.9 -19L-71 -41 M-19 -32.9L-41 -71 M0 -38L0 -82 M19 -32.9L41 -71 M32.9 -19L71 -41 M-82 0L82 0 M0 -82L0 82"
+      })
+    ]);
+  }
+
   function makeLabel(node, tight, viewBox) {
     const radius = markerRadius(node);
     const label = tight && node.labelTight ? node.labelTight : (node.label || {});
@@ -478,13 +496,11 @@
       const radius = markerRadius(node);
       const selected = selectedNodeIds.has(node.id);
 
-      halosGroup.append(svg("circle", {
-        class: `halo ${node.type || "site"}`,
-        cx: node.x,
-        cy: node.y,
-        r: radius + (selected ? 13 : 8),
-        "vector-effect": "non-scaling-stroke"
-      }));
+      if (selected) {
+        halosGroup.append(svg("g", { transform: `translate(${node.x} ${node.y})` }, [
+          makeSelectedHalo(radius)
+        ]));
+      }
 
       const nodeGroup = svg("g", {
         class: `demo-node ${selected ? "is-selected" : ""}`,
