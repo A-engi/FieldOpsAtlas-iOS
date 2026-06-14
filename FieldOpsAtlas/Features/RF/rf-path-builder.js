@@ -1,225 +1,176 @@
 /* ==========================================================================
    FieldOps Atlas RF path builder
    File: FieldOpsAtlas/Features/RF/rf-path-builder.js
-   Version: 1.1.101-mid-svg-right-fit
+   Version: 1.1.102-path-pane-rewrite
 
    Purpose:
    - Build the selected RF path model from topology, site, service, and path data.
-   - Currently renders the demo selected-path values until topology/site/service data is wired.
+   - Render the full Path Details card into the empty slot created by rf-interface.js.
    - Keep pane shell, controls, and styling in rf-interface.js / rf-interface.css.
-   - Render the built path model into the existing RF interface pane.
-   - Use the visible path details slot from rf-interface.js.
-   - Paste the real path details body into the permanent visible slot from rf-interface.js.
-   - Keep the middle RF signal SVG placeholder on the left of the RF values.
-   - Remove duplicate path-builder bodies before rendering.
+   - This rewrite replaces the archived legacy pane/body renderer.
    ========================================================================== */
 
 (() => {
   "use strict";
 
-  const VERSION = "1.1.101-mid-svg-right-fit";
-  const MAP_PAPER_SELECTOR = ".rf-map-paper";
-  const PANE_SELECTOR = ".rf-path-pane";
-  const PATH_DETAILS_SLOT_SELECTOR = "[data-rf-path-details]";
+  const VERSION = "1.1.102-path-pane-rewrite";
+  const SLOT_SELECTOR = "[data-rf-path-details]";
   const PANE_READY_EVENT = "fieldops:rf-pane-shell-ready";
-  const PATH_BUILDER_READY_CLASS = "is-path-builder-ready";
 
-  const PATH_BUILDER_BODY_TEMPLATE = String.raw`
-<div class="rf-path-pane-body">
-  <header class="rf-path-pane-title">
-    <img
-      class="rf-path-title-wave"
-      src="../../../data/icons/path-details-wave.svg"
-      alt=""
-      aria-hidden="true"
-      loading="lazy"
-      decoding="async"
-    >
-    <span>Path details</span>
-  </header>
+  const ICON_ROOT = "../../../data/icons/";
 
-  <section class="rf-path-site is-from" aria-label="Source site">
-    <span class="rf-path-mast" aria-hidden="true">
-      <img
-        src="../../../data/icons/atlas-transmitter-gold.svg"
-        alt=""
-        loading="lazy"
-        decoding="async"
-      >
-    </span>
-    <span class="rf-path-site-copy">
-      <small>From</small>
-      <b>North Ridge</b>
-      <b>TX Site</b>
-    </span>
-  </section>
-
-  <section class="rf-path-mid" aria-label="Selected RF path">
-    <img
-      class="rf-path-signal-vertical"
-      src="../../../data/icons/path-signal-glow.svg"
-      alt=""
-      aria-hidden="true"
-      loading="lazy"
-      decoding="async"
-    >
-
-    <div class="rf-path-frequency">
-      <strong>6.725 GHz</strong>
-      <span>Horizontal</span>
-
-      <dl class="rf-path-data">
-        <div>
-          <dt>Service</dt>
-          <dd>DTT 1</dd>
-        </div>
-        <div>
-          <dt>Band</dt>
-          <dd>28 MHz</dd>
-        </div>
-        <div>
-          <dt>Mode</dt>
-          <dd>64QAM</dd>
-        </div>
-        <div>
-          <dt>Power</dt>
-          <dd>18 dBm</dd>
-        </div>
-        <div>
-          <dt>Avail</dt>
-          <dd>99.98%</dd>
-        </div>
-        <div>
-          <dt>Status</dt>
-          <dd><i aria-hidden="true"></i>Online</dd>
-        </div>
-      </dl>
-    </div>
-  </section>
-
-  <section class="rf-path-site is-to" aria-label="Destination site">
-    <span class="rf-path-mast" aria-hidden="true">
-      <img
-        src="../../../data/icons/atlas-transmitter-gold.svg"
-        alt=""
-        loading="lazy"
-        decoding="async"
-      >
-    </span>
-    <span class="rf-path-site-copy">
-      <small>To</small>
-      <b>Hilltop</b>
-      <b>Relay Site</b>
-    </span>
-  </section>
-</div>
-`;
-
-  function makeFragment(html) {
-    const template = document.createElement("template");
-    template.innerHTML = html.trim();
-    return template.content.cloneNode(true);
-  }
-
-  function getMapPaper(root = document) {
-    return root.querySelector(MAP_PAPER_SELECTOR);
-  }
-
-  function getPane(root = document) {
-    const mapPaper = getMapPaper(root);
-    return mapPaper ? mapPaper.querySelector(PANE_SELECTOR) : null;
-  }
-
-  function getPathDetailsSlot(pane) {
-    return pane ? pane.querySelector(PATH_DETAILS_SLOT_SELECTOR) : null;
-  }
-
-  function removeLegacyPathBuilderMounts(root = document) {
-    root
-      .querySelectorAll("[data-rf-path-builder-mount], [data-rf-path-builder-body]")
-      .forEach((node) => node.remove());
-  }
-
-  function removeExistingBodies(pane, slot) {
-    if (pane) {
-      pane
-        .querySelectorAll(":scope > .rf-path-pane-body")
-        .forEach((body) => body.remove());
+  const SELECTED_PATH = {
+    id: "north-ridge-to-hilltop",
+    from: {
+      eyebrow: "From",
+      name: "North Ridge",
+      role: "TX Site",
+      icon: "rf-mast.svg"
+    },
+    to: {
+      eyebrow: "To",
+      name: "Hilltop",
+      role: "Relay Site",
+      icon: "rf-mast.svg"
+    },
+    link: {
+      art: "path-signal-glow.svg",
+      frequency: "6.725 GHz",
+      polarity: "Horizontal",
+      service: "DTT 1",
+      band: "28 MHz",
+      mode: "64QAM",
+      power: "18 dBm",
+      availability: "99.98%",
+      status: "Online"
     }
+  };
 
-    if (slot) {
-      slot
-        .querySelectorAll(":scope > .rf-path-pane-body")
-        .forEach((body) => body.remove());
-    }
+  function iconPath(name) {
+    return `${ICON_ROOT}${name}`;
   }
 
-  function mountBodyInSlot(slot, body) {
-    slot.appendChild(body);
+  function escapeHTML(value) {
+    return String(value ?? "")
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
   }
 
-  function renderPathBuilder(root = document) {
-    const mapPaper = getMapPaper(root);
-    const pane = getPane(root);
-    const slot = getPathDetailsSlot(pane);
+  function renderEndpoint(endpoint, modifier) {
+    const eyebrow = escapeHTML(endpoint.eyebrow);
+    const name = escapeHTML(endpoint.name);
+    const role = escapeHTML(endpoint.role);
+    const icon = escapeHTML(iconPath(endpoint.icon));
 
-    if (!mapPaper || !pane || !slot) {
+    return `
+      <section class="rf-path-endpoint ${modifier}">
+        <span class="rf-path-endpoint-icon" aria-hidden="true">
+          <img src="${icon}" alt="" loading="lazy" decoding="async">
+        </span>
+        <span class="rf-path-endpoint-copy">
+          <small class="rf-path-label">${eyebrow}</small>
+          <b class="rf-path-site-name">${name}</b>
+          <b class="rf-path-site-role">${role}</b>
+        </span>
+      </section>
+    `;
+  }
+
+  function renderSpecRows(link) {
+    const rows = [
+      ["Service", link.service],
+      ["Band", link.band],
+      ["Mode", link.mode],
+      ["Power", link.power],
+      ["Avail", link.availability],
+      ["Status", `<span class="rf-path-status-dot" aria-hidden="true"></span>${escapeHTML(link.status)}`]
+    ];
+
+    return rows
+      .map(([label, value]) => `
+        <div>
+          <dt>${escapeHTML(label)}</dt>
+          <dd>${label === "Status" ? value : escapeHTML(value)}</dd>
+        </div>
+      `)
+      .join("");
+  }
+
+  function renderPathCard(path) {
+    const link = path.link;
+
+    return `
+      <article class="rf-path-card" data-rf-path-builder-body data-rf-path-id="${escapeHTML(path.id)}">
+        <header class="rf-path-card-head">
+          <img
+            class="rf-path-card-wave"
+            src="${escapeHTML(iconPath("path-wave.svg"))}"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+          >
+          <span class="rf-path-card-title">Path Details</span>
+        </header>
+
+        ${renderEndpoint(path.from, "is-from")}
+
+        <section class="rf-path-link-box" aria-label="Selected RF path values">
+          <img
+            class="rf-path-link-art"
+            src="${escapeHTML(iconPath(link.art))}"
+            alt=""
+            aria-hidden="true"
+            loading="lazy"
+            decoding="async"
+          >
+          <div class="rf-path-link-copy">
+            <strong class="rf-path-frequency">${escapeHTML(link.frequency)}</strong>
+            <span class="rf-path-polarity">${escapeHTML(link.polarity)}</span>
+            <dl class="rf-path-specs">${renderSpecRows(link)}</dl>
+          </div>
+        </section>
+
+        ${renderEndpoint(path.to, "is-to")}
+      </article>
+    `;
+  }
+
+  function renderSelectedPath() {
+    const slot = document.querySelector(SLOT_SELECTOR);
+
+    if (!slot) {
       return false;
     }
 
-    removeLegacyPathBuilderMounts(mapPaper);
-    removeExistingBodies(pane, slot);
-
-    const fragment = makeFragment(PATH_BUILDER_BODY_TEMPLATE);
-    const body = fragment.querySelector(".rf-path-pane-body");
-
-    if (!body) {
-      return false;
-    }
-
-    body.dataset.rfPathBuilderLoaded = "true";
-    body.dataset.rfPathBuilderVersion = VERSION;
-
-    mountBodyInSlot(slot, body);
+    slot.replaceChildren();
+    slot.insertAdjacentHTML("beforeend", renderPathCard(SELECTED_PATH));
     slot.dataset.rfPathBuilderLoaded = "true";
-    slot.dataset.rfPathBuilderVersion = VERSION;
-    pane.dataset.rfPathBuilderLoaded = "true";
-    pane.dataset.rfPathBuilderVersion = VERSION;
-    mapPaper.classList.add(PATH_BUILDER_READY_CLASS);
 
-    mapPaper.dispatchEvent(new CustomEvent("fieldops:rf-path-builder-ready", {
-      bubbles: true,
+    document.dispatchEvent(new CustomEvent("fieldops:rf-path-details-rendered", {
       detail: {
         version: VERSION,
-        pane: "path-builder"
+        pathId: SELECTED_PATH.id
       }
     }));
 
     return true;
   }
 
-  function init() {
-    removeLegacyPathBuilderMounts();
-
-    if (renderPathBuilder()) {
-      return;
-    }
-
-    document.addEventListener(PANE_READY_EVENT, () => {
-      renderPathBuilder();
-    }, { once: true });
+  function initialise() {
+    renderSelectedPath();
   }
+
+  document.addEventListener(PANE_READY_EVENT, initialise);
+  document.addEventListener("DOMContentLoaded", initialise);
 
   window.FieldOpsRFPathBuilder = {
-    VERSION,
-    renderPathBuilder
+    version: VERSION,
+    renderSelectedPath
   };
-
-  if (document.readyState === "loading") {
-    document.addEventListener("DOMContentLoaded", init, { once: true });
-  } else {
-    init();
-  }
 })();
 
 /* End of FieldOpsAtlas/Features/RF/rf-path-builder.js | bottom/end of file */
