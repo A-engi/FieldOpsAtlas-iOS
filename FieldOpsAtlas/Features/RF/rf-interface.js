@@ -1,7 +1,7 @@
 /* ==========================================================================
-   FieldOps Atlas RF panes
-   File: FieldOpsAtlas/Features/RF/rf-panes.js
-   Version: 1.1.37-shell-only
+   FieldOps Atlas RF interface
+   File: FieldOpsAtlas/Features/RF/rf-interface.js
+   Version: 1.1.61-rf-interface-js-rename
 
    Purpose:
    - Own only the RF path pane shell.
@@ -14,7 +14,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.37-shell-only";
+  const VERSION = "1.1.61-rf-interface-js-rename";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const MAP_STAGE_SELECTOR = ".rf-map-stage";
 
@@ -62,7 +62,7 @@
   }
 
   function attachPathPane(mapPaper) {
-    if (!mapPaper || mapPaper.dataset.rfPaneInit === "true") {
+    if (!mapPaper || mapPaper.dataset.rfInterfaceInit === "true") {
       return;
     }
 
@@ -84,7 +84,7 @@
 
     mapPaper.insertBefore(toggle, mapStage);
     mapStage.insertAdjacentElement("afterend", pane);
-    mapPaper.dataset.rfPaneInit = "true";
+    mapPaper.dataset.rfInterfaceInit = "true";
 
     mapPaper.dispatchEvent(new CustomEvent("fieldops:rf-pane-shell-ready", {
       bubbles: true,
@@ -103,7 +103,7 @@
       .forEach(attachPathPane);
   }
 
-  window.FieldOpsRFPanes = {
+  window.FieldOpsRFInterface = {
     VERSION,
     initAll
   };
