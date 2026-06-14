@@ -1,11 +1,12 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.css
-   Version: 1.1.97-path-mid-snapped
+   Version: 1.1.98-remove-mid-icon
 
    Purpose:
    - Own RF interface layout, panels, cards, controls, and path pane shell styling.
-   - Keep the existing path-builder middle details box snapped permanently between the From and To rows.
+   - Keep the existing path-builder middle details box visible between the From and To rows.
+   - Let the middle RF values use the full width after removing the left signal placeholder.
    - Leave topology/graph drawing to rf-graph.css/js.
    - Leave selected path content data to rf-path-builder.js.
    ========================================================================== */
@@ -160,10 +161,10 @@
   --path-row-gap: 4px;
   --path-title-height: 22px;
   --path-node-row-height: 38px;
-  --path-mid-height: 112px;
+  --path-mid-height: 104px;
   --path-node-size: 21px;
   --path-node-icon-size: 9px;
-  --path-signal-width: 34px;
+  --path-signal-width: 0px;
   position: absolute;
   top: 0;
   right: 0;
@@ -239,8 +240,10 @@
   min-width: 0;
   min-height: 0;
   height: 100%;
-  padding: 0;
-  display: block;
+  padding: 5px 6px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--path-row-gap);
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.14);
   border-radius: 9px;
@@ -248,11 +251,9 @@
 }
 
 .rf-path-pane-title {
-  position: absolute;
-  top: 5px;
-  right: 6px;
-  left: 6px;
-  height: var(--path-title-height);
+  flex: 0 0 var(--path-title-height);
+  grid-column: 1 / -1;
+  grid-row: 1;
   min-width: 0;
   padding-bottom: 4px;
   display: grid;
@@ -283,6 +284,7 @@
 }
 
 .rf-path-site {
+  flex: 0 0 var(--path-node-row-height);
   min-width: 0;
   min-height: 0;
   display: grid;
@@ -292,19 +294,13 @@
 }
 
 .rf-path-site.is-from {
-  position: absolute;
-  top: 36px;
-  right: 6px;
-  left: 6px;
-  height: var(--path-node-row-height);
+  grid-column: 1 / -1;
+  grid-row: 2;
 }
 
 .rf-path-site.is-to {
-  position: absolute;
-  right: 6px;
-  bottom: 5px;
-  left: 6px;
-  height: var(--path-node-row-height);
+  grid-column: 1 / -1;
+  grid-row: 4;
 }
 
 .rf-path-mast {
@@ -338,7 +334,7 @@
 
 .rf-path-site-copy small {
   color: rgba(255, 255, 255, 0.62);
-  font-size: 5.6px;
+  font-size: 4.9px;
   font-weight: 900;
   letter-spacing: 0.14em;
   line-height: 1;
@@ -360,29 +356,23 @@
 }
 
 .rf-path-mid {
-  position: absolute;
-  top: 80px;
-  right: 6px;
-  bottom: 47px;
-  left: 6px;
-  min-width: 0;
-  min-height: 0;
-  padding: 5px;
+  flex: 1 1 var(--path-mid-height);
+  grid-column: 1 / -1;
+  grid-row: 3;
+  min-height: 98px;
+  padding: 5px 6px;
   display: grid;
-  grid-template-columns: var(--path-signal-width) minmax(0, 1fr);
-  gap: 8px;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0;
   align-items: center;
-  overflow: hidden;
+  overflow: visible;
   border: 1px solid rgba(255, 221, 160, 0.48);
   border-radius: 8px;
   background: rgba(255, 221, 160, 0.035);
 }
 
 .rf-path-signal-vertical {
-  width: var(--path-signal-width);
-  height: min(92px, 100%);
-  display: block;
-  object-fit: contain;
+  display: none;
 }
 
 .rf-path-frequency {
@@ -390,13 +380,13 @@
   min-height: 0;
   align-self: center;
   display: grid;
-  gap: 2px;
+  gap: 1.5px;
 }
 
 .rf-path-frequency strong {
   color: #fff;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 12.4px;
+  font-size: 10.4px;
   font-weight: 950;
   line-height: 1;
   white-space: nowrap;
@@ -429,7 +419,7 @@
 
 .rf-path-data dt {
   color: rgba(255, 255, 255, 0.62);
-  font-size: 4.9px;
+  font-size: 4.8px;
   font-weight: 900;
   letter-spacing: 0.10em;
   text-transform: uppercase;
@@ -438,7 +428,7 @@
 .rf-path-data dd {
   margin: 0;
   color: #fff;
-  font-size: 5px;
+  font-size: 4.9px;
   font-weight: 950;
   white-space: nowrap;
 }
