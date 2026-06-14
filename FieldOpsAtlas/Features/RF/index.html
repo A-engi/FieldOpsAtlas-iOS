@@ -3,17 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>FieldOps Atlas RF v1.1.72</title>
+  <title>FieldOps Atlas RF v1.1.73</title>
   <link rel="stylesheet" href="../../../shell.css?v=1.1.12-single-rf-doc">
-  <link rel="stylesheet" href="./background.css?v=1.1.60-visible-services-row">
-  <link rel="stylesheet" href="./rf.css?v=legacy-fallback">
-  <link rel="stylesheet" href="./rf-map.css?v=legacy-fallback">
-  <link rel="stylesheet" href="./rf-topology.css?v=1.1.65-rf-topology-rename">
-  <link rel="stylesheet" href="./rf-interface.css?v=1.1.64-interface-owns-rfpages">
-  <link rel="stylesheet" href="./page.css?v=legacy-fallback">
+  <link rel="stylesheet" href="./background.css?v=1.1.68-rf-layout-stability">
+  <link rel="stylesheet" href="./rf-topology.css?v=1.1.73-exact-new-file-names">
+  <link rel="stylesheet" href="./rf-interface.css?v=1.1.68-services-row-stability">
 </head>
 <body>
-  <main class="phone" data-page="rf" data-nav="rf" data-version="1.1.72">
+  <main class="phone" data-page="rf" data-nav="rf" data-version="1.1.73">
     <section class="content-canvas" aria-label="RF Atlas content">
       <article class="rf-home">
         <section class="rf-network" aria-labelledby="rfNetworkTitle">
@@ -33,7 +30,6 @@
                 class="rf-map-stage"
                 id="rfMapStage"
                 data-rf-topology
-                data-rf-network-map
                 role="img"
                 aria-label="RF network map"
               ></div>
@@ -235,19 +231,16 @@
   </script>
 
   <script src="../../../shell.js?v=1.1.12-single-rf-doc" defer></script>
-  <script src="./rf-panes.js?v=legacy-fallback" defer></script>
   <script src="./rf-interface.js?v=1.1.61-rf-interface-js-rename" defer></script>
-  <script src="./rf-network-map.js?v=legacy-fallback" defer></script>
-  <script src="./rf-topology.js?v=1.1.65-rf-topology-rename" defer></script>
-  <script src="./rf-path-details.js?v=legacy-fallback" defer></script>
+  <script src="./rf-topology.js?v=1.1.73-exact-new-file-names" defer></script>
   <script src="./rf-path-builder.js?v=1.1.67-rf-path-builder-rename" defer></script>
   <script>
-    /* RF load toast | Version: 1.1.72-explicit-file-toast */
+    /* RF load toast | Version: 1.1.73-exact-new-file-toast */
     (() => {
       "use strict";
 
-      const PAGE_VERSION = "1.1.72";
-      const TOAST_VERSION = "1.1.72-explicit-file-toast";
+      const PAGE_VERSION = "1.1.73";
+      const TOAST_VERSION = "1.1.73-exact-new-file-toast";
       const TOAST_ID = "rfLoadToast";
 
       function versionOf(globalName) {
@@ -290,14 +283,13 @@
 
         const toast = makeToast();
         const lines = [
-          `RF index.html v${PAGE_VERSION}`,
-          `toast ${TOAST_VERSION}`,
+          `index.html ${PAGE_VERSION}`,
+          `background.css 1.1.68-rf-layout-stability`,
+          `rf-interface.css 1.1.68-services-row-stability`,
           `rf-interface.js ${versionOf("FieldOpsRFInterface")}`,
-          `legacy rf-panes.js ${versionOf("FieldOpsRFPanes")}`,
+          `rf-topology.css 1.1.73-exact-new-file-names`,
           `rf-topology.js ${versionOf("FieldOpsRFTopology")}`,
-          `legacy rf-network-map.js ${versionOf("FieldOpsRFNetworkMap")}`,
-          `rf-path-builder.js ${versionOf("FieldOpsRFPathBuilder")}`,
-          `legacy rf-path-details.js ${versionOf("FieldOpsRFPathDetails")}`
+          `rf-path-builder.js ${versionOf("FieldOpsRFPathBuilder")}`
         ];
 
         toast.innerHTML = lines.join("<br>");
