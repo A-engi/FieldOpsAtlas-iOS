@@ -1,32 +1,32 @@
 /* ==========================================================================
-   FieldOps Atlas RF path details
-   File: FieldOpsAtlas/Features/RF/rf-path-details.js
-   Version: 1.1.41-render-on-pane-ready-once
+   FieldOps Atlas RF path builder
+   File: FieldOpsAtlas/Features/RF/rf-path-builder.js
+   Version: 1.1.74-path-builder-global-fix
 
    Purpose:
-   - Own the visible Path details content only.
-   - Render the zigzag signal SVG and 6 GHz/service detail rows.
-   - Render once when the pane shell is ready.
-   - Do not wait for the RF map render event.
+   - Build the selected RF path model from topology, site, service, and path data.
+   - Currently renders the demo selected-path values until topology/site/service data is wired.
+   - Keep pane shell, controls, and styling in rf-interface.js / rf-interface.css.
+   - Render the built path model into the existing RF interface pane.
    - Do not create an empty mount or placeholder.
-   - Remove duplicate detail bodies before rendering.
+   - Remove duplicate path-builder bodies before rendering.
    ========================================================================== */
 
 (() => {
   "use strict";
 
-  const VERSION = "1.1.41-render-on-pane-ready-once";
+  const VERSION = "1.1.74-path-builder-global-fix";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const PANE_SELECTOR = ".rf-path-pane";
   const PANE_READY_EVENT = "fieldops:rf-pane-shell-ready";
-  const DETAILS_READY_CLASS = "is-path-details-ready";
+  const PATH_BUILDER_READY_CLASS = "is-path-builder-ready";
 
-  const PATH_DETAILS_BODY_TEMPLATE = String.raw`
+  const PATH_BUILDER_BODY_TEMPLATE = String.raw`
 <div class="rf-path-pane-body">
   <header class="rf-path-pane-title">
     <img
       class="rf-path-title-wave"
-      src="../../../data/icons/path-details-wave.svg"
+      src="../../../data/icons/path-builder-wave.svg"
       alt=""
       aria-hidden="true"
       loading="lazy"
@@ -127,9 +127,9 @@
     return mapPaper ? mapPaper.querySelector(PANE_SELECTOR) : null;
   }
 
-  function removeLegacyDetailMounts(root = document) {
+  function removeLegacyPathBuilderMounts(root = document) {
     root
-      .querySelectorAll("[data-rf-path-details-mount], [data-rf-path-details-body]")
+      .querySelectorAll("[data-rf-path-builder-mount], [data-rf-path-builder-body]")
       .forEach((node) => node.remove());
   }
 
@@ -143,7 +143,7 @@
       .forEach((body) => body.remove());
   }
 
-  function renderDetails(root = document) {
+  function renderPathBuilder(root = document) {
     const mapPaper = getMapPaper(root);
     const pane = getPane(root);
 
@@ -151,29 +151,29 @@
       return false;
     }
 
-    removeLegacyDetailMounts(mapPaper);
+    removeLegacyPathBuilderMounts(mapPaper);
     removeExistingBodies(pane);
 
-    const fragment = makeFragment(PATH_DETAILS_BODY_TEMPLATE);
+    const fragment = makeFragment(PATH_BUILDER_BODY_TEMPLATE);
     const body = fragment.querySelector(".rf-path-pane-body");
 
     if (!body) {
       return false;
     }
 
-    body.dataset.rfDetailsLoaded = "true";
-    body.dataset.rfDetailsVersion = VERSION;
+    body.dataset.rfPathBuilderLoaded = "true";
+    body.dataset.rfPathBuilderVersion = VERSION;
 
     pane.appendChild(body);
-    pane.dataset.rfDetailsLoaded = "true";
-    pane.dataset.rfDetailsVersion = VERSION;
-    mapPaper.classList.add(DETAILS_READY_CLASS);
+    pane.dataset.rfPathBuilderLoaded = "true";
+    pane.dataset.rfPathBuilderVersion = VERSION;
+    mapPaper.classList.add(PATH_BUILDER_READY_CLASS);
 
-    mapPaper.dispatchEvent(new CustomEvent("fieldops:rf-path-details-ready", {
+    mapPaper.dispatchEvent(new CustomEvent("fieldops:rf-path-builder-ready", {
       bubbles: true,
       detail: {
         version: VERSION,
-        pane: "path-details"
+        pane: "path-builder"
       }
     }));
 
@@ -181,20 +181,20 @@
   }
 
   function init() {
-    removeLegacyDetailMounts();
+    removeLegacyPathBuilderMounts();
 
-    if (renderDetails()) {
+    if (renderPathBuilder()) {
       return;
     }
 
     document.addEventListener(PANE_READY_EVENT, () => {
-      renderDetails();
+      renderPathBuilder();
     }, { once: true });
   }
 
-  window.FieldOpsRFPathDetails = {
+  window.FieldOpsRFPathBuilder = {
     VERSION,
-    renderDetails
+    renderPathBuilder
   };
 
   if (document.readyState === "loading") {
