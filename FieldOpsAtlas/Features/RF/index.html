@@ -3,14 +3,42 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>FieldOps Atlas RF v1.1.77</title>
+  <title>FieldOps Atlas RF v1.1.79</title>
   <link rel="stylesheet" href="../../../shell.css?v=1.1.12-single-rf-doc">
   <link rel="stylesheet" href="./background.css?v=1.1.75-background-only">
   <link rel="stylesheet" href="./rf-topology.css?v=1.1.73-exact-new-file-names">
-  <link rel="stylesheet" href="./rf-interface.css?v=1.1.77-interface-owns-all-ui">
+  <link rel="stylesheet" href="./rf-interface.css?v=1.1.79-clean-interface-panels">
+
+  <style>
+    .rf-load-toast {
+      position: fixed;
+      z-index: 9999;
+      left: 14px;
+      right: auto;
+      bottom: 92px;
+      width: auto;
+      max-width: min(86vw, 360px);
+      padding: 7px 9px;
+      border: 1px solid rgba(255, 221, 142, 0.66);
+      border-radius: 13px;
+      background: rgba(10, 23, 36, 0.88);
+      color: #ffe7b8;
+      box-shadow: 0 10px 26px rgba(0, 0, 0, 0.26);
+      font: 700 10px/1.18 ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      white-space: pre-wrap;
+      opacity: 0.86;
+      pointer-events: none;
+    }
+
+    .rf-load-toast pre {
+      margin: 0;
+      white-space: pre-wrap;
+    }
+  </style>
+
 </head>
 <body>
-  <main class="phone" data-page="rf" data-nav="rf" data-version="1.1.77">
+  <main class="phone" data-page="rf" data-nav="rf" data-version="1.1.79">
     <section class="content-canvas" aria-label="RF Atlas content">
       <article class="rf-home" data-rf-interface-root></article>
     </section>
@@ -113,16 +141,16 @@
   </script>
 
   <script src="../../../shell.js?v=1.1.12-single-rf-doc" defer></script>
-  <script src="./rf-interface.js?v=1.1.77-interface-owns-all-ui" defer></script>
+  <script src="./rf-interface.js?v=1.1.79-clean-interface-panels" defer></script>
   <script src="./rf-topology.js?v=1.1.73-exact-new-file-names" defer></script>
-  <script src="./rf-path-builder.js?v=1.1.74-path-builder-global-fix" defer></script>
+  <script src="./rf-path-builder.js?v=1.1.79-path-title-icon-fit" defer></script>
   <script>
-    /* RF load toast | Version: 1.1.77-interface-owns-all-ui */
+    /* RF load toast | Version: 1.1.79-clean-interface-panels */
     (() => {
       "use strict";
 
-      const PAGE_VERSION = "1.1.77";
-      const TOAST_VERSION = "1.1.77-interface-owns-all-ui";
+      const PAGE_VERSION = "1.1.79";
+      const TOAST_VERSION = "1.1.79-clean-interface-panels";
       const TOAST_ID = "rfLoadToast";
 
       function versionOf(globalName) {
@@ -166,10 +194,8 @@
         const toast = makeToast();
         const lines = [
           `index.html ${PAGE_VERSION}`,
-          `background.css 1.1.75-background-only`,
-          `rf-interface.css 1.1.77-interface-owns-all-ui`,
+          `rf-interface.css 1.1.79-clean-interface-panels`,
           `rf-interface.js ${versionOf("FieldOpsRFInterface")}`,
-          `rf-topology.css 1.1.73-exact-new-file-names`,
           `rf-topology.js ${versionOf("FieldOpsRFTopology")}`,
           `rf-path-builder.js ${versionOf("FieldOpsRFPathBuilder")}`
         ];
