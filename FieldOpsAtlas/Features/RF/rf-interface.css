@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.css
-   Version: 1.1.59-rf-interface-css-home
+   Version: 1.1.60-visible-services-row
 
    Purpose:
    - Own RF path details pane styling.
@@ -502,9 +502,7 @@
 }
 
 .rf-bottom {
-  flex: 0 0 auto;
   min-height: 0;
-  margin-top: 8px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 0.72fr);
   gap: 8px;
@@ -616,11 +614,11 @@
    ========================================================================== */
 
 .rf-network {
-  flex: 1 1 auto;
   min-height: 0;
   display: grid;
   grid-template-rows: 24px minmax(0, 1fr);
   gap: 6px;
+  overflow: hidden;
 }
 
 .rf-network-head {
