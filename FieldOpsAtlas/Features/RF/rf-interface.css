@@ -1,11 +1,11 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.css
-   Version: 1.1.79-clean-interface-panels
+   Version: 1.1.80-remove-service-type-filter
 
    Purpose:
    - Own RF interface layout, panels, cards, controls, path pane shell styling,
-     service type filter, recent cards, Services panel, and Equipment panel.
+     recent cards, Services panel, and Equipment panel.
    - Leave topology/graph drawing to rf-topology.css/js.
    - Leave selected path content data to rf-path-builder.js.
    ========================================================================== */
@@ -23,7 +23,7 @@
   min-height: 0;
   height: 100%;
   display: grid;
-  grid-template-rows: 24px 48px minmax(0, 1fr) 124px;
+  grid-template-rows: 24px minmax(0, 1fr) 124px;
   gap: 6px;
   overflow: hidden;
 }
@@ -39,8 +39,7 @@
 
 .rf-title,
 .rf-panel-title,
-.rf-recent-title,
-.rf-service-type-title {
+.rf-recent-title {
   margin: 0;
   color: #071c32;
   font-family: Georgia, "Times New Roman", serif;
@@ -90,110 +89,9 @@
     rgba(221, 190, 132, 0.34);
 }
 
-/* ==========================================================================
-   2. Service type filter
-   ========================================================================== */
-
-.rf-service-type-filter {
-  min-width: 0;
-  min-height: 0;
-  position: relative;
-  padding: 8px 10px 8px 10px;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
-  overflow: hidden;
-  border: 1px solid rgba(130, 91, 22, 0.16);
-  border-radius: 14px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.72), transparent 58%),
-    linear-gradient(180deg, rgba(255, 252, 243, 0.78), rgba(248, 234, 202, 0.36));
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.58),
-    0 5px 12px rgba(80, 56, 18, 0.08);
-}
-
-.rf-filter-handle {
-  position: absolute;
-  top: 3px;
-  left: 50%;
-  width: 42px;
-  height: 4px;
-  border-radius: 999px;
-  background: rgba(7, 31, 56, 0.16);
-  transform: translateX(-50%);
-}
-
-.rf-service-type-title {
-  font-size: 9px;
-  white-space: nowrap;
-}
-
-.rf-service-type-actions {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
-}
-
-.rf-service-type-pill {
-  min-width: 0;
-  min-height: 30px;
-  padding: 4px 6px;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  align-items: center;
-  gap: 6px;
-  color: #071c32;
-  border: 1px solid rgba(130, 91, 22, 0.16);
-  border-radius: 11px;
-  background: rgba(255, 255, 255, 0.42);
-  text-decoration: none;
-}
-
-.rf-service-type-pill b {
-  width: 27px;
-  height: 20px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(130, 91, 22, 0.14);
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.54);
-  font-size: 7px;
-  font-weight: 950;
-}
-
-.rf-service-type-pill span {
-  min-width: 0;
-  overflow: hidden;
-  color: rgba(7, 28, 50, 0.72);
-  font-size: 6.3px;
-  font-weight: 850;
-  line-height: 1.05;
-  text-overflow: ellipsis;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.rf-service-type-pill.is-dtt b {
-  color: #167339;
-}
-
-.rf-service-type-pill.is-dab b {
-  color: #115fab;
-}
-
-.rf-service-type-pill.is-fm b {
-  color: #733091;
-}
-
-.rf-service-type-pill.is-equipment b {
-  color: #557c89;
-}
 
 /* ==========================================================================
-   3. Map holder and topology slot
+   2. Map holder and topology slot
    ========================================================================== */
 
 .rf-map-recent {
@@ -253,7 +151,7 @@
 }
 
 /* ==========================================================================
-   4. Path pane shell
+   3. Path pane shell
    ========================================================================== */
 
 .rf-path-toggle {
@@ -324,7 +222,7 @@
 }
 
 /* ==========================================================================
-   5. Path detail content from rf-path-builder.js
+   4. Path detail content from rf-path-builder.js
    ========================================================================== */
 
 .rf-path-pane-body {
@@ -535,7 +433,7 @@
 }
 
 /* ==========================================================================
-   6. Recent cards
+   5. Recent cards
    ========================================================================== */
 
 .rf-recent {
@@ -656,7 +554,7 @@
 }
 
 /* ==========================================================================
-   7. Services and equipment panels
+   6. Services and equipment panels
    ========================================================================== */
 
 .rf-interface-panels {
@@ -779,39 +677,14 @@
 }
 
 /* ==========================================================================
-   8. Small screens
+   7. Small screens
    ========================================================================== */
 
 @media (max-width: 380px) {
   .rf-network {
-    grid-template-rows: 24px 48px minmax(0, 1fr) 122px;
+    grid-template-rows: 24px minmax(0, 1fr) 122px;
   }
 
-  .rf-service-type-filter {
-    grid-template-columns: 1fr;
-    gap: 5px;
-    padding: 7px 7px;
-  }
-
-  .rf-service-type-title {
-    display: none;
-  }
-
-  .rf-service-type-actions {
-    gap: 4px;
-  }
-
-  .rf-service-type-pill {
-    min-height: 30px;
-    grid-template-columns: 1fr;
-    justify-items: center;
-    gap: 2px;
-    padding: 3px;
-  }
-
-  .rf-service-type-pill span {
-    font-size: 5.4px;
-  }
 
   .rf-map-recent {
     grid-template-rows: minmax(0, 1fr) 68px;
@@ -838,3 +711,5 @@
     min-height: 52px;
   }
 }
+
+/* End of FieldOpsAtlas/Features/RF/rf-interface.css */
