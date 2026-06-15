@@ -1,11 +1,11 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.css
-   Version: 1.1.112-pane-trim-from-left
+   Version: 1.1.113-pane-trim-to-rf-mid
 
    Purpose:
    - Own RF interface layout, panels, cards, controls, and path pane shell styling.
-   - Trim the path-details pane from the left so the handle sits further right.
+   - Trim the path-details pane further from the left so the handle sits nearer the RF button midpoint.
    - Keep the combined pane and handle footprint below the last generated width.
    - Use the signal chevron icon from the icons folder for the pane handle.
    - Leave topology/graph drawing to rf-graph.css/js.
@@ -103,7 +103,7 @@
 }
 
 .rf-map-paper {
-  --path-pane-width: clamp(148px, 38%, 166px);
+  --path-pane-width: clamp(128px, 33%, 148px);
   --path-handle-width: 20px;
 
   position: relative;
@@ -218,7 +218,7 @@
   inset: 0 0 0 var(--path-handle-width);
   min-width: 0;
   min-height: 0;
-  padding: 7px 7px 7px 8px;
+  padding: 7px 6px 7px 7px;
   display: block;
   overflow: hidden;
 }
@@ -229,7 +229,7 @@
   color: #f8d892;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(7px, 1.9vw, 9px);
+  font-size: clamp(6.8px, 1.8vw, 8.7px);
   font-weight: 950;
   letter-spacing: 0.035em;
   line-height: 1;
@@ -539,7 +539,7 @@
   }
 
   .rf-map-paper {
-    --path-pane-width: clamp(142px, 38%, 158px);
+    --path-pane-width: clamp(122px, 33%, 140px);
     --path-handle-width: 20px;
   }
 
