@@ -1,12 +1,12 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.css
-   Version: 1.1.109-path-pane-right-heavy
+   Version: 1.1.110-compact-pane-dot-pole
 
    Purpose:
    - Own RF interface layout, panels, cards, controls, and path pane shell styling.
-   - Keep the path pane comfortably wider again so it owns more of the right side.
-   - Leave room for path names/details without crushing the graph completely.
+   - Keep the path pane smaller so the open handle does not travel too far left.
+   - Keep path-detail text compact so names still fit inside the smaller pane.
    - Use the signal chevron icon from the icons folder for the pane handle.
    - Leave topology/graph drawing to rf-graph.css/js.
    ========================================================================== */
@@ -103,7 +103,7 @@
 }
 
 .rf-map-paper {
-  --path-pane-width: clamp(198px, 56%, 236px);
+  --path-pane-width: clamp(166px, 43%, 188px);
   --path-handle-width: 20px;
 
   position: relative;
@@ -152,7 +152,7 @@
 }
 
 /* ==========================================================================
-   3. Right-heavy collapsible path pane
+   3. Smaller collapsible path pane
    ========================================================================== */
 
 .rf-path-pane {
@@ -218,39 +218,39 @@
   inset: 0 0 0 var(--path-handle-width);
   min-width: 0;
   min-height: 0;
-  padding: 9px 10px 9px 11px;
+  padding: 8px 8px 8px 9px;
   display: block;
   overflow: hidden;
 }
 
 .rf-path-blank-title {
   margin: 0;
-  padding-bottom: 6px;
+  padding-bottom: 5px;
   color: #f8d892;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(8px, 2.2vw, 10px);
+  font-size: clamp(7.5px, 2vw, 9.5px);
   font-weight: 950;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.035em;
   line-height: 1;
   text-transform: uppercase;
 }
 
 /* ==========================================================================
-   4. Path details
+   4. Compact path details
    ========================================================================== */
 
 .rf-path-details {
   min-width: 0;
-  margin-top: 7px;
+  margin-top: 6px;
   display: grid;
-  gap: 6px;
+  gap: 5px;
   overflow: hidden;
 }
 
 .rf-path-detail {
   min-width: 0;
-  padding: 6px 6px 5px;
+  padding: 5px 5px 4px;
   display: grid;
   gap: 2px;
   border: 1px solid rgba(248, 216, 146, 0.18);
@@ -262,10 +262,10 @@
   min-width: 0;
   overflow: hidden;
   color: #ffe2a3;
-  font-size: 6.9px;
+  font-size: 6.6px;
   font-weight: 900;
-  letter-spacing: 0.03em;
-  line-height: 1.06;
+  letter-spacing: 0.025em;
+  line-height: 1.05;
   text-overflow: ellipsis;
   text-transform: uppercase;
   white-space: nowrap;
@@ -275,7 +275,7 @@
   min-width: 0;
   overflow: hidden;
   color: rgba(230, 241, 255, 0.68);
-  font-size: 6px;
+  font-size: 5.8px;
   font-weight: 760;
   line-height: 1.08;
   text-overflow: ellipsis;
@@ -539,7 +539,7 @@
   }
 
   .rf-map-paper {
-    --path-pane-width: clamp(190px, 56%, 220px);
+    --path-pane-width: clamp(158px, 43%, 178px);
     --path-handle-width: 20px;
   }
 
