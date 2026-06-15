@@ -1,12 +1,12 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.css
-   Version: 1.1.110-compact-pane-dot-pole
+   Version: 1.1.112-pane-trim-from-left
 
    Purpose:
    - Own RF interface layout, panels, cards, controls, and path pane shell styling.
-   - Keep the path pane smaller so the open handle does not travel too far left.
-   - Keep path-detail text compact so names still fit inside the smaller pane.
+   - Trim the path-details pane from the left so the handle sits further right.
+   - Keep the combined pane and handle footprint below the last generated width.
    - Use the signal chevron icon from the icons folder for the pane handle.
    - Leave topology/graph drawing to rf-graph.css/js.
    ========================================================================== */
@@ -103,7 +103,7 @@
 }
 
 .rf-map-paper {
-  --path-pane-width: clamp(166px, 43%, 188px);
+  --path-pane-width: clamp(148px, 38%, 166px);
   --path-handle-width: 20px;
 
   position: relative;
@@ -152,7 +152,7 @@
 }
 
 /* ==========================================================================
-   3. Smaller collapsible path pane
+   3. Left-trimmed collapsible path pane
    ========================================================================== */
 
 .rf-path-pane {
@@ -218,7 +218,7 @@
   inset: 0 0 0 var(--path-handle-width);
   min-width: 0;
   min-height: 0;
-  padding: 8px 8px 8px 9px;
+  padding: 7px 7px 7px 8px;
   display: block;
   overflow: hidden;
 }
@@ -229,7 +229,7 @@
   color: #f8d892;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(7.5px, 2vw, 9.5px);
+  font-size: clamp(7px, 1.9vw, 9px);
   font-weight: 950;
   letter-spacing: 0.035em;
   line-height: 1;
@@ -539,7 +539,7 @@
   }
 
   .rf-map-paper {
-    --path-pane-width: clamp(158px, 43%, 178px);
+    --path-pane-width: clamp(142px, 38%, 158px);
     --path-handle-width: 20px;
   }
 
