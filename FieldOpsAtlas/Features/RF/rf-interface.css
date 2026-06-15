@@ -1,11 +1,11 @@
-/* ==========================================================================
+* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.css
-   Version: 1.1.105-existing-glow-handle
+   Version: 1.1.106-path-pane-wide
 
    Purpose:
    - Own RF interface layout, panels, cards, controls, and path pane shell styling.
-   - Render a simple collapsible blank path pane with a title only.
+   - Render a wider collapsible blank path pane with a title only.
    - Use the existing big glowy signal icon from the icons folder for the pane handle.
    - Leave topology/graph drawing to rf-graph.css/js.
    ========================================================================== */
@@ -89,7 +89,6 @@
     rgba(221, 190, 132, 0.34);
 }
 
-
 /* ==========================================================================
    2. Map holder and topology slot
    ========================================================================== */
@@ -103,8 +102,9 @@
 }
 
 .rf-map-paper {
-  --path-pane-width: clamp(142px, 35%, 158px);
-  --path-handle-width: 14px;
+  --path-pane-width: clamp(190px, 52%, 226px);
+  --path-handle-width: 20px;
+
   position: relative;
   min-height: 0;
   overflow: hidden;
@@ -155,7 +155,8 @@
    ========================================================================== */
 
 .rf-path-pane {
-  --path-handle-width: 14px;
+  --path-handle-width: 20px;
+
   position: absolute;
   top: 0;
   right: 0;
@@ -200,8 +201,8 @@
 }
 
 .rf-path-handle-icon {
-  width: 12px;
-  height: 58px;
+  width: 18px;
+  height: 180px;
   display: block;
   object-fit: contain;
   transition: transform 180ms ease;
@@ -216,18 +217,18 @@
   inset: 0 0 0 var(--path-handle-width);
   min-width: 0;
   min-height: 0;
-  padding: 8px;
+  padding: 10px 11px 10px 12px;
   display: block;
   overflow: hidden;
 }
 
 .rf-path-blank-title {
   margin: 0;
-  padding-bottom: 6px;
+  padding-bottom: 7px;
   color: #f8d892;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(8px, 2.3vw, 10px);
+  font-size: clamp(9px, 2.4vw, 11px);
   font-weight: 950;
   letter-spacing: 0.04em;
   line-height: 1;
@@ -237,7 +238,6 @@
 /* ==========================================================================
    4. Path details reserved
    ========================================================================== */
-
 
 /* ==========================================================================
    5. Recent cards
@@ -328,8 +328,7 @@
   color: #071c32;
   border: 1px solid rgba(239, 198, 120, 0.66);
   border-radius: 11px;
-  background:
-    linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 246, 224, 0.24));
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 246, 224, 0.24));
   text-decoration: none;
 }
 
@@ -492,9 +491,13 @@
     grid-template-rows: 24px minmax(0, 1fr) 122px;
   }
 
-
   .rf-map-recent {
     grid-template-rows: minmax(0, 1fr) 68px;
+  }
+
+  .rf-map-paper {
+    --path-pane-width: clamp(184px, 54%, 214px);
+    --path-handle-width: 20px;
   }
 
   .rf-interface-panels {
