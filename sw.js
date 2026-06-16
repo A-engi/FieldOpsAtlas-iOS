@@ -1,10 +1,10 @@
-/* FIELDOPS ATLAS SERVICE WORKER v1.1.6-weather-map-cache
+/* FIELDOPS ATLAS SERVICE WORKER v1.1.7-weather-rainviewer-map
    Keeps the browser prototype usable offline where possible.
    Maps remains the main fallback page.
-   Bumps the cache so Weather v0.3.5 replaces stale Weather provider-test assets.
+   Bumps the cache so Weather v0.3.6 replaces the key-box test surface.
 */
 
-const CACHE_NAME = "fieldops-atlas-v1.1.6-weather-map-cache";
+const CACHE_NAME = "fieldops-atlas-v1.1.7-weather-rainviewer-map";
 const MAP_FALLBACK = "./FieldOpsAtlas/Features/maps/index.html";
 
 const CORE_FILES = [
@@ -37,10 +37,10 @@ const CORE_FILES = [
   "./FieldOpsAtlas/Features/Docs/index.html",
   "./FieldOpsAtlas/Features/Tools/index.html",
   "./FieldOpsAtlas/Features/Weather/index.html",
-  "./FieldOpsAtlas/Features/Weather/styles.css?v=0.3.5-stadia-smooth-base-filter",
-  "./FieldOpsAtlas/Features/Weather/weather-map.js?v=0.3.5-stadia-smooth-base-filter",
+  "./FieldOpsAtlas/Features/Weather/styles.css?v=0.3.6-domain-rainviewer-map",
+  "./FieldOpsAtlas/Features/Weather/weather-map.js?v=0.3.6-domain-rainviewer-map",
   "./FieldOpsAtlas/Features/Weather/rainviewer.html",
-  "./FieldOpsAtlas/Features/Weather/rainviewer.js?v=0.3.4-real-rainviewer-overlay",
+  "./FieldOpsAtlas/Features/Weather/rainviewer.js?v=0.3.0-demapped-weather-apis",
   "./FieldOpsAtlas/Features/Weather/openmeteo.html",
   "./FieldOpsAtlas/Features/Weather/openmeteo.js?v=0.3.0-demapped-weather-apis",
   "./FieldOpsAtlas/Features/Weather/metoffice.html",
