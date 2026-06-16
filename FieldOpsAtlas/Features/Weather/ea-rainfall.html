@@ -3,56 +3,60 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>EA Rainfall Gauges · FieldOps Atlas Weather</title>
-  <link rel="stylesheet" href="styles.css?v=0.3.0-demapped-weather-apis" />
+  <title>Open-Meteo Site Risk · FieldOps Atlas Weather</title>
+  <link rel="stylesheet" href="styles.css?v=0.3.2-provider-test-clean" />
 </head>
 <body>
-  <main class="lab-shell provider-shell" data-page="ea-rainfall">
+  <main class="lab-shell provider-shell" data-page="openmeteo">
     <header class="lab-header">
-      <a class="back-link" href="metoffice.html">‹ Met Office</a>
+      <a class="back-link" href="rainviewer.html">‹ RainViewer</a>
       <div>
         <p class="eyebrow">Weather API</p>
-        <h1>EA rainfall gauges</h1>
+        <h1>Open-Meteo site risk</h1>
       </div>
-      <a class="back-link" href="rainviewer.html">RainViewer ›</a>
+      <a class="back-link" href="metoffice.html">Met Office ›</a>
     </header>
 
     <nav class="provider-tabs" aria-label="Weather provider screens">
       <a class="provider-tab" href="rainviewer.html">RainViewer</a>
-      <a class="provider-tab" href="openmeteo.html">Open-Meteo</a>
+      <a class="provider-tab active" href="openmeteo.html">Open-Meteo</a>
       <a class="provider-tab" href="metoffice.html">Met Office</a>
-      <a class="provider-tab active" href="ea-rainfall.html">EA gauges</a>
+      <a class="provider-tab" href="ea-rainfall.html">EA gauges</a>
     </nav>
 
     <section class="hero-card provider-card-stack">
       <div>
         <p class="eyebrow">No API map loaded here</p>
-        <h2>Nearby measured rainfall gauges</h2>
-        <p>This screen lists stations near a selected site. It does not create markers, an OSM base map, or a provider map.</p>
+        <h2>Forecast values for a small site batch</h2>
+        <p>This screen fetches forecast data only. It does not load site markers, OSM tiles, or provider maps.</p>
       </div>
-      <button id="loadGaugesButton" class="primary-button" type="button">Load nearby gauges</button>
+      <div class="button-row">
+        <button id="loadSitesButton" class="secondary-button" type="button">Reload sites</button>
+        <button id="fetchRiskButton" class="primary-button" type="button">Fetch risk</button>
+      </div>
     </section>
 
     <section class="weather-data-card">
-      <label class="field-label" for="siteSelect">Site</label>
-      <select id="siteSelect" class="text-input"></select>
-      <label class="field-label" for="distanceRange">Search radius: <span id="distanceLabel">40 km</span></label>
-      <input id="distanceRange" class="range-control" type="range" min="5" max="100" value="40" step="5" />
-      <div class="button-row">
-        <button id="clearGaugesButton" class="secondary-button" type="button">Clear gauges</button>
+      <div class="weather-card-header">
+        <div>
+          <p class="eyebrow">Sites</p>
+          <h2><span id="regionCount">0</span> region(s), <span id="siteCount">0</span> site(s)</h2>
+        </div>
+        <label class="field-label" for="siteSearch">Find site</label>
       </div>
+      <input id="siteSearch" class="text-input" autocomplete="off" placeholder="Preseli" />
       <p id="statusText" class="status-text">Ready.</p>
     </section>
 
     <section class="weather-data-card">
-      <h2>Gauge list</h2>
-      <div id="gaugeList" class="compact-list"></div>
+      <h2>Risk cards</h2>
+      <div id="riskList" class="risk-list"></div>
     </section>
   </main>
 
-  <script src="weather-display-style.js?v=0.1.1"></script>
+  <script src="weather-display-style.js?v=0.1.2"></script>
   <script src="app.js?v=0.3.0-demapped-weather-apis"></script>
-  <script src="ea-rainfall.js?v=0.3.0-demapped-weather-apis"></script>
+  <script src="openmeteo.js?v=0.3.0-demapped-weather-apis"></script>
 </body>
 </html>
-<!-- End of file: FieldOpsAtlas/Features/Weather/ea-rainfall.html -->
+<!-- End of file: FieldOpsAtlas/Features/Weather/openmeteo.html -->
