@@ -3,64 +3,51 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>FieldOps Atlas Weather v0.3.2</title>
-  <link rel="stylesheet" href="styles.css?v=0.3.2-provider-test-clean" />
+  <title>FieldOps Atlas Weather Map v0.3.5</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="styles.css?v=0.3.5-stadia-smooth-base-filter" />
 </head>
-<body>
-  <main class="lab-shell lab-home">
-    <header class="lab-header">
+<body class="weather-map-body">
+  <main class="weather-map-shell" data-page="weather-map">
+    <header class="weather-map-header">
       <a class="back-link" href="../maps/index.html">Atlas Map</a>
       <div>
-        <p class="eyebrow">Weather</p>
-        <h1>Weather provider checks</h1>
+        <p class="eyebrow">Weather map</p>
+        <h1>Stadia Smooth base test</h1>
       </div>
-      <span class="version-pill">v0.3.2-provider-test-clean</span>
+      <span class="version-pill">v0.3.5</span>
     </header>
 
-    <section class="hero-card">
-      <div class="hero-icon" aria-hidden="true">⚡</div>
-      <div>
-        <h2>Check each weather source separately.</h2>
-        <p>Rain frames, forecast risk, Met Office images, and measured rainfall gauges are kept separate so one provider cannot confuse another.</p>
-      </div>
-    </section>
+    <section class="weather-map-stage" aria-label="Weather map with smooth basemap">
+      <div id="weatherMap" class="weather-map-canvas weather-map-base-filter" aria-label="Stadia Alidade Smooth weather basemap"></div>
 
-    <section class="page-grid" aria-label="Weather provider pages">
-      <a class="page-card radar" href="rainviewer.html">
-        <span class="card-icon" aria-hidden="true">🌧</span>
-        <strong>RainViewer radar</strong>
-        <span>Radar frames and tile URLs.</span>
-      </a>
+      <aside class="weather-map-float" aria-label="Weather map controls">
+        <p class="eyebrow">Base</p>
+        <h2>Alidade Smooth</h2>
+        <p id="weatherMapStatus">Loading smooth basemap...</p>
 
-      <a class="page-card risk" href="openmeteo.html">
-        <span class="card-icon" aria-hidden="true">⚠</span>
-        <strong>Open-Meteo site risk</strong>
-        <span>Batched forecast values and hazard cards.</span>
-      </a>
+        <label class="field-label" for="stadiaApiKey">Stadia key, optional</label>
+        <input id="stadiaApiKey" class="text-input" type="password" autocomplete="off" placeholder="Use domain auth or paste key" />
 
-      <a class="page-card metoffice" href="metoffice.html">
-        <span class="card-icon" aria-hidden="true">🛰</span>
-        <strong>Met Office DataHub</strong>
-        <span>Map Images order test with your own key.</span>
-      </a>
+        <div class="button-row">
+          <button id="saveStadiaKey" class="primary-button" type="button">Save key</button>
+          <button id="clearStadiaKey" class="secondary-button" type="button">Clear</button>
+        </div>
 
-      <a class="page-card gauges" href="ea-rainfall.html">
-        <span class="card-icon" aria-hidden="true">☔</span>
-        <strong>EA rainfall gauges</strong>
-        <span>Nearby measured rainfall stations for verification.</span>
-      </a>
-    </section>
+        <p class="source-note">The colour filter is applied to the basemap pane before any weather overlay loads. Future rain layers sit above it unfiltered.</p>
+      </aside>
 
-    <section class="decision-card">
-      <h2>What this page checks</h2>
-      <ul>
-        <li><strong>Radar:</strong> Which source gives the best rain frame data.</li>
-        <li><strong>Risk:</strong> Which source gives the best site-level hazard values.</li>
-        <li><strong>Rainfall:</strong> Whether measured gauges support the forecast view.</li>
-        <li><strong>Integration:</strong> Which provider data should feed the final Weather page.</li>
-      </ul>
+      <nav class="weather-map-provider-links" aria-label="Weather provider tests">
+        <a href="rainviewer.html">RainViewer</a>
+        <a href="openmeteo.html">Open-Meteo</a>
+        <a href="metoffice.html">Met Office</a>
+        <a href="ea-rainfall.html">EA gauges</a>
+      </nav>
     </section>
   </main>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="weather-map.js?v=0.3.5-stadia-smooth-base-filter"></script>
 </body>
 </html>
 <!-- Destination: FieldOpsAtlas/Features/Weather/index.html -->
