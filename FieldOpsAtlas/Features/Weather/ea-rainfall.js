@@ -1,14 +1,16 @@
-/* Environment Agency rainfall gauge standalone test page v0.2.0 */
+/* Environment Agency rainfall gauge API tester v0.3.0
+   Data-only screen. No OSM/Leaflet map and no markers.
+*/
 
 (() => {
+  "use strict";
+
   const Lab = window.AtlasWeatherLab;
   const EA_ROOT = "https://environment.data.gov.uk/flood-monitoring";
 
   const state = {
     regions: [],
-    sites: [],
-    siteMarker: null,
-    gaugeLayer: null
+    sites: []
   };
 
   const els = {
@@ -21,9 +23,6 @@
     gaugeList: document.getElementById("gaugeList")
   };
 
-  const map = Lab.createBaseMap("map", { center: [52.15, -3.85], zoom: 7 });
-  state.gaugeLayer = L.layerGroup().addTo(map);
-
   init();
 
   async function init() {
@@ -31,150 +30,100 @@
     state.sites = Lab.allSites(state.regions);
     populateSites();
     bindEvents();
-    selectCurrentSite();
     setStatus("Ready. Pick a sample site and load nearby Environment Agency rainfall gauges.");
   }
 
   function populateSites() {
-    els.siteSelect.innerHTML = state.sites.map(site => `
-      <option value="${Lab.escapeHtml(site.id)}">${Lab.escapeHtml(site.name)} Â· ${Lab.escapeHtml(site.region)}</option>
+    if (!els.siteSelect) return;
+    els.siteSelect.innerHTML = state.sites.map((site) => `
+      <option value="${Lab.escapeHtml(site.id)}">${Lab.escapeHtml(site.name)} · ${Lab.escapeHtml(site.region)}</option>
     `).join("");
-
-    const preseli = state.sites.find(site => site.name.toLowerCase() === "preseli");
+    const preseli = state.sites.find((site) => site.name.toLowerCase() === "preseli");
     if (preseli) els.siteSelect.value = preseli.id;
   }
 
   function bindEvents() {
-    els.siteSelect.addEventListener("change", selectCurrentSite);
-    els.distanceRange.addEventListener("input", () => {
+    els.distanceRange?.addEventListener("input", () => {
       els.distanceLabel.textContent = `${els.distanceRange.value} km`;
     });
-    els.loadGaugesButton.addEventListener("click", loadNearbyGauges);
-    els.clearGaugesButton.addEventListener("click", clearGauges);
-  }
-
-  function selectCurrentSite() {
-    const site = currentSite();
-    if (!site) return;
-
-    if (state.siteMarker) map.removeLayer(state.siteMarker);
-
-    state.siteMarker = L.marker([site.lat, site.lon], {
-      icon: Lab.createDivIcon(`<div class="site-dot severe"></div>`)
-    }).addTo(map);
-
-    state.siteMarker.bindPopup(`<strong>${Lab.escapeHtml(site.name)}</strong><br />Sample site centre`);
-    map.setView([site.lat, site.lon], 9);
-    setStatus(`${site.name} selected. Load gauges to show measured rainfall near this sample site.`);
+    els.loadGaugesButton?.addEventListener("click", loadNearbyGauges);
+    els.clearGaugesButton?.addEventListener("click", clearGauges);
   }
 
   async function loadNearbyGauges() {
     const site = currentSite();
-    if (!site) return;
+    if (!site) {
+      setStatus("No site selected.");
+      return;
+    }
 
-    const distance = Number(els.distanceRange.value);
-    const url = `${EA_ROOT}/id/stations?parameter=rainfall&lat=${site.lat}&long=${site.lon}&dist=${distance}&_view=full`;
-
-    els.loadGaugesButton.disabled = true;
-    els.loadGaugesButton.textContent = "Loadingâ¦";
-    clearGauges(false);
-    setStatus(`Loading rainfall gauges within ${distance} km of ${site.name}â¦`);
+    const radiusKm = Number(els.distanceRange?.value || 40);
+    setBusy(true);
+    setStatus(`Loading EA rainfall stations within ${radiusKm} km of ${site.name}...`);
 
     try {
-      const response = await fetch(url, { cache: "no-store" });
-      if (!response.ok) throw new Error(`Environment Agency HTTP ${response.status}`);
-
+      const url = `${EA_ROOT}/id/stations?parameter=rainfall&lat=${site.lat}&long=${site.lon}&dist=${radiusKm}`;
+      const response = await fetch(url, { headers: { Accept: "application/json" }, cache: "no-store" });
+      if (!response.ok) throw new Error(`EA rainfall station request returned HTTP ${response.status}`);
       const data = await response.json();
-      const gauges = Array.isArray(data.items) ? data.items : [];
-      const normalised = gauges
-        .filter(gauge => Number.isFinite(Number(gauge.lat)) && Number.isFinite(Number(gauge.long)))
-        .map(normaliseGauge);
-
-      renderGauges(normalised);
-      setStatus(`${normalised.length} rainfall gauge(s) loaded near ${site.name}.`);
+      const stations = Array.isArray(data?.items) ? data.items : [];
+      const gauges = stations.map((station) => normaliseGauge(station, site)).filter(Boolean).sort((a, b) => a.distanceKm - b.distanceKm);
+      renderGauges(gauges);
+      setStatus(`${gauges.length} rainfall gauge(s) found. No map or marker layer was created.`);
     } catch (error) {
-      setStatus(`Environment Agency rainfall failed: ${error.message}`);
+      setStatus(error?.message || "EA rainfall gauge request failed.");
     } finally {
-      els.loadGaugesButton.disabled = false;
-      els.loadGaugesButton.textContent = "Load nearby gauges";
+      setBusy(false);
     }
   }
 
-  function normaliseGauge(gauge) {
-    const measures = Array.isArray(gauge.measures) ? gauge.measures : [];
-    const rainfallMeasure = measures.find(measure => measure.parameter === "rainfall") || measures[0] || {};
-    const reading = rainfallMeasure.latestReading || {};
-    const value = Number(reading.value || 0);
-
+  function normaliseGauge(station, site) {
+    const lat = Number(station.lat);
+    const lon = Number(station.long ?? station.lon);
+    if (!Number.isFinite(lat) || !Number.isFinite(lon)) return null;
     return {
-      id: gauge.stationReference || gauge.notation || gauge["@id"] || "unknown",
-      lat: Number(gauge.lat),
-      lon: Number(gauge.long),
-      grid: gauge.gridReference || "unknown grid",
-      value,
-      unit: rainfallMeasure.unitName || "mm",
-      dateTime: reading.dateTime,
-      label: gauge.label || "Rainfall station"
+      id: String(station.stationReference || station.notation || station["@id"] || station.label || "unknown"),
+      label: String(station.label || station.stationReference || "Unnamed gauge"),
+      lat,
+      lon,
+      distanceKm: Lab.haversineKm(site, { lat, lon }),
+      riverName: station.riverName || "",
+      town: station.town || ""
     };
   }
 
   function renderGauges(gauges) {
-    state.gaugeLayer.clearLayers();
-
+    if (!els.gaugeList) return;
     if (!gauges.length) {
-      els.gaugeList.innerHTML = `<div class="gauge-card"><span>No rainfall gauges returned for this distance.</span></div>`;
+      els.gaugeList.innerHTML = `<p class="status-text">No rainfall gauges found in this radius.</p>`;
       return;
     }
 
-    gauges.forEach(gauge => {
-      const wetClass = gauge.value >= 4 ? "heavy" : gauge.value > 0 ? "wet" : "";
-      const marker = L.marker([gauge.lat, gauge.lon], {
-        icon: Lab.createDivIcon(`<div class="gauge-dot ${wetClass}"></div>`)
-      }).addTo(state.gaugeLayer);
-
-      marker.bindPopup(renderGaugePopup(gauge));
-    });
-
-    els.gaugeList.innerHTML = gauges
-      .sort((a, b) => b.value - a.value)
-      .slice(0, 12)
-      .map(gauge => `
-        <article class="gauge-card">
-          <strong>${Lab.escapeHtml(gauge.id)} Â· ${Lab.round(gauge.value)} ${Lab.escapeHtml(gauge.unit)}</strong>
-          <span>${Lab.escapeHtml(gauge.grid)} Â· ${Lab.escapeHtml(Lab.formatDateTime(gauge.dateTime))}</span>
-          <button type="button" data-gauge="${Lab.escapeHtml(gauge.id)}">View</button>
-        </article>
-      `).join("");
-
-    els.gaugeList.querySelectorAll("[data-gauge]").forEach(button => {
-      button.addEventListener("click", () => {
-        const gauge = gauges.find(candidate => candidate.id === button.dataset.gauge);
-        if (gauge) map.setView([gauge.lat, gauge.lon], Math.max(map.getZoom(), 11));
-      });
-    });
+    els.gaugeList.innerHTML = gauges.slice(0, 30).map((gauge) => `
+      <article class="list-row gauge-row">
+        <span>${Lab.escapeHtml(gauge.label)}</span>
+        <code>${gauge.distanceKm.toFixed(1)} km</code>
+        <small>${Lab.escapeHtml([gauge.town, gauge.riverName].filter(Boolean).join(" · "))}</small>
+      </article>
+    `).join("");
   }
 
-  function renderGaugePopup(gauge) {
-    return `
-      <strong>${Lab.escapeHtml(gauge.id)}</strong><br />
-      ${Lab.escapeHtml(gauge.grid)}<br />
-      Latest: ${Lab.round(gauge.value)} ${Lab.escapeHtml(gauge.unit)}<br />
-      ${Lab.escapeHtml(Lab.formatDateTime(gauge.dateTime))}
-    `;
-  }
-
-  function clearGauges(updateStatus = true) {
-    state.gaugeLayer.clearLayers();
-    els.gaugeList.innerHTML = "";
-    if (updateStatus) setStatus("Gauge layer cleared.");
+  function clearGauges() {
+    if (els.gaugeList) els.gaugeList.innerHTML = "";
+    setStatus("Gauge list cleared. No API request was made.");
   }
 
   function currentSite() {
-    return state.sites.find(site => site.id === els.siteSelect.value);
+    const id = els.siteSelect?.value;
+    return state.sites.find((site) => site.id === id) || state.sites[0] || null;
   }
 
-  function setStatus(text) {
-    els.statusText.textContent = text;
+  function setBusy(isBusy) {
+    if (els.loadGaugesButton) els.loadGaugesButton.disabled = isBusy;
+  }
+
+  function setStatus(message) {
+    if (els.statusText) els.statusText.textContent = message;
   }
 })();
 
