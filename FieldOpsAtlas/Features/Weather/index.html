@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>FieldOps Atlas Weather Map v0.3.5</title>
+  <title>FieldOps Atlas Weather Map v0.3.6</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-  <link rel="stylesheet" href="styles.css?v=0.3.5-stadia-smooth-base-filter" />
+  <link rel="stylesheet" href="styles.css?v=0.3.6-domain-rainviewer-map" />
 </head>
 <body class="weather-map-body">
   <main class="weather-map-shell" data-page="weather-map">
@@ -13,28 +13,28 @@
       <a class="back-link" href="../maps/index.html">Atlas Map</a>
       <div>
         <p class="eyebrow">Weather map</p>
-        <h1>Stadia Smooth base test</h1>
+        <h1>Stadia Smooth radar</h1>
       </div>
-      <span class="version-pill">v0.3.5</span>
+      <span class="version-pill">v0.3.6</span>
     </header>
 
-    <section class="weather-map-stage" aria-label="Weather map with smooth basemap">
-      <div id="weatherMap" class="weather-map-canvas weather-map-base-filter" aria-label="Stadia Alidade Smooth weather basemap"></div>
+    <section class="weather-map-stage" aria-label="Weather map with RainViewer radar">
+      <div id="weatherMap" class="weather-map-canvas weather-map-base-filter" aria-label="Stadia Alidade Smooth weather radar map"></div>
 
       <aside class="weather-map-float" aria-label="Weather map controls">
-        <p class="eyebrow">Base</p>
-        <h2>Alidade Smooth</h2>
-        <p id="weatherMapStatus">Loading smooth basemap...</p>
-
-        <label class="field-label" for="stadiaApiKey">Stadia key, optional</label>
-        <input id="stadiaApiKey" class="text-input" type="password" autocomplete="off" placeholder="Use domain auth or paste key" />
+        <p class="eyebrow">Live layer</p>
+        <h2>RainViewer radar</h2>
+        <p id="weatherMapStatus">Loading Stadia Smooth base and RainViewer radar...</p>
 
         <div class="button-row">
-          <button id="saveStadiaKey" class="primary-button" type="button">Save key</button>
-          <button id="clearStadiaKey" class="secondary-button" type="button">Clear</button>
+          <button id="loadRainViewerButton" class="primary-button" type="button">Reload radar</button>
         </div>
 
-        <p class="source-note">The colour filter is applied to the basemap pane before any weather overlay loads. Future rain layers sit above it unfiltered.</p>
+        <label class="field-label" for="rainFrameRange">Radar frame</label>
+        <input id="rainFrameRange" class="range-control" type="range" min="0" max="0" value="0" disabled />
+        <p id="rainFrameTime" class="weather-map-frame-time">Radar frame not loaded.</p>
+
+        <p class="source-note">Domain-auth Stadia Smooth is the filtered base. RainViewer radar is mapped above it unfiltered.</p>
       </aside>
 
       <nav class="weather-map-provider-links" aria-label="Weather provider tests">
@@ -47,7 +47,7 @@
   </main>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-  <script src="weather-map.js?v=0.3.5-stadia-smooth-base-filter"></script>
+  <script src="weather-map.js?v=0.3.6-domain-rainviewer-map"></script>
 </body>
 </html>
 <!-- Destination: FieldOpsAtlas/Features/Weather/index.html -->
