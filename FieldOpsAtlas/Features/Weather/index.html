@@ -7,16 +7,16 @@
  <title>FieldOps Atlas · Weather</title>
 
  <link rel="stylesheet" href="../../../shell.css">
- <link rel="stylesheet" href="../maps/background.css?v=weather-map-icon-20260616">
+ <link rel="stylesheet" href="../maps/background.css?v=weather-map-icon-toast-20260616">
  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
- <link rel="stylesheet" href="../maps/OSMmaps.css?v=weather-map-icon-20260616">
- <link rel="stylesheet" href="../maps/OSMpanes.css?v=weather-map-icon-20260616">
- <link rel="stylesheet" href="./weather-api-panel.css?v=weather-map-icon-20260616">
+ <link rel="stylesheet" href="../maps/OSMmaps.css?v=weather-map-icon-toast-20260616">
+ <link rel="stylesheet" href="../maps/OSMpanes.css?v=weather-map-icon-toast-20260616">
+ <link rel="stylesheet" href="./weather-api-panel.css?v=weather-map-icon-toast-20260616">
 </head>
 <body>
  <div class="fieldops-shell-root" data-page="weather"></div>
 
- <main class="osmmaps-page" data-osmmaps-page data-weather-map-page>
+ <main class="osmmaps-page" data-osmmaps-page data-weather-map-page data-version="v1.0.2-weather-map-icon-toast">
   <div id="OSMmaps" class="osmmaps-canvas" aria-label="FieldOps Atlas weather map"></div>
 
   <section class="osmmaps-region-overlay" data-region-overlay hidden aria-label="Choose map region">
@@ -87,16 +87,18 @@
   <pre class="weather-api-output" data-weather-output>Select a marker, then choose a weather source.</pre>
  </aside>
 
+ <div class="weather-version-toast" aria-label="Current weather page version">v1.0.2-weather-map-icon-toast</div>
+
  <div class="background-item" aria-hidden="true">
   <div class="atlas-top-fade"></div>
   <div class="atlas-top-fade atlas-bottom-fade"></div>
  </div>
 
- <script src="../../../shell.js?v=weather-map-icon-20260616"></script>
+ <script src="../../../shell.js?v=weather-map-icon-toast-20260616"></script>
  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
- <script src="../maps/OSMpanes.js?v=weather-map-icon-20260616"></script>
- <script src="../maps/OSMmaps.js?v=weather-map-icon-20260616"></script>
- <script src="./weather-api-panel.js?v=weather-map-icon-20260616"></script>
+ <script src="../maps/OSMpanes.js?v=weather-map-icon-toast-20260616"></script>
+ <script src="../maps/OSMmaps.js?v=weather-map-icon-toast-20260616"></script>
+ <script src="./weather-api-panel.js?v=weather-map-icon-toast-20260616"></script>
 </body>
 </html>
 <!-- End of file: FieldOpsAtlas/Features/Weather/index.html -->
