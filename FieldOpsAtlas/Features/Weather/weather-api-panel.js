@@ -1,17 +1,17 @@
 /* ==========================================================================
    FieldOps Atlas weather API panel
    File: FieldOpsAtlas/Features/Weather/weather-api-panel.js
-   Version: 1.0.0-existing-map-only
+   Version: 1.0.1-weather-map-icon
    Purpose:
    - Keep one map only: the existing FieldOps Atlas OSM map.
-   - Remove provider-owned map creation and provider image previews.
+   - Show a visible weather icon on the map.
    - Run weather API checks as data/results panels against the selected map walk.
    ========================================================================== */
 
 (function fieldOpsWeatherApiPanel() {
   "use strict";
 
-  var VERSION = "1.0.0-existing-map-only";
+  var VERSION = "1.0.1-weather-map-icon";
   var STORAGE_KEYS = {
     theme: "fieldops-osmmaps-theme-v1",
     metOfficeKey: "fieldops-weather-metoffice-key-local-v1",
@@ -103,6 +103,42 @@
 
   function normaliseOrderId(value) {
     return String(value || "").trim().toLowerCase().replace(/\s+/g, "-");
+  }
+
+  function openPanel() {
+    var panel = qs(".weather-api-panel");
+    var icon = qs("[data-weather-panel-open]");
+
+    if (panel) {
+      panel.hidden = false;
+    }
+
+    if (icon) {
+      icon.setAttribute("aria-expanded", "true");
+    }
+  }
+
+  function closePanel() {
+    var panel = qs(".weather-api-panel");
+    var icon = qs("[data-weather-panel-open]");
+
+    if (panel) {
+      panel.hidden = true;
+    }
+
+    if (icon) {
+      icon.setAttribute("aria-expanded", "false");
+    }
+  }
+
+  function togglePanel() {
+    var panel = qs(".weather-api-panel");
+
+    if (!panel || panel.hidden) {
+      openPanel();
+    } else {
+      closePanel();
+    }
   }
 
   function checkOpenMeteo() {
@@ -329,12 +365,13 @@
     document.addEventListener("click", function onClick(event) {
       var sourceButton = event.target.closest("[data-weather-source]");
       var themeButton = event.target.closest("[data-weather-theme]");
-      var hideButton = event.target.closest("[data-weather-panel-toggle]");
+      var closeButton = event.target.closest("[data-weather-panel-close]");
       var openButton = event.target.closest("[data-weather-panel-open]");
 
       if (sourceButton) {
         var source = sourceButton.getAttribute("data-weather-source");
         setActiveSource(source);
+        openPanel();
 
         if (source === "openmeteo") {
           checkOpenMeteo();
@@ -354,29 +391,13 @@
         return;
       }
 
-      if (hideButton) {
-        var panel = qs(".weather-api-panel");
-        var opener = qs("[data-weather-panel-open]");
-
-        if (panel) {
-          panel.hidden = true;
-        }
-
-        if (opener) {
-          opener.hidden = false;
-        }
-
+      if (closeButton) {
+        closePanel();
         return;
       }
 
       if (openButton) {
-        var hiddenPanel = qs(".weather-api-panel");
-
-        if (hiddenPanel) {
-          hiddenPanel.hidden = false;
-        }
-
-        openButton.hidden = true;
+        togglePanel();
       }
     });
   }
@@ -385,7 +406,13 @@
     restoreMetOfficeFields();
     wireControls();
     applyTheme(initialTheme());
-    output("Existing Atlas OSM map loaded. Select a marker, then run a weather source check. No provider-owned maps are rendered.");
+    closePanel();
+    output("Select a marker on the existing Atlas map, then open the weather icon and run a source check. No provider-owned maps are rendered.");
+    window.FieldOpsWeatherApiPanel = {
+      version: VERSION,
+      open: openPanel,
+      close: closePanel
+    };
   }
 
   if (document.readyState === "loading") {
