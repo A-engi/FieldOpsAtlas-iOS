@@ -10,7 +10,7 @@
  <link rel="stylesheet" href="./OSMmaps.css?v=fade-restore-20260612g">
  <link rel="stylesheet" href="./OSMpanes.css?v=fade-restore-20260612g">
  <link rel="stylesheet" href="./OSMweather-menu.css?v=weather-lab-menu-20260616">
- <link rel="stylesheet" href="../Weather/weather-api-panel.css?v=maps-preseli-forecast-20260616">
+ <link rel="stylesheet" href="../Weather/weather-api-panel.css?v=maps-weather-activate-history-20260616">
 </head>
 <body>
  <div class="fieldops-shell-root" data-page="map"></div>
@@ -44,7 +44,7 @@
 
  <section class="weather-map-icon-strip" aria-label="Weather controls">
   <button class="weather-map-icon-button" type="button" data-weather-panel-open aria-expanded="false" aria-label="Open Preseli weather forecast">
-   <img class="weather-map-icon-image" src="./icons/weather.svg?v=maps-preseli-forecast-20260616" alt="" aria-hidden="true">
+   <img class="weather-map-icon-image" src="./icons/weather.svg?v=maps-weather-activate-history-20260616" alt="" aria-hidden="true">
   </button>
  </section>
 
@@ -58,12 +58,12 @@
   </header>
 
   <p class="weather-api-copy">
-   Uses the existing Atlas OSM map. No provider-owned maps or weather-map previews are rendered.
+   Small Preseli forecast preview. Activate opens the Weather pages, starting at History.
   </p>
 
-  <button class="weather-api-activate" type="button" data-weather-activate>
+  <a class="weather-api-activate" href="../Weather/index.html#history" data-weather-activate>
    Activate
-  </button>
+  </a>
 
   <section class="weather-forecast-slider" aria-label="Preseli forecast slider">
    <header class="weather-forecast-header">
@@ -73,12 +73,12 @@
 
    <div class="weather-forecast-track" data-weather-forecast-track tabindex="0" role="list">
     <article class="weather-forecast-card weather-forecast-card-placeholder" role="listitem">
-     Tap Activate.
+     Opening panel loads forecast.
     </article>
    </div>
   </section>
 
-  <p class="weather-api-status" data-weather-output>v1.0.3-preseli-forecast-slider</p>
+  <p class="weather-api-status" data-weather-output>v1.0.4-weather-activate-history</p>
  </aside>
 
  <div class="background-item" aria-hidden="true">
@@ -91,7 +91,7 @@
  <script src="./OSMpanes.js?v=fade-restore-20260612g"></script>
  <script src="./OSMmaps.js?v=fade-restore-20260612g"></script>
  <script src="./OSMweather-menu.js?v=weather-lab-menu-20260616"></script>
- <script src="../Weather/weather-api-panel.js?v=maps-preseli-forecast-20260616"></script>
+ <script src="../Weather/weather-api-panel.js?v=maps-weather-activate-history-20260616"></script>
 </body>
 </html>
 <!-- End of file: FieldOpsAtlas/Features/maps/index.html -->
