@@ -1,0 +1,53 @@
+.osmpanes-weather-menu {
+  margin-top: 10px;
+  display: grid;
+  gap: 10px;
+}
+
+.osmpanes-weather-menu-copy {
+  margin: 0;
+  color: rgba(232, 246, 255, 0.72);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.osmpanes-weather-menu-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.osmpanes-weather-menu-activate,
+.osmpanes-weather-menu-link {
+  appearance: none;
+  -webkit-appearance: none;
+  min-height: 40px;
+  padding: 0 12px;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(128, 199, 255, 0.22);
+  border-radius: 14px;
+  color: rgba(240, 249, 255, 0.96);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(125, 194, 255, 0.12), transparent 52%),
+    rgba(8, 31, 58, 0.76);
+  text-decoration: none;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.osmpanes-weather-menu-activate {
+  color: #06182f;
+  border-color: rgba(245, 195, 75, 0.72);
+  background: linear-gradient(180deg, #ffe08a, #f5c34b);
+}
+
+@media (min-width: 520px) {
+  .osmpanes-weather-menu-actions {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* End of file: FieldOpsAtlas/Features/maps/OSMweather-menu.css */
