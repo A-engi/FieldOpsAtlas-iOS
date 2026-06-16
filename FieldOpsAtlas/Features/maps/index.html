@@ -10,7 +10,7 @@
  <link rel="stylesheet" href="./OSMmaps.css?v=fade-restore-20260612g">
  <link rel="stylesheet" href="./OSMpanes.css?v=fade-restore-20260612g">
  <link rel="stylesheet" href="./OSMweather-menu.css?v=weather-lab-menu-20260616">
- <link rel="stylesheet" href="../Weather/weather-api-panel.css?v=maps-weather-button-minimal-20260616">
+ <link rel="stylesheet" href="../Weather/weather-api-panel.css?v=maps-preseli-forecast-20260616">
 </head>
 <body>
  <div class="fieldops-shell-root" data-page="map"></div>
@@ -42,43 +42,43 @@
   <section class="osmpanes-details" data-selected-panel hidden aria-live="polite"></section>
  </main>
 
- <button class="weather-map-icon-button" type="button" data-weather-panel-open aria-expanded="false" aria-label="Open weather API checks">
-  <span aria-hidden="true">â</span>
- </button>
+ <section class="weather-map-icon-strip" aria-label="Weather controls">
+  <button class="weather-map-icon-button" type="button" data-weather-panel-open aria-expanded="false" aria-label="Open Preseli weather forecast">
+   <img class="weather-map-icon-image" src="./icons/weather.svg?v=maps-preseli-forecast-20260616" alt="" aria-hidden="true">
+  </button>
+ </section>
 
- <aside class="weather-api-panel" aria-label="Weather API checks" hidden>
+ <aside class="weather-api-panel" aria-label="Preseli weather forecast" hidden>
   <header class="weather-api-panel-header">
    <div>
     <p class="weather-api-kicker">Weather</p>
-    <h1>API checks</h1>
+    <h1>Preseli forecast</h1>
    </div>
-   <button class="weather-api-mini-button" type="button" data-weather-panel-close aria-label="Close weather API checks">Close</button>
+   <button class="weather-api-mini-button" type="button" data-weather-panel-close aria-label="Close Preseli weather forecast">Close</button>
   </header>
 
   <p class="weather-api-copy">
-   Uses the existing Atlas OSM map. Select a marker, then run a source check. Provider-owned maps and weather-map previews are not rendered here.
+   Uses the existing Atlas OSM map. No provider-owned maps or weather-map previews are rendered.
   </p>
 
-  <div class="weather-api-sources" aria-label="Weather source actions">
-   <button class="weather-api-source" type="button" data-weather-source="openmeteo">Open-Meteo site risk</button>
-   <button class="weather-api-source" type="button" data-weather-source="rainviewer">RainViewer metadata</button>
-   <button class="weather-api-source" type="button" data-weather-source="metoffice">Met Office order list</button>
-   <button class="weather-api-source" type="button" data-weather-source="ea">EA rain gauges</button>
-  </div>
+  <button class="weather-api-activate" type="button" data-weather-activate>
+   Activate
+  </button>
 
-  <div class="weather-api-fields" data-weather-metoffice-fields hidden>
-   <label class="weather-api-field">
-    DataHub API key
-    <input type="password" autocomplete="off" data-metoffice-key placeholder="Typed locally only">
-   </label>
+  <section class="weather-forecast-slider" aria-label="Preseli forecast slider">
+   <header class="weather-forecast-header">
+    <span>Preseli area</span>
+    <span data-weather-forecast-updated>Not loaded</span>
+   </header>
 
-   <label class="weather-api-field">
-    API Order ID
-    <input type="text" data-metoffice-order placeholder="Example: maps-uk1">
-   </label>
-  </div>
+   <div class="weather-forecast-track" data-weather-forecast-track tabindex="0" role="list">
+    <article class="weather-forecast-card weather-forecast-card-placeholder" role="listitem">
+     Tap Activate.
+    </article>
+   </div>
+  </section>
 
-  <pre class="weather-api-output" data-weather-output>Select a marker, then choose a weather source.</pre>
+  <p class="weather-api-status" data-weather-output>v1.0.3-preseli-forecast-slider</p>
  </aside>
 
  <div class="background-item" aria-hidden="true">
@@ -91,7 +91,7 @@
  <script src="./OSMpanes.js?v=fade-restore-20260612g"></script>
  <script src="./OSMmaps.js?v=fade-restore-20260612g"></script>
  <script src="./OSMweather-menu.js?v=weather-lab-menu-20260616"></script>
- <script src="../Weather/weather-api-panel.js?v=maps-weather-button-minimal-20260616"></script>
+ <script src="../Weather/weather-api-panel.js?v=maps-preseli-forecast-20260616"></script>
 </body>
 </html>
 <!-- End of file: FieldOpsAtlas/Features/maps/index.html -->
