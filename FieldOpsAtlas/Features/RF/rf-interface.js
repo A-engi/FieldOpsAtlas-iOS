@@ -1,10 +1,10 @@
 /* ==========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.js
-   Version: 1.1.117-path-details-mount
+   Version: 1.1.118-graph-labels
    Purpose:
    - Own the RF interface shell and static RF UI.
-   - Create the RF title, RF/IP/MW/All graph filter controls, map holder,
+   - Create the RF title, RF/IP/MW/All graph filter controls, graph holder,
      recent cards, Services panel, Equipment panel, and collapsible path pane.
    - Keep the graph drawing in rf-graph.js.
    - Provide the [data-rf-path-details] mount required by rf-path-builder.js.
@@ -13,7 +13,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.117-path-details-mount";
+  const VERSION = "1.1.118-graph-labels";
   const HOME_SELECTOR = ".rf-home";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const MAP_STAGE_SELECTOR = ".rf-map-stage";
@@ -24,7 +24,7 @@
   const MAIN_INTERFACE_TEMPLATE = String.raw`
     <section class="rf-network" aria-label="RF network">
       <header class="rf-network-head">
-        <h1 class="rf-title">RF network map</h1>
+        <h1 class="rf-title">RF graph</h1>
         <div class="rf-tabs" role="group" aria-label="RF graph filters">
           <button class="rf-tab is-active" type="button" data-rf-filter="rf">RF</button>
           <button class="rf-tab" type="button" data-rf-filter="ip">IP</button>
@@ -33,15 +33,15 @@
         </div>
       </header>
 
-      <section class="rf-map-recent" aria-label="RF map and recently opened">
-        <article class="rf-map-paper" aria-label="RF network topology">
+      <section class="rf-map-recent" aria-label="RF graph and recently opened">
+        <article class="rf-map-paper" aria-label="RF graph topology">
           <img
             class="rf-map-background"
             src="../../../data/icons/rf-current-background.svg?v=1.1.1"
             alt=""
             aria-hidden="true"
           >
-          <div class="rf-map-stage" data-rf-graph aria-label="RF network graph"></div>
+          <div class="rf-map-stage" data-rf-graph aria-label="RF graph"></div>
         </article>
 
         <section class="rf-recent" aria-label="Recently opened">
@@ -336,4 +336,3 @@
   }
 })();
 
-/* End of FieldOpsAtlas/Features/RF/rf-interface.js | bottom/end of file */
