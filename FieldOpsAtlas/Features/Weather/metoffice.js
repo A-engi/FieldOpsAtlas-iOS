@@ -1,4 +1,4 @@
-/* Met Office DataHub Map Images v0.4.1
+/* Met Office DataHub Map Images v0.4.2
    Destination: FieldOpsAtlas/Features/Weather/metoffice.js
 
    - Debug/count/control pane deleted.
@@ -13,7 +13,8 @@
 (() => {
   "use strict";
 
-  const VERSION = "0.4.1";
+  const VERSION = "0.4.2";
+  const DEFAULT_ORDER_ID = "Maps-uk1";
   const METOFFICE_MAP_IMAGES_BASE = "https://data.hub.api.metoffice.gov.uk/map-images/1.0.0";
   const UK_TIME_ZONE = "Europe/London";
 
@@ -103,7 +104,7 @@
     const apiKey = getApiKey();
     const orderId = getOrderId();
     if (!apiKey || !orderId) {
-      setStatus("Setup needed: paste the Map Images key and API Order ID. They stay in this browser only.");
+      setStatus(`Setup needed: paste the Map Images key. Order ID defaults to ${DEFAULT_ORDER_ID} while this prototype is being built.`);
       return;
     }
 
@@ -123,7 +124,7 @@
     const apiKey = getApiKey();
     const orderId = getOrderId();
     if (!apiKey || !orderId) {
-      setStatus("Setup needed: paste a Map Images key and API Order ID first.");
+      setStatus(`Setup needed: paste a Map Images key first. Order ID defaults to ${DEFAULT_ORDER_ID}.`);
       return;
     }
 
@@ -166,7 +167,7 @@
     const orderId = getOrderId();
 
     if (!apiKey || !orderId) {
-      setStatus("Setup needed: paste a Map Images key and API Order ID first.");
+      setStatus(`Setup needed: paste a Map Images key first. Order ID defaults to ${DEFAULT_ORDER_ID}.`);
       return;
     }
 
@@ -340,7 +341,7 @@
   }
 
   function getOrderId() {
-    return localStorage.getItem(STORAGE.order) || "";
+    return localStorage.getItem(STORAGE.order) || DEFAULT_ORDER_ID;
   }
 
   function getStoredLayer() {
