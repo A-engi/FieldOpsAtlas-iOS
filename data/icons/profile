@@ -1,0 +1,8 @@
+<svg xmlns="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x77;&#x77;&#x77;&#x2E;&#x77;&#x33;&#x2E;&#x6F;&#x72;&#x67;&#x2F;&#x32;&#x30;&#x30;&#x30;&#x2F;&#x73;&#x76;&#x67;" viewBox="0 0 24 24" role="img" aria-labelledby="profileIconTitle profileIconDesc">
+  <title id="profileIconTitle">Profile icon</title>
+  <desc id="profileIconDesc">Simple user profile silhouette for the FieldOps Atlas shell drawer.</desc>
+  <path d="M12 12.25c2.28 0 4.13-1.85 4.13-4.13S14.28 4 12 4 7.88 5.85 7.88 8.12s1.84 4.13 4.12 4.13Z" fill="currentColor"/>
+  <path d="M4.75 20c.46-3.7 3.55-6.18 7.25-6.18S18.79 16.3 19.25 20H4.75Z" fill="currentColor"/>
+  <!-- Destination: data/icons/profile.svg -->
+  <!-- End of file: data/icons/profile.svg -->
+</svg>
