@@ -3,13 +3,153 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>RF Atlas Settings</title>
+  <title>FieldOps Atlas Settings v0.1.36</title>
   <link rel="stylesheet" href="shell.css" />
-  <link rel="stylesheet" href="page.css" />
+  <style>
+    .phone[data-page="settings"] {
+      background:
+        radial-gradient(ellipse at 88% 20%, rgba(73, 213, 255, 0.20), transparent 34%),
+        radial-gradient(ellipse at 14% 35%, rgba(40, 119, 190, 0.16), transparent 44%),
+        linear-gradient(180deg, #071d3f 0%, #061a3a 42%, #041733 100%);
+    }
+
+    .phone[data-page="settings"] .content-canvas {
+      position: absolute;
+      z-index: 1;
+      top: calc(var(--safe-top, 0px) + var(--top-height, 54px) + 8px);
+      right: 7px;
+      bottom: calc(var(--safe-bottom, 0px) + var(--nav-height, 38px) + var(--bottom-lift, 8px) + 7px);
+      left: 7px;
+      min-height: 0;
+      overflow: hidden;
+      border: 2px solid var(--gold-border, rgba(237, 191, 99, 0.78));
+      border-radius: 20px;
+      background:
+        radial-gradient(circle at 50% 37%, rgba(255, 255, 255, 0.82), transparent 39%),
+        linear-gradient(180deg, rgba(255, 253, 246, 0.95) 0%, rgba(251, 242, 223, 0.93) 100%);
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.68),
+        inset 0 0 0 1px rgba(255, 231, 168, 0.26),
+        0 -2px 0 rgba(255, 226, 160, 0.20),
+        0 0 0 1px rgba(85, 55, 10, 0.14),
+        0 14px 30px rgba(2, 9, 20, 0.26);
+    }
+
+    .page-content {
+      height: 100%;
+      min-height: 0;
+      padding: 12px;
+      display: grid;
+      align-content: start;
+      gap: 10px;
+      overflow-x: hidden;
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      color: #071c32;
+    }
+
+    .page-head,
+    .card {
+      padding: 12px;
+      border: 1px solid rgba(130, 91, 22, 0.13);
+      border-radius: 15px;
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.55), transparent 46%),
+        linear-gradient(180deg, rgba(255, 252, 242, 0.84), rgba(248, 236, 211, 0.72));
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.52);
+    }
+
+    .page-kicker {
+      margin-bottom: 5px;
+      color: rgba(7, 31, 56, 0.62);
+      font-size: 8px;
+      font-weight: 900;
+      letter-spacing: 0.12em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    .page-title,
+    .card-title {
+      margin: 0;
+      color: #071c32;
+      font-family: Georgia, "Times New Roman", serif;
+      font-weight: 950;
+      text-transform: uppercase;
+    }
+
+    .page-title {
+      font-size: 24px;
+      letter-spacing: -0.03em;
+      line-height: 0.95;
+    }
+
+    .card-title {
+      margin-bottom: 9px;
+      font-size: 12px;
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+
+    .page-lede {
+      margin: 7px 0 0;
+      color: rgba(7, 31, 56, 0.68);
+      font-size: 11px;
+      font-weight: 650;
+      line-height: 1.35;
+    }
+
+    .list {
+      display: grid;
+      gap: 7px;
+    }
+
+    .list-row {
+      min-height: 46px;
+      padding: 8px;
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr) auto;
+      gap: 8px;
+      align-items: center;
+      color: #071c32;
+      border: 1px solid rgba(239, 198, 120, 0.58);
+      border-radius: 12px;
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 246, 224, 0.24));
+      text-decoration: none;
+    }
+
+    .row-title {
+      color: #071c32;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 10px;
+      font-weight: 950;
+      line-height: 1.05;
+      text-transform: uppercase;
+    }
+
+    .row-sub {
+      margin-top: 2px;
+      color: rgba(7, 31, 56, 0.64);
+      font-size: 7px;
+      font-weight: 750;
+      line-height: 1.1;
+    }
+
+    .row-value {
+      color: #1c9570;
+      font-size: 7px;
+      font-weight: 900;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      text-align: right;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+  </style>
 </head>
 
 <body>
-  <main class="phone" data-page="settings" data-nav="tools" data-version="0.1.35">
+  <main class="phone" data-page="settings" data-nav="tools" data-version="0.1.36">
     <section class="content-canvas" aria-label="RF Atlas Settings content">
       <article class="page-content">
         <header class="page-head">
@@ -33,3 +173,5 @@
   <script src="shell.js"></script>
 </body>
 </html>
+<!-- Destination: settings.html -->
+<!-- End of file: settings.html -->
