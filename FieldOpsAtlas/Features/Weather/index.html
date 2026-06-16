@@ -7,11 +7,11 @@
  <title>FieldOps Atlas · Weather</title>
 
  <link rel="stylesheet" href="../../../shell.css">
- <link rel="stylesheet" href="../maps/background.css?v=existing-map-weather-api-20260616">
+ <link rel="stylesheet" href="../maps/background.css?v=weather-map-icon-20260616">
  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
- <link rel="stylesheet" href="../maps/OSMmaps.css?v=existing-map-weather-api-20260616">
- <link rel="stylesheet" href="../maps/OSMpanes.css?v=existing-map-weather-api-20260616">
- <link rel="stylesheet" href="./weather-api-panel.css?v=existing-map-weather-api-20260616">
+ <link rel="stylesheet" href="../maps/OSMmaps.css?v=weather-map-icon-20260616">
+ <link rel="stylesheet" href="../maps/OSMpanes.css?v=weather-map-icon-20260616">
+ <link rel="stylesheet" href="./weather-api-panel.css?v=weather-map-icon-20260616">
 </head>
 <body>
  <div class="fieldops-shell-root" data-page="weather"></div>
@@ -48,17 +48,21 @@
   <button class="weather-map-theme-button" type="button" data-weather-theme="light" aria-pressed="false">Light</button>
  </section>
 
- <aside class="weather-api-panel" aria-label="Weather API checks">
+ <button class="weather-map-icon-button" type="button" data-weather-panel-open aria-label="Open weather API checks">
+  <span aria-hidden="true">☁</span>
+ </button>
+
+ <aside class="weather-api-panel" aria-label="Weather API checks" hidden>
   <header class="weather-api-panel-header">
    <div>
     <p class="weather-api-kicker">Weather</p>
     <h1>API checks</h1>
    </div>
-   <button class="weather-api-mini-button" type="button" data-weather-panel-toggle>Hide</button>
+   <button class="weather-api-mini-button" type="button" data-weather-panel-close aria-label="Close weather API checks">Close</button>
   </header>
 
   <p class="weather-api-copy">
-   Uses the existing Atlas OSM map on this page. Provider map previews are removed.
+   Uses the existing Atlas OSM map. Select a marker, then run a source check. Provider-owned maps and weather-map previews are not rendered here.
   </p>
 
   <div class="weather-api-sources" aria-label="Weather source actions">
@@ -80,21 +84,19 @@
    </label>
   </div>
 
-  <pre class="weather-api-output" data-weather-output>Select a source. For site checks, select a map marker first.</pre>
+  <pre class="weather-api-output" data-weather-output>Select a marker, then choose a weather source.</pre>
  </aside>
-
- <button class="weather-api-panel-open" type="button" data-weather-panel-open hidden>Weather API checks</button>
 
  <div class="background-item" aria-hidden="true">
   <div class="atlas-top-fade"></div>
   <div class="atlas-top-fade atlas-bottom-fade"></div>
  </div>
 
- <script src="../../../shell.js?v=existing-map-weather-api-20260616"></script>
+ <script src="../../../shell.js?v=weather-map-icon-20260616"></script>
  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
- <script src="../maps/OSMpanes.js?v=existing-map-weather-api-20260616"></script>
- <script src="../maps/OSMmaps.js?v=existing-map-weather-api-20260616"></script>
- <script src="./weather-api-panel.js?v=existing-map-weather-api-20260616"></script>
+ <script src="../maps/OSMpanes.js?v=weather-map-icon-20260616"></script>
+ <script src="../maps/OSMmaps.js?v=weather-map-icon-20260616"></script>
+ <script src="./weather-api-panel.js?v=weather-map-icon-20260616"></script>
 </body>
 </html>
 <!-- End of file: FieldOpsAtlas/Features/Weather/index.html -->
