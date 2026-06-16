@@ -1,9 +1,9 @@
-/* FIELDOPS ATLAS SERVICE WORKER v1.1.4-weather-root
+/* FIELDOPS ATLAS SERVICE WORKER v1.1.5-rescan-clear
    Keeps the browser prototype usable offline where possible.
    Maps remains the main fallback page.
 */
 
-const CACHE_NAME = "fieldops-atlas-v1.1.4-weather-root";
+const CACHE_NAME = "fieldops-atlas-v1.1.5-rescan-clear";
 const MAP_FALLBACK = "./FieldOpsAtlas/Features/maps/index.html";
 
 const CORE_FILES = [
@@ -15,13 +15,14 @@ const CORE_FILES = [
   "./components.css",
   "./theme.css",
   "./settings.html",
+  "./data/icons/profile.svg",
   "./FieldOpsAtlas/Features/Profile/index.html",
   "./FieldOpsAtlas/Features/RF/index.html",
   "./FieldOpsAtlas/Features/RF/background.css?v=1.1.76-graph-label",
   "./FieldOpsAtlas/Features/RF/rf-graph.css?v=1.1.83-rename-graph-files",
-  "./FieldOpsAtlas/Features/RF/rf-graph.js?v=1.1.86-graph-data-rename",
-  "./FieldOpsAtlas/Features/RF/rf-interface.css?v=1.1.115-site-pack-panel",
-  "./FieldOpsAtlas/Features/RF/rf-interface.js?v=1.1.118-graph-labels",
+  "./FieldOpsAtlas/Features/RF/rf-graph.js?v=1.1.87-rf-graph-source",
+  "./FieldOpsAtlas/Features/RF/rf-interface.css?v=1.1.117-rfpages-layout-clear",
+  "./FieldOpsAtlas/Features/RF/rf-interface.js?v=1.1.119-cream-graph-assets",
   "./FieldOpsAtlas/Features/RF/rf-path-builder.js?v=1.1.116-generic-demo-builder",
   "./FieldOpsAtlas/Features/RFPages/sites.html",
   "./FieldOpsAtlas/Features/RFPages/dtt.html",
@@ -87,4 +88,5 @@ self.addEventListener("fetch", (event) => {
   );
 });
 
+/* Destination: sw.js */
 /* End of file: sw.js */
