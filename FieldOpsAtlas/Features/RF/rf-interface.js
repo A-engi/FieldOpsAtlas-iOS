@@ -1,19 +1,19 @@
-/* ==========================================================================
+/* ===========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.js
-   Version: 1.1.119-cream-graph-assets
+   Version: 1.1.120-network-map-title
    Purpose:
    - Own the RF interface shell and static RF UI.
    - Create the RF title, RF/IP/MW/All graph filter controls, graph holder,
      recent cards, Services panel, Equipment panel, and collapsible path pane.
-   - Keep the graph drawing in rf-graph.js.
+   - Keep graph drawing in rf-graph.js.
    - Provide the [data-rf-path-details] mount required by rf-path-builder.js.
    ========================================================================== */
 
 (() => {
   "use strict";
 
-  const VERSION = "1.1.119-cream-graph-assets";
+  const VERSION = "1.1.120-network-map-title";
   const HOME_SELECTOR = ".rf-home";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const MAP_STAGE_SELECTOR = ".rf-map-stage";
@@ -22,9 +22,9 @@
   const PANE_COLLAPSED_CLASS = "is-path-pane-collapsed";
 
   const MAIN_INTERFACE_TEMPLATE = String.raw`
-    <section class="rf-network" aria-label="RF graph">
+    <section class="rf-network" aria-label="RF network map">
       <header class="rf-network-head">
-        <h1 class="rf-title">RF graph</h1>
+        <h1 class="rf-title">RF network map</h1>
         <div class="rf-tabs" role="group" aria-label="RF graph filters">
           <button class="rf-tab is-active" type="button" data-rf-filter="rf">RF</button>
           <button class="rf-tab" type="button" data-rf-filter="ip">IP</button>
