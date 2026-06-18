@@ -1,7 +1,7 @@
 /* ===========================================================================
    FieldOps Atlas RF path builder
    File: FieldOpsAtlas/Features/RF/rf-path-builder.js
-   Version: 1.1.123-selected-path-pane
+   Version: 1.1.124-endpoint-icons
 
    Purpose:
    - Own the RF demo-safe topology model used by the RF graph renderer.
@@ -15,7 +15,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.123-selected-path-pane";
+  const VERSION = "1.1.124-endpoint-icons";
   const SLOT_SELECTOR = "[data-rf-path-details]";
   const PANE_READY_EVENT = "fieldops:rf-pane-shell-ready";
   const RENDERED_EVENT = "fieldops:rf-path-details-rendered";
@@ -159,10 +159,27 @@
     };
   }
 
+  function endpointIconHTML(direction) {
+    const tone = direction === "from" ? "tx" : "rx";
+
+    return `
+      <span class="rf-endpoint-icon is-${tone}" aria-hidden="true">
+        <svg viewBox="0 0 48 48" focusable="false">
+          <circle class="rf-endpoint-icon-bg" cx="24" cy="24" r="20"></circle>
+          <circle class="rf-endpoint-icon-ring" cx="24" cy="24" r="23"></circle>
+          <path class="rf-endpoint-icon-mast" d="M24 14L17 34H31Z"></path>
+          <path class="rf-endpoint-icon-line" d="M24 18V34M20.5 27H27.5"></path>
+          <path class="rf-endpoint-icon-wave" d="M14.2 17.8C10.8 21.2 10.8 26.8 14.2 30.2M33.8 17.8C37.2 21.2 37.2 26.8 33.8 30.2"></path>
+        </svg>
+      </span>
+    `;
+  }
+
   function endpointHTML(endpoint, direction) {
     return `
       <section class="rf-selected-endpoint is-${escapeHTML(direction)}">
         <small>${direction === "from" ? "From" : "To"}</small>
+        ${endpointIconHTML(direction)}
         <b>${escapeHTML(endpoint.name)}</b>
         <span>${escapeHTML(endpoint.role)}</span>
         <em>${escapeHTML(endpoint.input)}</em>
