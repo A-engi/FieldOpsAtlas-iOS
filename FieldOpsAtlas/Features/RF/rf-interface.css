@@ -1,7 +1,7 @@
 /* ===========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.css
-   Version: 1.1.118-selected-path-pane
+   Version: 1.1.119-endpoint-icons
 
    Purpose:
    - Own RF interface layout, panels, cards, controls, and path pane shell styling.
@@ -291,7 +291,66 @@
 .rf-selected-endpoint {
   min-width: 0;
   display: grid;
-  gap: 2px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  grid-template-areas:
+    "label label"
+    "icon name"
+    "icon role"
+    "icon input";
+  align-items: start;
+  column-gap: 7px;
+  row-gap: 2px;
+}
+
+.rf-selected-endpoint small {
+  grid-area: label;
+}
+
+.rf-endpoint-icon {
+  grid-area: icon;
+  width: 23px;
+  height: 23px;
+  margin-top: 0;
+  display: block;
+  filter: drop-shadow(0 0 7px rgba(255, 218, 120, 0.22));
+}
+
+.rf-endpoint-icon svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.rf-endpoint-icon-bg {
+  fill: #19813b;
+}
+
+.rf-endpoint-icon.is-rx .rf-endpoint-icon-bg {
+  fill: #b82a21;
+}
+
+.rf-endpoint-icon-ring {
+  fill: none;
+  stroke: rgba(255, 242, 194, 0.70);
+  stroke-width: 2;
+}
+
+.rf-endpoint-icon-mast,
+.rf-endpoint-icon-line,
+.rf-endpoint-icon-wave {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.92);
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.rf-endpoint-icon-mast {
+  stroke-width: 2.1;
+}
+
+.rf-endpoint-icon-line,
+.rf-endpoint-icon-wave {
+  stroke-width: 1.8;
 }
 
 .rf-selected-endpoint b,
@@ -308,7 +367,13 @@
   white-space: nowrap;
 }
 
-.rf-selected-endpoint span {
+.rf-selected-endpoint b {
+  grid-area: name;
+  align-self: center;
+}
+
+.rf-selected-endpoint > span:not(.rf-endpoint-icon) {
+  grid-area: role;
   overflow: hidden;
   color: rgba(230, 241, 255, 0.84);
   font-size: 6.5px;
@@ -319,6 +384,7 @@
 }
 
 .rf-selected-endpoint em {
+  grid-area: input;
   width: max-content;
   max-width: 100%;
   margin-top: 2px;
