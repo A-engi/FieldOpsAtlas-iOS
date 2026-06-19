@@ -1,835 +1,303 @@
 /* ===========================================================================
-   FieldOps Atlas RF interface
-   File: FieldOpsAtlas/Features/RF/rf-interface.css
-   Version: 1.1.120-pane-fit
+   FieldOps Atlas RF path builder
+   File: FieldOpsAtlas/Features/RF/rf-path-builder.js
+   Version: 1.1.124-endpoint-icons
 
    Purpose:
-   - Own RF interface layout, panels, cards, controls, and path pane shell styling.
-   - Keep the collapsible signal/zigzag rail inside the RF path pane.
-   - Keep selected-path detail layout compact enough for the pane.
-   - Leave topology/graph drawing and map colours to rf-graph.css/js.
+   - Own the RF demo-safe topology model used by the RF graph renderer.
+   - Keep graph drawing in rf-graph.js.
+   - Keep the collapsible pane focused on one selected path, not a list of
+     generic site cards.
+   - Keep service/equipment/frequency detail in the selected path pane only.
+   - Do not use private operational records or real internal data.
    ========================================================================== */
 
-.rf-home,
-.rf-home * {
-  box-sizing: border-box;
-}
-
-.rf-network {
-  min-height: 0;
-  height: 100%;
-  display: grid;
-  grid-template-rows: 24px minmax(0, 1fr) 124px;
-  gap: 6px;
-  overflow: hidden;
-}
-
-.rf-network-head {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: center;
-  gap: 8px;
-  padding: 0 4px;
-}
-
-.rf-title,
-.rf-panel-title,
-.rf-recent-title {
-  margin: 0;
-  color: #071c32;
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 950;
-  letter-spacing: 0.04em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.rf-title {
-  font-size: 13px;
-}
-
-.rf-tabs {
-  display: flex;
-  gap: 5px;
-}
-
-.rf-tab {
-  appearance: none;
-  -webkit-appearance: none;
-  min-width: 34px;
-  height: 22px;
-  padding: 0 8px;
-  display: grid;
-  place-items: center;
-  color: rgba(7, 31, 56, 0.78);
-  border: 1px solid rgba(130, 91, 22, 0.22);
-  border-radius: 8px;
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.56), rgba(255, 248, 232, 0.20)),
-    rgba(255, 248, 232, 0.82);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.50),
-    0 4px 10px rgba(28, 18, 6, 0.08);
-  cursor: pointer;
-  font-size: 7.5px;
-  font-weight: 900;
-  white-space: nowrap;
-}
-
-.rf-tab.is-active {
-  color: rgba(7, 31, 56, 0.88);
-  border-color: rgba(15, 111, 120, 0.38);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.54), rgba(255, 248, 232, 0.22)),
-    rgba(221, 190, 132, 0.34);
-}
-
-.rf-map-recent {
-  min-height: 0;
-  display: grid;
-  grid-template-rows: minmax(0, 1fr) 74px;
-  gap: 0;
-  overflow: hidden;
-}
-
-.rf-map-paper {
-  --path-pane-width: clamp(140px, 32%, 150px);
-  --path-handle-width: 30px;
-
-  position: relative;
-  min-height: 0;
-  overflow: hidden;
-  isolation: isolate;
-  border: 1px solid rgba(130, 91, 22, 0.14);
-  border-bottom: 0;
-  border-radius: 13px 13px 0 0;
-  background: #f8ecd2;
-}
-
-.rf-map-background {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  display: block;
-  object-fit: cover;
-  pointer-events: none;
-  user-select: none;
-}
-
-.rf-map-stage {
-  position: absolute;
-  top: 0;
-  right: calc(var(--path-pane-width) - var(--path-handle-width));
-  bottom: 0;
-  left: 0;
-  z-index: 2;
-  overflow: hidden;
-  border-radius: 12px 0 0 0;
-  transition: right 180ms ease;
-}
-
-.rf-map-paper.is-path-pane-collapsed .rf-map-stage {
-  right: var(--path-handle-width);
-}
-
-.rf-map-stage svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-  overflow: visible;
-}
-
-.rf-path-pane {
-  --path-handle-width: 30px;
-
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 6;
-  width: var(--path-pane-width);
-  overflow: hidden;
-  color: #fff;
-  border: 1px solid rgba(237, 191, 99, 0.70);
-  border-radius: 0 12px 0 0;
-  background:
-    radial-gradient(circle at 48% 0%, rgba(255, 215, 115, 0.10), transparent 34%),
-    linear-gradient(180deg, #061f38 0%, #011532 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.10),
-    -6px 0 14px rgba(3, 10, 20, 0.20);
-  transform: translateX(0);
-  transition: transform 180ms ease;
-}
-
-.rf-map-paper.is-path-pane-collapsed .rf-path-pane {
-  transform: translateX(calc(100% - var(--path-handle-width)));
-}
-
-.rf-path-handle {
-  appearance: none;
-  -webkit-appearance: none;
-  position: absolute;
-  inset: 0 auto 0 0;
-  z-index: 3;
-  width: var(--path-handle-width);
-  padding: 7px 0;
-  display: grid;
-  place-items: center;
-  color: #ffdda0;
-  cursor: pointer;
-  border: 0;
-  border-right: 1px solid rgba(237, 191, 99, 0.32);
-  background:
-    linear-gradient(180deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.01)),
-    rgba(4, 16, 30, 0.78);
-}
-
-.rf-path-handle-icon {
-  width: 28px;
-  height: 100%;
-  display: block;
-  object-fit: contain;
-  transition: transform 180ms ease;
-}
-
-.rf-map-paper.is-path-pane-collapsed .rf-path-handle-icon {
-  transform: rotate(180deg);
-}
-
-.rf-path-blank {
-  position: absolute;
-  inset: 0 0 0 var(--path-handle-width);
-  min-width: 0;
-  min-height: 0;
-  padding: 7px 6px 7px 7px;
-  display: grid;
-  grid-template-rows: auto minmax(0, 1fr);
-  overflow: hidden;
-}
-
-.rf-path-blank-title {
-  margin: 0;
-  padding-bottom: 4px;
-  color: #f8d892;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.14);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(6.8px, 1.65vw, 8.2px);
-  font-weight: 950;
-  letter-spacing: 0.035em;
-  line-height: 1;
-  text-transform: uppercase;
-}
-
-.rf-path-details {
-  min-width: 0;
-  min-height: 0;
-  margin-top: 4px;
-  overflow: hidden;
-}
-
-.rf-path-details::-webkit-scrollbar {
-  width: 0;
-  height: 0;
-}
-
-.rf-path-pack {
-  min-width: 0;
-  display: grid;
-  gap: 4px;
-  color: rgba(239, 247, 255, 0.82);
-}
-
-.rf-path-selected-head {
-  min-width: 0;
-  padding-bottom: 4px;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) 6px auto;
-  align-items: center;
-  gap: 3px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.11);
-}
-
-.rf-path-selected-head small,
-.rf-selected-endpoint small,
-.rf-path-frequency-card small,
-.rf-service-bundle small,
-.rf-path-metric dt {
-  overflow: hidden;
-  color: rgba(225, 239, 255, 0.68);
-  font-size: 5.2px;
-  font-weight: 900;
-  letter-spacing: 0.07em;
-  line-height: 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.rf-path-selected-head b {
-  color: #79e85e;
-  font-size: 5.9px;
-  font-weight: 950;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.rf-path-active-dot {
-  width: 6px;
-  height: 6px;
-  display: block;
-  border-radius: 50%;
-  background: #79e85e;
-  box-shadow: 0 0 8px rgba(121, 232, 94, 0.64);
-}
-
-.rf-selected-endpoint {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 22px minmax(0, 1fr);
-  grid-template-areas:
-    "label label"
-    "icon name"
-    "icon role"
-    "icon input";
-  align-items: start;
-  column-gap: 5px;
-  row-gap: 1px;
-}
-
-.rf-selected-endpoint small {
-  grid-area: label;
-}
-
-.rf-endpoint-icon {
-  grid-area: icon;
-  width: 21px;
-  height: 21px;
-  margin-top: 0;
-  display: block;
-  filter: drop-shadow(0 0 7px rgba(255, 218, 120, 0.22));
-}
-
-.rf-endpoint-icon svg {
-  width: 100%;
-  height: 100%;
-  display: block;
-}
-
-.rf-endpoint-icon-bg {
-  fill: #19813b;
-}
-
-.rf-endpoint-icon.is-rx .rf-endpoint-icon-bg {
-  fill: #b82a21;
-}
-
-.rf-endpoint-icon-ring {
-  fill: none;
-  stroke: rgba(255, 242, 194, 0.70);
-  stroke-width: 2;
-}
-
-.rf-endpoint-icon-mast,
-.rf-endpoint-icon-line,
-.rf-endpoint-icon-wave {
-  fill: none;
-  stroke: rgba(255, 255, 255, 0.92);
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.rf-endpoint-icon-mast {
-  stroke-width: 2.1;
-}
-
-.rf-endpoint-icon-line,
-.rf-endpoint-icon-wave {
-  stroke-width: 1.8;
-}
-
-.rf-selected-endpoint b,
-.rf-path-frequency-card b {
-  overflow: hidden;
-  color: #ffe2a3;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 8.5px;
-  font-weight: 950;
-  letter-spacing: 0.015em;
-  line-height: 1;
-  text-transform: uppercase;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rf-selected-endpoint b {
-  grid-area: name;
-  align-self: center;
-}
-
-.rf-selected-endpoint > span:not(.rf-endpoint-icon) {
-  grid-area: role;
-  overflow: hidden;
-  color: rgba(230, 241, 255, 0.84);
-  font-size: 5.8px;
-  font-weight: 820;
-  line-height: 1.05;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rf-selected-endpoint em {
-  grid-area: input;
-  width: max-content;
-  max-width: 100%;
-  margin-top: 1px;
-  overflow: hidden;
-  padding: 1.5px 4px;
-  color: rgba(239, 247, 255, 0.88);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-radius: 5px;
-  background: rgba(255, 255, 255, 0.055);
-  font-size: 5.3px;
-  font-style: normal;
-  font-weight: 820;
-  line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rf-path-frequency-card {
-  min-width: 0;
-  padding: 2px 0;
-  display: grid;
-  gap: 2px;
-  text-align: center;
-}
-
-.rf-path-frequency-card b {
-  font-size: 9.5px;
-  text-align: center;
-}
-
-.rf-path-frequency-card span {
-  color: rgba(230, 241, 255, 0.78);
-  font-size: 5.5px;
-  font-weight: 820;
-  line-height: 1;
-  white-space: nowrap;
-}
-
-.rf-path-frequency-card i {
-  color: rgba(248, 216, 146, 0.72);
-  font-style: normal;
-}
-
-.rf-service-bundle {
-  min-width: 0;
-  display: grid;
-  gap: 3px;
-}
-
-.rf-service-bundle header {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 3px;
-  align-items: center;
-}
-
-.rf-service-bundle header b {
-  padding: 2px 5px;
-  color: #eaffdc;
-  border-radius: 999px;
-  background: rgba(28, 149, 112, 0.78);
-  font-size: 5.2px;
-  font-weight: 950;
-  line-height: 1;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.rf-service-bundle ul {
-  min-width: 0;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 2px;
-  list-style: none;
-}
-
-.rf-service-bundle li {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
-  gap: 4px;
-  align-items: center;
-}
-
-.rf-service-bundle li b {
-  padding: 2px 0;
-  color: #eaffdc;
-  border-radius: 4px;
-  background: rgba(28, 149, 112, 0.72);
-  font-size: 5.1px;
-  font-weight: 950;
-  line-height: 1;
-  text-align: center;
-}
-
-.rf-service-bundle li span {
-  overflow: hidden;
-  color: rgba(239, 247, 255, 0.84);
-  font-size: 5.4px;
-  font-weight: 800;
-  line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rf-path-metrics {
-  min-width: 0;
-  margin: 0;
-  padding-top: 4px;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 4px 3px;
-  border-top: 1px solid rgba(255, 255, 255, 0.11);
-}
-
-.rf-path-metric {
-  min-width: 0;
-  display: grid;
-  gap: 1px;
-}
-
-.rf-path-metric dd {
-  min-width: 0;
-  margin: 0;
-  overflow: hidden;
-  color: rgba(239, 247, 255, 0.92);
-  font-size: 6.1px;
-  font-weight: 900;
-  line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rf-recent {
-  min-height: 0;
-  padding: 5px 8px;
-  display: grid;
-  grid-template-rows: 17px minmax(0, 1fr);
-  gap: 4px;
-  border: 1px solid rgba(130, 91, 22, 0.13);
-  border-top: 0;
-  border-radius: 0 0 13px 13px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.42), transparent 48%),
-    linear-gradient(180deg, rgba(255, 252, 242, 0.84), rgba(248, 236, 211, 0.70));
-}
-
-.rf-recent-head {
-  min-width: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-}
-
-.rf-recent-title {
-  display: inline-flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 10px;
-}
-
-.rf-clock {
-  width: 14px;
-  height: 14px;
-  display: inline-block;
-  border: 2px solid #071c32;
-  border-radius: 50%;
-  position: relative;
-}
-
-.rf-clock::before,
-.rf-clock::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  bottom: 50%;
-  width: 2px;
-  border-radius: 99px;
-  background: #071c32;
-  transform-origin: bottom center;
-}
-
-.rf-clock::before {
-  height: 5px;
-  transform: translateX(-50%) rotate(0deg);
-}
-
-.rf-clock::after {
-  height: 4px;
-  transform: translateX(-50%) rotate(120deg);
-}
-
-.rf-viewall {
-  color: #071c32;
-  font-size: 7px;
-  font-weight: 800;
-}
-
-.rf-recent-grid {
-  min-width: 0;
-  overflow: hidden;
-  display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
-  gap: 6px;
-}
-
-.rf-recent-card {
-  min-width: 0;
-  min-height: 38px;
-  padding: 4px 5px;
-  display: grid;
-  grid-template-columns: 18px minmax(0, 1fr);
-  gap: 4px;
-  align-items: center;
-  color: #071c32;
-  border: 1px solid rgba(239, 198, 120, 0.66);
-  border-radius: 11px;
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.62), rgba(255, 246, 224, 0.24));
-  text-decoration: none;
-}
-
-.rf-recent-card img {
-  width: 17px;
-  height: 17px;
-  object-fit: contain;
-}
-
-.rf-recent-name {
-  display: block;
-  overflow: hidden;
-  color: #071c32;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 6.8px;
-  font-weight: 950;
-  line-height: 0.94;
-  text-decoration: underline;
-  text-transform: uppercase;
-}
-
-.rf-status {
-  margin-top: 2px;
-  display: block;
-  color: #1c9570;
-  font-size: 5.8px;
-  font-weight: 850;
-  line-height: 1;
-}
-
-.rf-interface-panels {
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 0.78fr);
-  gap: 8px;
-  overflow: hidden;
-}
-
-.rf-panel {
-  min-width: 0;
-  min-height: 0;
-  overflow: hidden;
-  padding: 8px 9px;
-  border: 1px solid rgba(130, 91, 22, 0.16);
-  border-radius: 14px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.56), transparent 58%),
-    linear-gradient(180deg, rgba(255, 252, 243, 0.78), rgba(247, 236, 211, 0.64));
-}
-
-.rf-panel-title {
-  margin-bottom: 7px;
-  font-size: 10px;
-}
-
-.rf-services-table {
-  min-width: 0;
-  display: grid;
-  gap: 0;
-}
-
-.rf-services-table-head,
-.rf-service-row {
-  min-width: 0;
-  min-height: 17px;
-  display: grid;
-  grid-template-columns: minmax(0, 1.45fr) minmax(36px, 0.5fr) minmax(44px, 0.5fr);
-  align-items: center;
-  gap: 7px;
-  border-bottom: 1px solid rgba(130, 91, 22, 0.18);
-}
-
-.rf-services-table-head span {
-  color: rgba(7, 31, 56, 0.52);
-  font-size: 5.8px;
-  font-weight: 950;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-}
-
-.rf-service-row {
-  color: #071c32;
-  text-decoration: none;
-}
-
-.rf-service-row span,
-.rf-service-row b {
-  min-width: 0;
-  overflow: hidden;
-  font-size: 6.4px;
-  line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.rf-service-row span:first-child {
-  color: #1b4883;
-  text-decoration: underline;
-}
-
-.rf-service-row b {
-  color: #071c32;
-  font-weight: 900;
-}
-
-.rf-equipment-grid {
-  min-width: 0;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 8px;
-}
-
-.rf-equipment-card {
-  min-width: 0;
-  min-height: 54px;
-  padding: 7px 4px;
-  display: grid;
-  place-items: center;
-  align-content: center;
-  gap: 2px;
-  color: #071c32;
-  border: 1px solid rgba(239, 198, 120, 0.58);
-  border-radius: 12px;
-  background:
-    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.62), transparent 52%),
-    linear-gradient(180deg, rgba(255, 248, 232, 0.82), rgba(239, 228, 200, 0.70));
-  text-align: center;
-  text-decoration: none;
-}
-
-.rf-equipment-card strong {
-  color: #173052;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 17px;
-  font-weight: 950;
-  line-height: 1;
-  text-decoration: underline;
-}
-
-.rf-equipment-card span {
-  color: #1b4883;
-  font-size: 6.2px;
-  font-weight: 950;
-  letter-spacing: 0.05em;
-  line-height: 1;
-  text-decoration: underline;
-  text-transform: uppercase;
-}
-
-.phone[data-nav="rf"]:not([data-page="rf"]) .content-canvas {
-  position: absolute;
-  z-index: 1;
-  top: calc(var(--safe-top, 0px) + var(--top-height, 54px) + 8px);
-  right: 7px;
-  bottom: calc(var(--safe-bottom, 0px) + var(--nav-height, 38px) + var(--bottom-lift, 8px) + 7px);
-  left: 7px;
-  min-height: 0;
-  overflow: hidden;
-  border: 2px solid var(--gold-border, rgba(237, 191, 99, 0.78));
-  border-radius: 20px;
-  background:
-    radial-gradient(circle at 50% 37%, rgba(255, 255, 255, 0.82), transparent 39%),
-    linear-gradient(180deg, rgba(255, 253, 246, 0.95) 0%, rgba(251, 242, 223, 0.93) 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.68),
-    inset 0 0 0 1px rgba(255, 231, 168, 0.26),
-    0 -2px 0 rgba(255, 226, 160, 0.20),
-    0 0 0 1px rgba(85, 55, 10, 0.14),
-    0 14px 30px rgba(2, 9, 20, 0.26);
-}
-
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-content {
-  height: 100%;
-  min-height: 0;
-  padding: 12px;
-  display: grid;
-  align-content: start;
-  gap: 10px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  color: #071c32;
-}
-
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-head,
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-section {
-  padding: 12px;
-  border: 1px solid rgba(130, 91, 22, 0.12);
-  border-radius: 16px;
-  background: rgba(255, 255, 255, 0.34);
-}
-
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-title,
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-section-title {
-  margin: 0;
-  color: #071c32;
-  font-family: Georgia, "Times New Roman", serif;
-  font-weight: 950;
-  text-transform: uppercase;
-}
-
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-title {
-  font-size: 18px;
-}
-
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-section-title {
-  margin-bottom: 8px;
-  font-size: 13px;
-}
-
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-list,
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-grid {
-  min-width: 0;
-  display: grid;
-  gap: 8px;
-}
-
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-card,
-.phone[data-nav="rf"]:not([data-page="rf"]) .page-row {
-  min-width: 0;
-  padding: 9px;
-  color: #071c32;
-  border: 1px solid rgba(130, 91, 22, 0.12);
-  border-radius: 12px;
-  background: rgba(255, 255, 255, 0.40);
-  text-decoration: none;
-}
-
-/* Destination: FieldOpsAtlas/Features/RF/rf-interface.css */
-/* End of file: FieldOpsAtlas/Features/RF/rf-interface.css */
+(() => {
+  "use strict";
+
+  const VERSION = "1.1.124-endpoint-icons";
+  const SLOT_SELECTOR = "[data-rf-path-details]";
+  const PANE_READY_EVENT = "fieldops:rf-pane-shell-ready";
+  const RENDERED_EVENT = "fieldops:rf-path-details-rendered";
+
+  const SITES = [
+    { id: "glasgow-core", name: "Glasgow", role: "Core", status: "Online", nodeType: "core", x: 0.16, y: 0.16 },
+    { id: "edinburgh-core", name: "Edinburgh", role: "Core", status: "Online", nodeType: "core", x: 0.70, y: 0.16 },
+    { id: "manchester-core", name: "Manchester", role: "Core", status: "Online", nodeType: "core", x: 0.44, y: 0.40, size: "large" },
+    { id: "birmingham-core", name: "Birmingham", role: "Core", status: "Online", nodeType: "core", x: 0.44, y: 0.58 },
+    { id: "london-core", name: "London", role: "Core site", status: "Online", nodeType: "core", x: 0.47, y: 0.78, size: "large" },
+    { id: "valley-remote", name: "Valley", role: "Remote", status: "Online", nodeType: "remote", x: 0.14, y: 0.70 },
+    { id: "pinewood-remote", name: "Pinewood", role: "Remote", status: "Online", nodeType: "remote", x: 0.46, y: 0.94 },
+    { id: "hilltop-relay", name: "Hilltop", role: "Relay", status: "Active", nodeType: "relay", x: 0.78, y: 0.45, size: "large" },
+    { id: "ridgeway-relay", name: "Ridgeway", role: "Relay", status: "Watch", nodeType: "relay", x: 0.83, y: 0.62 }
+  ];
+
+  const LINKS = [
+    { id: "glasgow-manchester", from: "glasgow-core", to: "manchester-core", type: "main" },
+    { id: "edinburgh-manchester", from: "edinburgh-core", to: "manchester-core", type: "main" },
+    { id: "manchester-birmingham", from: "manchester-core", to: "birmingham-core", type: "main" },
+    { id: "birmingham-london", from: "birmingham-core", to: "london-core", type: "main" },
+    { id: "london-hilltop", from: "london-core", to: "hilltop-relay", type: "alert" },
+    { id: "hilltop-ridgeway", from: "hilltop-relay", to: "ridgeway-relay", type: "alert" },
+    { id: "london-ridgeway", from: "london-core", to: "ridgeway-relay", type: "main" },
+    { id: "london-valley", from: "london-core", to: "valley-remote", type: "backup" },
+    { id: "london-pinewood", from: "london-core", to: "pinewood-remote", type: "backup" },
+    { id: "glasgow-edinburgh", from: "glasgow-core", to: "edinburgh-core", type: "backup" }
+  ];
+
+  const SELECTED_PATH = {
+    id: "london-hilltop",
+    status: "Active",
+    from: {
+      siteId: "london-core",
+      name: "London",
+      role: "Core Site",
+      input: "Fibre Input"
+    },
+    to: {
+      siteId: "hilltop-relay",
+      name: "Hilltop",
+      role: "Relay Site",
+      input: "Off-air Antenna"
+    },
+    frequency: "234.928 MHz",
+    channel: "DTT CH 39",
+    bandwidth: "8 MHz",
+    serviceCount: "6 links",
+    services: [
+      { type: "DTT", name: "BBC R1" },
+      { type: "DTT", name: "BBC R2" },
+      { type: "DTT", name: "BBC R3" },
+      { type: "DTT", name: "BBC R4" },
+      { type: "DTT", name: "BBC WS" },
+      { type: "DAB", name: "BBC Radio Cymru" }
+    ],
+    metrics: [
+      { label: "Path length", value: "37.6 km" },
+      { label: "Azimuth", value: "123.4°" },
+      { label: "Elevation", value: "1,245 m" },
+      { label: "RX power", value: "-58.2 dBm" },
+      { label: "Fade margin", value: "18.6 dB" },
+      { label: "Availability", value: "99.98%" }
+    ]
+  };
+
+  function cleanText(value) {
+    return String(value ?? "").replace(/\s+/g, " ").trim();
+  }
+
+  function escapeHTML(value) {
+    return cleanText(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#39;");
+  }
+
+  function siteById(id) {
+    return SITES.find((site) => site.id === id) || null;
+  }
+
+  function graphNodeFromSite(site) {
+    const labelSide = site.x > 0.72 ? -1 : 1;
+    const label = {
+      dx: labelSide < 0 ? -24 : 24,
+      dy: -16,
+      anchor: labelSide < 0 ? "end" : "start"
+    };
+
+    return {
+      id: site.id,
+      name: site.name,
+      type: site.nodeType || "relay",
+      size: site.size || (site.nodeType === "core" ? "large" : ""),
+      x: site.x,
+      y: site.y,
+      label,
+      labelTight: {
+        dx: label.dx,
+        dy: -13,
+        anchor: label.anchor
+      }
+    };
+  }
+
+  function buildSites() {
+    return SITES.map((site) => ({ ...site }));
+  }
+
+  function buildGraph() {
+    if (
+      window.ATLAS_RF_GRAPH &&
+      Array.isArray(window.ATLAS_RF_GRAPH.nodes) &&
+      window.ATLAS_RF_GRAPH.nodes.length > 0 &&
+      Array.isArray(window.ATLAS_RF_GRAPH.links)
+    ) {
+      return {
+        ...window.ATLAS_RF_GRAPH,
+        meta: {
+          ...(window.ATLAS_RF_GRAPH.meta || {}),
+          source: "window.ATLAS_RF_GRAPH",
+          builderVersion: VERSION,
+          mode: "external-model"
+        }
+      };
+    }
+
+    return {
+      id: "rf-demo-network-map",
+      selectedPathId: SELECTED_PATH.id,
+      meta: {
+        source: "FieldOpsRFPathBuilder",
+        builderVersion: VERSION,
+        mode: "demo-safe-rf-network",
+        note: "Prototype-safe RF network map. Replace with real path records when available."
+      },
+      nodes: SITES.map(graphNodeFromSite),
+      links: LINKS.map((link) => ({ ...link }))
+    };
+  }
+
+  function endpointIconHTML(direction) {
+    const tone = direction === "from" ? "tx" : "rx";
+
+    return `
+      <span class="rf-endpoint-icon is-${tone}" aria-hidden="true">
+        <svg viewBox="0 0 48 48" focusable="false">
+          <circle class="rf-endpoint-icon-bg" cx="24" cy="24" r="20"></circle>
+          <circle class="rf-endpoint-icon-ring" cx="24" cy="24" r="23"></circle>
+          <path class="rf-endpoint-icon-mast" d="M24 14L17 34H31Z"></path>
+          <path class="rf-endpoint-icon-line" d="M24 18V34M20.5 27H27.5"></path>
+          <path class="rf-endpoint-icon-wave" d="M14.2 17.8C10.8 21.2 10.8 26.8 14.2 30.2M33.8 17.8C37.2 21.2 37.2 26.8 33.8 30.2"></path>
+        </svg>
+      </span>
+    `;
+  }
+
+  function endpointHTML(endpoint, direction) {
+    return `
+      <section class="rf-selected-endpoint is-${escapeHTML(direction)}">
+        <small>${direction === "from" ? "From" : "To"}</small>
+        ${endpointIconHTML(direction)}
+        <b>${escapeHTML(endpoint.name)}</b>
+        <span>${escapeHTML(endpoint.role)}</span>
+        <em>${escapeHTML(endpoint.input)}</em>
+      </section>
+    `;
+  }
+
+  function serviceHTML(service) {
+    return `
+      <li>
+        <b>${escapeHTML(service.type)}</b>
+        <span>${escapeHTML(service.name)}</span>
+      </li>
+    `;
+  }
+
+  function metricHTML(metric) {
+    return `
+      <div class="rf-path-metric">
+        <dt>${escapeHTML(metric.label)}</dt>
+        <dd>${escapeHTML(metric.value)}</dd>
+      </div>
+    `;
+  }
+
+  function buildSitePack() {
+    const fromSite = siteById(SELECTED_PATH.from.siteId);
+    const toSite = siteById(SELECTED_PATH.to.siteId);
+
+    return {
+      id: SELECTED_PATH.id,
+      from: fromSite,
+      to: toSite,
+      selectedPath: SELECTED_PATH,
+      siteCount: SITES.length,
+      linkCount: LINKS.length
+    };
+  }
+
+  function renderPathDetails(pack) {
+    const path = pack.selectedPath;
+
+    return `
+      <article class="rf-path-pack rf-selected-path-pack" data-rf-path-builder-body data-rf-path-id="${escapeHTML(pack.id)}">
+        <section class="rf-path-selected-head">
+          <small>Selected path</small>
+          <span class="rf-path-active-dot" aria-hidden="true"></span>
+          <b>${escapeHTML(path.status)}</b>
+        </section>
+
+        ${endpointHTML(path.from, "from")}
+
+        <section class="rf-path-frequency-card">
+          <small>Frequency</small>
+          <b>${escapeHTML(path.frequency)}</b>
+          <span>${escapeHTML(path.channel)} <i aria-hidden="true">|</i> ${escapeHTML(path.bandwidth)}</span>
+        </section>
+
+        <section class="rf-service-bundle">
+          <header>
+            <small>Service bundle</small>
+            <b>${escapeHTML(path.serviceCount)}</b>
+          </header>
+          <ul>
+            ${path.services.map(serviceHTML).join("")}
+          </ul>
+        </section>
+
+        ${endpointHTML(path.to, "to")}
+
+        <dl class="rf-path-metrics">
+          ${path.metrics.map(metricHTML).join("")}
+        </dl>
+      </article>
+    `;
+  }
+
+  function render(root = document) {
+    const slot = root.querySelector(SLOT_SELECTOR);
+    if (!slot) return false;
+
+    const pack = buildSitePack(root);
+    slot.replaceChildren();
+    slot.insertAdjacentHTML("beforeend", renderPathDetails(pack));
+    slot.dataset.rfPathBuilderLoaded = "true";
+    slot.dataset.rfPathBuilderVersion = VERSION;
+
+    document.dispatchEvent(new CustomEvent(RENDERED_EVENT, {
+      detail: {
+        version: VERSION,
+        pathId: pack.id,
+        source: "selected-path-pane",
+        graph: buildGraph(root)
+      }
+    }));
+
+    return true;
+  }
+
+  function init() {
+    if (render()) return;
+    document.addEventListener(PANE_READY_EVENT, () => { render(); }, { once: true });
+  }
+
+  window.FieldOpsRFPathBuilder = {
+    VERSION,
+    buildSites,
+    buildSitePack,
+    buildGraph,
+    render
+  };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
+})();
+
+/* Destination: FieldOpsAtlas/Features/RF/rf-path-builder.js */
+/* End of file: FieldOpsAtlas/Features/RF/rf-path-builder.js */
