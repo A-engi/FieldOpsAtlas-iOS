@@ -1,302 +1,307 @@
 /* ==========================================================================
    FieldOps Atlas RF graph visuals
    File: FieldOpsAtlas/Features/RF/rf-graph.css
-   Version: 1.1.84-path-details-visible
+   Version: 1.1.85-network-topology
 
    Ownership:
-   - Dynamic RF graph SVG styling.
-   - Demo node/link/label visual styling.
-   - Selected path mesh/radar halo styling.
-   - RF graph key styling.
-
-   Non-ownership:
-   - RF page background/canvas stays in background.css.
-   - RF controls, panes, panels, cards, and page UI stay in rf-interface.css.
-   ========================================================================== */
-
-/* ==========================================================================
-   1. RF graph SVG
+   - RF topology SVG nodes, links, labels, route badges, and graph legends.
+   - RF page layout and path pane styling remain in rf-interface.css.
    ========================================================================== */
 
 .rf-graph-svg {
+  width: 100%;
+  height: 100%;
   max-width: 100%;
   max-height: 100%;
+  display: block;
 }
 
-.demo-route,
-.demo-link-soft,
-.demo-node circle,
-.demo-original-halo circle,
-.demo-original-halo path,
-.demo-compass,
-.demo-compass path,
-.demo-legend {
+.rf-route,
+.rf-route-soft,
+.rf-node-disc,
+.rf-node-halo circle,
+.rf-node-tower path {
   vector-effect: non-scaling-stroke;
 }
 
-.demo-route {
+.rf-route,
+.rf-route-soft {
   fill: none;
   stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.demo-link-soft {
-  opacity: 0.22;
-  stroke-width: 7;
-  fill: none;
+.rf-route-soft {
+  opacity: 0.20;
+  stroke-width: 9;
 }
 
-.demo-link-soft.is-main {
-  stroke: #126832;
+.rf-route-soft.is-main {
+  stroke: #176f35;
 }
 
-.demo-link-soft.is-backup {
-  stroke: #1b5c92;
-}
-
-.demo-link-soft.is-alert {
+.rf-route-soft.is-alert {
   stroke: #c5291e;
 }
 
-.demo-route.is-main {
-  stroke: #106228;
+.rf-route-soft.is-fm,
+.rf-route-soft.is-backup {
+  stroke: #2566a0;
+}
+
+.rf-route-soft.is-standby {
+  stroke: #8f969c;
+}
+
+.rf-route {
   stroke-width: 3.2;
 }
 
-.demo-route.is-backup {
-  stroke: #1f5f98;
-  stroke-width: 2.8;
+.rf-route.is-main {
+  stroke: #176f35;
 }
 
-.demo-route.is-alert {
+.rf-route.is-alert {
   stroke: #c5291e;
-  stroke-width: 3.5;
 }
 
-.demo-route.is-selected-path {
+.rf-route.is-fm,
+.rf-route.is-backup {
+  stroke: #2566a0;
+  stroke-dasharray: 8 8;
+}
+
+.rf-route.is-standby {
+  stroke: #8f969c;
+  stroke-width: 2.5;
+  stroke-dasharray: 9 9;
+}
+
+.rf-route.is-selected {
   filter:
-    drop-shadow(0 0 4px rgba(255, 94, 51, 0.38))
-    drop-shadow(0 0 10px rgba(255, 214, 122, 0.20));
+    drop-shadow(0 0 4px rgba(255, 220, 126, 0.44))
+    drop-shadow(0 0 10px rgba(23, 111, 53, 0.22));
 }
 
-
-.demo-node {
-  color: #fff7de;
+.rf-route-badge circle {
+  fill: #187744;
+  stroke: rgba(255, 244, 202, 0.84);
+  stroke-width: 2;
+  filter: drop-shadow(0 0 6px rgba(23, 111, 53, 0.28));
 }
 
-
-.demo-node circle.core,
-.demo-node circle.main {
-  fill: #13733a;
-  stroke: #fff7de;
-  stroke-width: 2.2;
+.rf-route-badge text {
+  fill: #fff8df;
+  font-family: Inter, system-ui, sans-serif;
+  font-size: 20px;
+  font-weight: 950;
+  letter-spacing: -0.03em;
 }
 
-.demo-node circle.remote {
-  fill: #1f5f98;
-  stroke: #fff7de;
-  stroke-width: 2.2;
-}
-
-.demo-node circle.relay {
-  fill: #b82a21;
-  stroke: #fff7de;
-  stroke-width: 2.2;
-}
-
-
-.demo-node.is-selected circle.relay,
-.demo-node.is-selected circle.core,
-.demo-node.is-selected circle.main,
-.demo-node.is-selected circle.remote {
-  filter:
-    drop-shadow(0 0 5px rgba(255, 218, 123, 0.48))
-    drop-shadow(0 0 12px rgba(255, 94, 51, 0.30));
-}
-
-
-.demo-original-halo {
+.rf-node-halo {
   fill: none;
   pointer-events: none;
 }
 
-.relay-halo-ring {
-  stroke: rgba(201, 42, 31, 0.24);
-  stroke-width: 1;
+.rf-node-halo circle {
+  fill: rgba(255, 253, 241, 0.34);
+  stroke: rgba(237, 191, 99, 0.22);
+  stroke-width: 2;
 }
 
-.relay-halo-ring.is-outer {
-  stroke: rgba(201, 42, 31, 0.18);
+.rf-node-halo circle + circle {
+  fill: none;
+  stroke: rgba(20, 112, 55, 0.18);
+  stroke-width: 2;
 }
 
-.relay-halo-line {
-  stroke: rgba(201, 42, 31, 0.18);
-  stroke-width: 0.7;
+.rf-node.is-relay .rf-node-halo circle + circle {
+  stroke: rgba(197, 41, 30, 0.20);
 }
 
-.relay-halo-line.strong {
-  stroke: rgba(201, 42, 31, 0.26);
-  stroke-width: 0.9;
+.rf-node.is-remote .rf-node-halo circle + circle {
+  stroke: rgba(37, 102, 160, 0.20);
 }
 
-.demo-label {
-  fill: #071c32;
-  paint-order: stroke;
-  stroke: rgba(255, 248, 231, 0.88);
-  stroke-width: 7px;
+.rf-node-halo.is-selected circle {
+  stroke: rgba(237, 191, 99, 0.44);
+  filter: drop-shadow(0 0 8px rgba(237, 191, 99, 0.28));
+}
+
+.rf-node-halo.is-selected circle.is-outer {
+  fill: none;
+  stroke: rgba(197, 41, 30, 0.18);
+  stroke-dasharray: 4 4;
+}
+
+.rf-node-disc {
+  stroke: #fff7de;
+  stroke-width: 3;
+}
+
+.rf-node.is-core .rf-node-disc {
+  fill: #13733a;
+}
+
+.rf-node.is-relay .rf-node-disc {
+  fill: #b82a21;
+}
+
+.rf-node.is-remote .rf-node-disc {
+  fill: #2566a0;
+}
+
+.rf-node.is-selected .rf-node-disc {
+  filter:
+    drop-shadow(0 0 6px rgba(255, 218, 123, 0.44))
+    drop-shadow(0 0 14px rgba(255, 255, 255, 0.18));
+}
+
+.rf-node-tower {
+  fill: none;
+  stroke: rgba(255, 255, 255, 0.96);
+  stroke-width: 2.4;
+  stroke-linecap: round;
   stroke-linejoin: round;
 }
 
-.demo-label .name {
+.rf-node-label {
+  fill: #071c32;
+  paint-order: stroke;
+  stroke: rgba(255, 250, 236, 0.92);
+  stroke-width: 8px;
+  stroke-linejoin: round;
+}
+
+.rf-node-label-name {
   font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  font-size: 22px;
-  font-weight: 900;
+  font-size: 27px;
+  font-weight: 950;
   letter-spacing: 0.01em;
   text-transform: uppercase;
 }
 
-.demo-label .type {
-  fill: rgba(7, 28, 50, 0.58);
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0.08em;
+.rf-node-label-type {
+  fill: #1b7444;
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 19px;
+  font-weight: 850;
+  stroke-width: 6px;
 }
 
-.demo-label.hide-type .type {
-  display: none;
+.rf-node-label.is-relay .rf-node-label-type {
+  fill: #173052;
 }
 
-.demo-compass {
-  fill: none;
-  stroke: rgba(130, 91, 22, 0.18);
-  stroke-width: 2.2;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+.rf-node-label.is-remote .rf-node-label-type {
+  fill: #2566a0;
 }
 
-.demo-compass text {
-  fill: rgba(130, 91, 22, 0.36);
-  stroke: none;
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 20px;
-  font-weight: 900;
-}
-
-.demo-legend {
-  fill: rgba(255, 255, 255, 0.56);
-  stroke: rgba(130, 91, 22, 0.14);
-  stroke-width: 1;
-}
-
-.demo-legend-text {
-  fill: #071c32;
-  stroke: none;
-  font-size: 15px;
-  font-weight: 800;
-}
-
-/* ==========================================================================
-   2. RF graph key
-   ========================================================================== */
-
-.rf-graph-key {
-  --rf-graph-key-strip-height: 20px;
+.rf-graph-legends {
   position: absolute;
-  left: 0;
-  bottom: 0;
   z-index: 5;
-  width: 50%;
-  height: var(--rf-graph-key-strip-height);
-  min-height: 0;
-  padding: 2px 7px;
-  display: grid;
-  grid-template-columns: auto minmax(0, max-content);
-  align-items: center;
-  justify-content: start;
-  column-gap: 6px;
-  color: rgba(7, 31, 56, 0.74);
-  border: 1px solid rgba(130, 91, 22, 0.12);
-  border-bottom: 0;
-  border-left: 0;
-  border-radius: 0 7px 0 0;
-  background: rgba(255, 248, 232, 0.48);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.25),
-    0 -2px 6px rgba(28, 18, 6, 0.03);
+  right: calc(var(--path-pane-width) - var(--path-handle-width) + 8px);
+  bottom: 8px;
+  left: 8px;
+  min-width: 0;
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 8px;
   pointer-events: none;
+  transition: right 180ms ease;
 }
 
-.rf-graph-key-title {
-  color: rgba(7, 31, 56, 0.62);
+.rf-map-paper.is-path-pane-collapsed .rf-graph-legends {
+  right: calc(var(--path-handle-width) + 8px);
+}
+
+.rf-graph-legend-card {
+  min-width: 0;
+  padding: 6px 7px;
+  color: rgba(7, 31, 56, 0.78);
+  border: 1px solid rgba(130, 91, 22, 0.14);
+  border-radius: 10px;
+  background: rgba(255, 250, 238, 0.78);
+  box-shadow: 0 5px 14px rgba(28, 18, 6, 0.06);
+}
+
+.rf-graph-legend-card.is-inputs {
+  width: min(44%, 112px);
+}
+
+.rf-graph-legend-card.is-links {
+  width: min(44%, 108px);
+}
+
+.rf-graph-legend-card h3 {
+  margin: 0 0 4px;
+  color: #071c32;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 5.7px;
-  font-weight: 800;
-  letter-spacing: 0.07em;
+  font-size: 6px;
+  font-weight: 950;
+  letter-spacing: 0.05em;
   line-height: 1;
   text-transform: uppercase;
-  white-space: nowrap;
 }
 
-.rf-graph-key-list {
+.rf-graph-legend-card ul {
   margin: 0;
   padding: 0;
-  min-width: 0;
   display: grid;
-  grid-template-columns: repeat(4, max-content);
-  align-items: center;
-  justify-content: start;
-  column-gap: 5px;
-  row-gap: 1px;
+  gap: 3px;
   list-style: none;
 }
 
-.rf-graph-key-list li {
+.rf-graph-legend-card li {
   min-width: 0;
   display: grid;
-  grid-template-columns: 9px max-content;
+  grid-template-columns: 18px minmax(0, 1fr);
+  gap: 4px;
   align-items: center;
-  gap: 2px;
-  color: rgba(7, 31, 56, 0.60);
-  font-size: 4.4px;
+  font-size: 5.2px;
   font-weight: 800;
-  letter-spacing: -0.01em;
   line-height: 1;
   white-space: nowrap;
 }
 
-.rf-graph-key-swatch {
-  width: 5px;
-  height: 5px;
-  justify-self: center;
-  border-radius: 50%;
-  display: block;
+.rf-input-symbol {
+  height: 11px;
+  display: grid;
+  place-items: center;
+  color: #173052;
+  border: 1px solid rgba(23, 48, 82, 0.18);
+  border-radius: 4px;
+  font-size: 4.4px;
+  font-weight: 950;
+  letter-spacing: -0.03em;
 }
 
-.rf-graph-key-swatch.is-core {
-  background: rgba(0, 130, 150, 0.76);
-  box-shadow: 0 0 0 1px rgba(0, 130, 150, 0.11);
-}
-
-.rf-graph-key-swatch.is-relay {
-  background: rgba(210, 128, 28, 0.78);
-  box-shadow: 0 0 0 1px rgba(210, 128, 28, 0.11);
-}
-
-.rf-graph-key-line {
-  width: 8px;
+.rf-link-swatch {
+  width: 16px;
   height: 0;
-  justify-self: center;
   display: block;
-  border-top: 1.1px solid rgba(7, 31, 56, 0.46);
+  border-top: 2px solid #176f35;
 }
 
-.rf-graph-key-line.is-selected {
-  border-top-color: rgba(201, 126, 28, 0.78);
-}
-
-.rf-graph-key-line.is-standby {
+.rf-link-swatch.is-dab {
   border-top-style: dashed;
-  border-top-color: rgba(7, 31, 56, 0.36);
+  border-top-color: #176f35;
 }
 
-/* End of FieldOpsAtlas/Features/RF/rf-graph.css | bottom/end of file */
+.rf-link-swatch.is-fm {
+  border-top-style: dashed;
+  border-top-color: #2566a0;
+}
+
+.rf-link-swatch.is-ip {
+  border-top-color: #7d5a9e;
+}
+
+.rf-link-swatch.is-standby {
+  border-top-style: dashed;
+  border-top-color: #8f969c;
+}
+
+/* Destination: FieldOpsAtlas/Features/RF/rf-graph.css */
+/* End of file: FieldOpsAtlas/Features/RF/rf-graph.css */
