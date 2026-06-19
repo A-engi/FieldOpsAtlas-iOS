@@ -1,26 +1,26 @@
-<svg xmlns="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x77;&#x77;&#x77;&#x2E;&#x77;&#x33;&#x2E;&#x6F;&#x72;&#x67;&#x2F;&#x32;&#x30;&#x30;&#x30;&#x2F;&#x73;&#x76;&#x67;" width="42" height="420" viewBox="0 0 42 420" fill="none" role="img" aria-labelledby="pathSignalTitle pathSignalDesc">
-  <title id="pathSignalTitle">Path pane cream gold signal rail</title>
-  <desc id="pathSignalDesc">A cream-centred gold zig-zag RF path rail without site labels.</desc>
-  <!-- Version: 1.1.117-rail-only -->
+<svg xmlns="&#x68;&#x74;&#x74;&#x70;&#x3A;&#x2F;&#x2F;&#x77;&#x77;&#x77;&#x2E;&#x77;&#x33;&#x2E;&#x6F;&#x72;&#x67;&#x2F;&#x32;&#x30;&#x30;&#x30;&#x2F;&#x73;&#x76;&#x67;" width="30" height="420" viewBox="0 0 30 420" fill="none" role="img" aria-labelledby="pathSignalTitle pathSignalDesc">
+  <title id="pathSignalTitle">Path pane signal rail</title>
+  <desc id="pathSignalDesc">A green start marker, cream-gold zig-zag RF path, and red end marker.</desc>
+  <!-- Version: 1.1.118-rail-dots -->
 
   <defs>
-    <linearGradient id="signalOuterGold" x1="11" y1="18" x2="11" y2="402" gradientUnits="userSpaceOnUse">
+    <linearGradient id="signalOuterGold" x1="15" y1="34" x2="15" y2="386" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#fff1b8" stop-opacity="0.80" />
-      <stop offset="0.20" stop-color="#f3c65d" stop-opacity="0.88" />
-      <stop offset="0.50" stop-color="#ffd96a" stop-opacity="0.96" />
+      <stop offset="0.24" stop-color="#f3c65d" stop-opacity="0.88" />
+      <stop offset="0.52" stop-color="#ffd96a" stop-opacity="0.96" />
       <stop offset="0.80" stop-color="#e5ad3f" stop-opacity="0.86" />
       <stop offset="1" stop-color="#fff0ba" stop-opacity="0.76" />
     </linearGradient>
 
-    <linearGradient id="signalCoreCream" x1="11" y1="18" x2="11" y2="402" gradientUnits="userSpaceOnUse">
+    <linearGradient id="signalCoreCream" x1="15" y1="34" x2="15" y2="386" gradientUnits="userSpaceOnUse">
       <stop offset="0" stop-color="#fff3c8" />
-      <stop offset="0.34" stop-color="#fffdf4" />
-      <stop offset="0.58" stop-color="#ffffff" />
+      <stop offset="0.36" stop-color="#fffdf4" />
+      <stop offset="0.62" stop-color="#ffffff" />
       <stop offset="1" stop-color="#fff0bd" />
     </linearGradient>
 
-    <filter id="signalGlowWide" x="-150%" y="-10%" width="400%" height="120%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="3.4" result="blur" />
+    <filter id="signalGlowWide" x="-220%" y="-10%" width="540%" height="120%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3.2" result="blur" />
       <feColorMatrix in="blur" type="matrix" values="1 0 0 0 0  0 0.82 0 0 0  0 0 0.24 0 0  0 0 0 0.60 0" result="glow" />
       <feMerge>
         <feMergeNode in="glow" />
@@ -28,17 +28,27 @@
       </feMerge>
     </filter>
 
-    <filter id="signalGlowSoft" x="-180%" y="-12%" width="460%" height="124%" color-interpolation-filters="sRGB">
-      <feGaussianBlur stdDeviation="8" />
+    <filter id="dotGlow" x="-180%" y="-180%" width="460%" height="460%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="3" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
     </filter>
 
-    <path id="zigZagPath" d="M11 38V152L7 165L18 180L7 196L19 212L7 228L18 244L7 260L16 274L11 288V386" />
+    <path id="signalPath" d="M15 46V156L9 171L21 188L9 205L21 222L9 239L21 256L10 272L15 287V374" />
   </defs>
 
   <g aria-hidden="true">
-    <use href="#zigZagPath" stroke="#b98619" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity="0.22" filter="url(#signalGlowSoft)" />
-    <use href="#zigZagPath" stroke="url(#signalOuterGold)" stroke-width="5.2" stroke-linecap="round" stroke-linejoin="round" opacity="0.72" filter="url(#signalGlowWide)" />
-    <use href="#zigZagPath" stroke="url(#signalCoreCream)" stroke-width="1.85" stroke-linecap="round" stroke-linejoin="round" />
+    <circle cx="15" cy="32" r="7" fill="#6bdc47" stroke="#fff2c5" stroke-width="1.4" filter="url(#dotGlow)" />
+    <path d="M15 39V48" stroke="#d7a947" stroke-width="1.5" stroke-linecap="round" />
+
+    <use href="#signalPath" stroke="#b98619" stroke-width="9" stroke-linecap="round" stroke-linejoin="round" opacity="0.20" />
+    <use href="#signalPath" stroke="url(#signalOuterGold)" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" opacity="0.74" filter="url(#signalGlowWide)" />
+    <use href="#signalPath" stroke="url(#signalCoreCream)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+
+    <path d="M15 373V381" stroke="#d7a947" stroke-width="1.5" stroke-linecap="round" />
+    <circle cx="15" cy="389" r="7" fill="#d43a2d" stroke="#fff2c5" stroke-width="1.4" filter="url(#dotGlow)" />
   </g>
 
   <!-- Destination: data/icons/path-pane-signal-chevron-gold.svg -->
