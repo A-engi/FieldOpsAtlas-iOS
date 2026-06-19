@@ -1,7 +1,7 @@
 /* ===========================================================================
    FieldOps Atlas RF interface
    File: FieldOpsAtlas/Features/RF/rf-interface.css
-   Version: 1.1.119-endpoint-icons
+   Version: 1.1.120-pane-fit
 
    Purpose:
    - Own RF interface layout, panels, cards, controls, and path pane shell styling.
@@ -94,8 +94,8 @@
 }
 
 .rf-map-paper {
-  --path-pane-width: clamp(162px, 34%, 196px);
-  --path-handle-width: 44px;
+  --path-pane-width: clamp(140px, 32%, 150px);
+  --path-handle-width: 30px;
 
   position: relative;
   min-height: 0;
@@ -143,7 +143,7 @@
 }
 
 .rf-path-pane {
-  --path-handle-width: 44px;
+  --path-handle-width: 30px;
 
   position: absolute;
   top: 0;
@@ -189,7 +189,7 @@
 }
 
 .rf-path-handle-icon {
-  width: 40px;
+  width: 28px;
   height: 100%;
   display: block;
   object-fit: contain;
@@ -205,7 +205,7 @@
   inset: 0 0 0 var(--path-handle-width);
   min-width: 0;
   min-height: 0;
-  padding: 8px 7px 8px 8px;
+  padding: 7px 6px 7px 7px;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   overflow: hidden;
@@ -213,11 +213,11 @@
 
 .rf-path-blank-title {
   margin: 0;
-  padding-bottom: 6px;
+  padding-bottom: 4px;
   color: #f8d892;
   border-bottom: 1px solid rgba(255, 255, 255, 0.14);
   font-family: Georgia, "Times New Roman", serif;
-  font-size: clamp(7px, 1.8vw, 9px);
+  font-size: clamp(6.8px, 1.65vw, 8.2px);
   font-weight: 950;
   letter-spacing: 0.035em;
   line-height: 1;
@@ -227,11 +227,8 @@
 .rf-path-details {
   min-width: 0;
   min-height: 0;
-  margin-top: 7px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  margin-top: 4px;
+  overflow: hidden;
 }
 
 .rf-path-details::-webkit-scrollbar {
@@ -242,17 +239,17 @@
 .rf-path-pack {
   min-width: 0;
   display: grid;
-  gap: 8px;
+  gap: 4px;
   color: rgba(239, 247, 255, 0.82);
 }
 
 .rf-path-selected-head {
   min-width: 0;
-  padding-bottom: 6px;
+  padding-bottom: 4px;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 8px auto;
+  grid-template-columns: minmax(0, 1fr) 6px auto;
   align-items: center;
-  gap: 5px;
+  gap: 3px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.11);
 }
 
@@ -263,7 +260,7 @@
 .rf-path-metric dt {
   overflow: hidden;
   color: rgba(225, 239, 255, 0.68);
-  font-size: 5.6px;
+  font-size: 5.2px;
   font-weight: 900;
   letter-spacing: 0.07em;
   line-height: 1;
@@ -273,15 +270,15 @@
 
 .rf-path-selected-head b {
   color: #79e85e;
-  font-size: 6.4px;
+  font-size: 5.9px;
   font-weight: 950;
   line-height: 1;
   white-space: nowrap;
 }
 
 .rf-path-active-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   display: block;
   border-radius: 50%;
   background: #79e85e;
@@ -291,15 +288,15 @@
 .rf-selected-endpoint {
   min-width: 0;
   display: grid;
-  grid-template-columns: 24px minmax(0, 1fr);
+  grid-template-columns: 22px minmax(0, 1fr);
   grid-template-areas:
     "label label"
     "icon name"
     "icon role"
     "icon input";
   align-items: start;
-  column-gap: 7px;
-  row-gap: 2px;
+  column-gap: 5px;
+  row-gap: 1px;
 }
 
 .rf-selected-endpoint small {
@@ -308,8 +305,8 @@
 
 .rf-endpoint-icon {
   grid-area: icon;
-  width: 23px;
-  height: 23px;
+  width: 21px;
+  height: 21px;
   margin-top: 0;
   display: block;
   filter: drop-shadow(0 0 7px rgba(255, 218, 120, 0.22));
@@ -358,7 +355,7 @@
   overflow: hidden;
   color: #ffe2a3;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 10px;
+  font-size: 8.5px;
   font-weight: 950;
   letter-spacing: 0.015em;
   line-height: 1;
@@ -376,7 +373,7 @@
   grid-area: role;
   overflow: hidden;
   color: rgba(230, 241, 255, 0.84);
-  font-size: 6.5px;
+  font-size: 5.8px;
   font-weight: 820;
   line-height: 1.05;
   text-overflow: ellipsis;
@@ -387,14 +384,14 @@
   grid-area: input;
   width: max-content;
   max-width: 100%;
-  margin-top: 2px;
+  margin-top: 1px;
   overflow: hidden;
-  padding: 2px 5px;
+  padding: 1.5px 4px;
   color: rgba(239, 247, 255, 0.88);
   border: 1px solid rgba(255, 255, 255, 0.12);
   border-radius: 5px;
   background: rgba(255, 255, 255, 0.055);
-  font-size: 5.9px;
+  font-size: 5.3px;
   font-style: normal;
   font-weight: 820;
   line-height: 1;
@@ -404,20 +401,20 @@
 
 .rf-path-frequency-card {
   min-width: 0;
-  padding: 5px 0;
+  padding: 2px 0;
   display: grid;
-  gap: 3px;
+  gap: 2px;
   text-align: center;
 }
 
 .rf-path-frequency-card b {
-  font-size: 11px;
+  font-size: 9.5px;
   text-align: center;
 }
 
 .rf-path-frequency-card span {
   color: rgba(230, 241, 255, 0.78);
-  font-size: 6.2px;
+  font-size: 5.5px;
   font-weight: 820;
   line-height: 1;
   white-space: nowrap;
@@ -431,14 +428,14 @@
 .rf-service-bundle {
   min-width: 0;
   display: grid;
-  gap: 5px;
+  gap: 3px;
 }
 
 .rf-service-bundle header {
   min-width: 0;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 5px;
+  gap: 3px;
   align-items: center;
 }
 
@@ -447,7 +444,7 @@
   color: #eaffdc;
   border-radius: 999px;
   background: rgba(28, 149, 112, 0.78);
-  font-size: 5.7px;
+  font-size: 5.2px;
   font-weight: 950;
   line-height: 1;
   text-transform: uppercase;
@@ -459,15 +456,15 @@
   margin: 0;
   padding: 0;
   display: grid;
-  gap: 4px;
+  gap: 2px;
   list-style: none;
 }
 
 .rf-service-bundle li {
   min-width: 0;
   display: grid;
-  grid-template-columns: 27px minmax(0, 1fr);
-  gap: 5px;
+  grid-template-columns: 24px minmax(0, 1fr);
+  gap: 4px;
   align-items: center;
 }
 
@@ -476,7 +473,7 @@
   color: #eaffdc;
   border-radius: 4px;
   background: rgba(28, 149, 112, 0.72);
-  font-size: 5.6px;
+  font-size: 5.1px;
   font-weight: 950;
   line-height: 1;
   text-align: center;
@@ -485,7 +482,7 @@
 .rf-service-bundle li span {
   overflow: hidden;
   color: rgba(239, 247, 255, 0.84);
-  font-size: 6px;
+  font-size: 5.4px;
   font-weight: 800;
   line-height: 1;
   text-overflow: ellipsis;
@@ -495,17 +492,17 @@
 .rf-path-metrics {
   min-width: 0;
   margin: 0;
-  padding-top: 7px;
+  padding-top: 4px;
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 7px 5px;
+  gap: 4px 3px;
   border-top: 1px solid rgba(255, 255, 255, 0.11);
 }
 
 .rf-path-metric {
   min-width: 0;
   display: grid;
-  gap: 2px;
+  gap: 1px;
 }
 
 .rf-path-metric dd {
@@ -513,7 +510,7 @@
   margin: 0;
   overflow: hidden;
   color: rgba(239, 247, 255, 0.92);
-  font-size: 7px;
+  font-size: 6.1px;
   font-weight: 900;
   line-height: 1;
   text-overflow: ellipsis;
