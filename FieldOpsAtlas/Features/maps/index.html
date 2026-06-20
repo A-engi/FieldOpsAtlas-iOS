@@ -3,13 +3,13 @@
 <head>
  <meta charset="utf-8">
  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
- <title>Maps v1.0.17-cluster-list-fix</title>
+ <title>Maps v1.0.21-regions-path-source</title>
  <link rel="stylesheet" href="../../../shell.css">
  <link rel="stylesheet" href="./background.css?v=fade-restore-20260612g">
  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
  <link rel="stylesheet" href="./OSMmaps.css?v=fade-restore-20260612g">
  <link rel="stylesheet" href="./OSMpanes.css?v=fade-restore-20260612g">
- <link rel="stylesheet" href="./OSMweather-menu.css?v=1.0.15-service-cluster-picker">
+ <link rel="stylesheet" href="./OSMweather-menu.css?v=1.0.19-regions-path-source">
  <style>
  .maps-load-toast {
   position: fixed;
@@ -42,7 +42,7 @@
 <body>
  <div class="fieldops-shell-root" data-page="map"></div>
 
- <main class="osmmaps-page" data-osmmaps-page data-version="1.0.17-cluster-list-fix">
+ <main class="osmmaps-page" data-osmmaps-page data-version="1.0.21-regions-path-source">
   <div id="OSMmaps" class="osmmaps-canvas" aria-label="UK walk marker map"></div>
 
   <section class="osmmaps-region-overlay" data-region-overlay hidden aria-label="Choose map region">
@@ -77,7 +77,7 @@
     data-map-service="dtt"
     aria-controls="mapServicePicker"
     aria-expanded="false"
-    aria-label="Choose DTT map cluster"
+    aria-label="Show DTT sites and choose cluster"
    >
     <img src="../../../data/icons/dtt.svg?v=1.1.1" alt="" aria-hidden="true">
     <span>DTT</span>
@@ -89,7 +89,7 @@
     data-map-service="dab"
     aria-controls="mapServicePicker"
     aria-expanded="false"
-    aria-label="Choose DAB map cluster"
+    aria-label="Show DAB sites and choose cluster"
    >
     <img src="../../../data/icons/dab.svg?v=1.1.1" alt="" aria-hidden="true">
     <span>DAB</span>
@@ -101,7 +101,7 @@
     data-map-service="fm"
     aria-controls="mapServicePicker"
     aria-expanded="false"
-    aria-label="Choose FM map cluster"
+    aria-label="Show FM sites and choose cluster"
    >
     <img src="../../../data/icons/fm.svg?v=1.1.1" alt="" aria-hidden="true">
     <span>FM</span>
@@ -181,7 +181,7 @@
    </div>
   </section>
 
-  <p class="weather-api-status" data-weather-output>v1.0.17-cluster-list-fix</p>
+  <p class="weather-api-status" data-weather-output>v1.0.21-regions-path-source</p>
  </aside>
 
  <div class="background-item" aria-hidden="true">
@@ -192,14 +192,14 @@
  <script src="../../../shell.js?v=fade-restore-20260612g"></script>
  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
  <script src="./OSMpanes.js?v=fade-restore-20260612g"></script>
- <script src="./OSMweather-menu.js?v=1.0.17-cluster-list-fix"></script>
+ <script src="./OSMweather-menu.js?v=1.0.21-regions-path-source"></script>
  <script src="./OSMmaps.js?v=fade-restore-20260612g"></script>
  <script>
- /* Maps load toast | Version: 1.0.17-cluster-list-fix */
+ /* Maps load toast | Version: 1.0.21-regions-path-source */
  (() => {
   "use strict";
 
-  const PAGE_VERSION = "1.0.17-cluster-list-fix";
+  const PAGE_VERSION = "1.0.21-regions-path-source";
   const TOAST_ID = "mapsLoadToast";
 
   function versionOf(globalName) {
@@ -237,7 +237,7 @@
     "leaflet.css 1.9.4",
     "OSMmaps.css fade-restore-20260612g",
     "OSMpanes.css fade-restore-20260612g",
-    "OSMweather-menu.css 1.0.15-service-cluster-picker",
+    "OSMweather-menu.css 1.0.19-regions-path-source",
     `shell.js ${versionOf("FieldOpsEditor")}`,
     `leaflet.js ${leafletVersion()}`,
     `OSMpanes.js ${versionOf("FieldOpsOSMpanes")}`,
