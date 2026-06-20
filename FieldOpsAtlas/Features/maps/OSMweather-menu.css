@@ -1,7 +1,7 @@
 /* ========================================================================== 
    FieldOps Atlas map quick tools and weather preview
    File: FieldOpsAtlas/Features/maps/OSMweather-menu.css
-   Version: 1.0.14-control-height-match
+   Version: 1.0.15-service-cluster-picker
    Purpose:
    - Styles the collapsible DTT, DAB, FM, and Weather button rail.
    - Styles the existing lazy-loaded map weather preview panel.
@@ -142,6 +142,140 @@
 .map-quick-tools__toggle:focus-visible {
   outline: 2px solid rgba(255, 220, 138, 0.94);
   outline-offset: 2px;
+}
+
+.map-quick-tool.is-active {
+  border-color: rgba(255, 224, 150, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1px rgba(255, 216, 122, 0.10),
+    0 5px 14px rgba(0, 0, 0, 0.20);
+}
+
+.map-service-picker[hidden] {
+  display: none !important;
+}
+
+.map-service-picker {
+  width: calc(100% - 12px);
+  max-height: min(280px, calc(100dvh - var(--safe-top) - 154px));
+  overflow: auto;
+  padding: 10px;
+  color: rgba(244, 251, 255, 0.96);
+  border: 1px solid rgba(139, 194, 231, 0.28);
+  border-top: 0;
+  border-radius: 0 0 16px 16px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(121, 198, 255, 0.10), transparent 42%),
+    rgba(5, 20, 39, 0.96);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.30);
+  pointer-events: auto;
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+}
+
+.map-service-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.map-service-picker__header > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.map-service-picker__header small {
+  color: rgba(195, 225, 245, 0.68);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.map-service-picker__header strong {
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-service-picker__header button,
+.map-service-cluster {
+  appearance: none;
+  -webkit-appearance: none;
+  color: inherit;
+  border: 1px solid rgba(151, 201, 236, 0.24);
+  background:
+    linear-gradient(180deg, rgba(36, 83, 126, 0.88), rgba(9, 38, 70, 0.90));
+  font: inherit;
+  cursor: pointer;
+}
+
+.map-service-picker__header button {
+  min-height: 30px;
+  padding: 0 10px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.map-service-picker__options {
+  display: grid;
+  gap: 7px;
+}
+
+.map-service-cluster {
+  width: 100%;
+  min-height: 44px;
+  padding: 7px 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  border-radius: 12px;
+  text-align: left;
+}
+
+.map-service-cluster strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-service-cluster span {
+  color: rgba(215, 237, 251, 0.70);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.map-service-cluster:focus-visible,
+.map-service-picker__header button:focus-visible {
+  outline: 2px solid rgba(255, 220, 138, 0.94);
+  outline-offset: 2px;
+}
+
+.map-service-picker__status {
+  margin: 8px 2px 0;
+  color: rgba(215, 237, 251, 0.66);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.map-quick-tools.has-service-picker .map-quick-tools__toggle {
+  border-top: 1px solid rgba(188, 207, 222, 0.42);
+  border-radius: 999px;
+}
+
+.map-quick-tools.is-collapsed .map-service-picker {
+  display: none !important;
 }
 
 .map-quick-tools__toggle {
