@@ -1,7 +1,7 @@
 /* ========================================================================== 
    FieldOps Atlas map quick tools and weather preview
    File: FieldOpsAtlas/Features/maps/OSMweather-menu.css
-   Version: 1.0.13-top-bar-height
+   Version: 1.0.14-control-height-match
    Purpose:
    - Styles the collapsible DTT, DAB, FM, and Weather button rail.
    - Styles the existing lazy-loaded map weather preview panel.
@@ -22,9 +22,9 @@
 
 .map-quick-tools__rail {
   width: 100%;
-  height: var(--top-height);
-  max-height: var(--top-height);
-  padding: 5px;
+  height: 50px;
+  max-height: 50px;
+  padding: 6px;
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 5px;
@@ -37,11 +37,12 @@
     rgba(5, 20, 39, 0.82);
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.08),
-    0 14px 32px rgba(0, 0, 0, 0.30);
+    0 10px 24px rgba(0, 0, 0, 0.26);
   opacity: 1;
   pointer-events: auto;
   transform: translateY(0);
   transition:
+    height 180ms ease,
     max-height 180ms ease,
     padding 180ms ease,
     border-width 180ms ease,
@@ -52,22 +53,23 @@
 }
 
 .map-quick-tools.is-collapsed .map-quick-tools__rail {
+  height: 0;
   max-height: 0;
   padding-top: 0;
   padding-bottom: 0;
   border-width: 0;
   opacity: 0;
   pointer-events: none;
-  transform: translateY(-12px);
+  transform: translateY(-10px);
 }
 
 .map-quick-tool {
   appearance: none;
   -webkit-appearance: none;
   min-width: 0;
-  height: calc(var(--top-height) - 10px);
-  min-height: calc(var(--top-height) - 10px);
-  padding: 5px 6px;
+  height: var(--top-control-height);
+  min-height: var(--top-control-height);
+  padding: 0 6px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -75,13 +77,13 @@
   overflow: hidden;
   color: rgba(255, 255, 255, 0.96);
   border: 1px solid rgba(176, 217, 245, 0.22);
-  border-radius: 11px;
+  border-radius: 10px;
   box-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.13),
-    0 8px 18px rgba(0, 0, 0, 0.20);
+    0 5px 12px rgba(0, 0, 0, 0.18);
   text-decoration: none;
   font: inherit;
-  font-size: clamp(11px, 3.4vw, 15px);
+  font-size: clamp(11px, 3.2vw, 14px);
   font-weight: 850;
   line-height: 1;
   letter-spacing: 0.02em;
@@ -89,8 +91,8 @@
 }
 
 .map-quick-tool img {
-  width: clamp(20px, 5.8vw, 26px);
-  height: clamp(20px, 5.8vw, 26px);
+  width: 22px;
+  height: 22px;
   flex: 0 0 auto;
   display: block;
   object-fit: contain;
@@ -128,8 +130,8 @@
 }
 
 .map-quick-tool.is-weather img {
-  width: 29px;
-  height: 29px;
+  width: 26px;
+  height: 26px;
 }
 
 .map-quick-tool:active {
@@ -145,8 +147,8 @@
 .map-quick-tools__toggle {
   appearance: none;
   -webkit-appearance: none;
-  width: 76px;
-  height: 17px;
+  width: 66px;
+  height: 14px;
   margin-top: 0;
   display: grid;
   place-items: center;
@@ -186,7 +188,7 @@
   position: fixed;
   z-index: 68;
   right: max(14px, calc((100vw - min(100vw, 430px)) / 2 + 14px));
-  top: calc(var(--safe-top) + (var(--top-height) * 2) + 22px);
+  top: calc(var(--safe-top) + var(--top-height) + 72px);
   width: min(330px, calc(100vw - 28px));
   max-height: min(520px, calc(100vh - 188px));
   overflow: auto;
@@ -324,26 +326,23 @@
   }
 
   .map-quick-tools__rail {
-    padding: 5px;
     gap: 4px;
   }
 
   .map-quick-tool {
-    height: calc(var(--top-height) - 10px);
-    min-height: calc(var(--top-height) - 10px);
     padding-inline: 4px;
     gap: 4px;
     font-size: 11px;
   }
 
   .map-quick-tool img {
-    width: 21px;
-    height: 21px;
+    width: 20px;
+    height: 20px;
   }
 
   .map-quick-tool.is-weather img {
-    width: 27px;
-    height: 27px;
+    width: 24px;
+    height: 24px;
   }
 }
 
