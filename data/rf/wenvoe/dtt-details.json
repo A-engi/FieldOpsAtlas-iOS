@@ -1,0 +1,4055 @@
+
+  "schema": "fieldops-rf-dtt-details-v1",
+  "version": "1.1.1-demo",
+  "regionId": "wenvoe",
+  "serviceType": "dtt",
+  "displayName": "Wenvoe Demo DTT",
+  "demoOnly": true,
+  "sourceSiteFile": "data/regions/wenvoe-sites.json",
+  "sourceSiteFileSha": "f653b9e31624ce8815b01b05a5a014452540f24f",
+  "participatingSiteCount": 76,
+  "pathCount": 75,
+  "notes": [
+    "Prototype-safe DTT data linked to existing Wenvoe walk IDs.",
+    "The 76 participating records mirror the working public count for the Wenvoe DTT transmitter group.",
+    "Clusters follow the broad geographic pattern of the real Wenvoe group but all paths, equipment, powers, channels outside the main Wenvoe seed set, telemetry and masked IP values are synthetic demo data.",
+    "Distance, bearing and compass direction are deliberately not stored; calculate them from the existing region-site coordinates.",
+    "No backup routes are included in this first DTT-only file."
+  ],
+  "clusters": [
+    {
+      "id": "wenvoe-central",
+      "name": "Wenvoe Central",
+      "headSiteId": "stone-shelf-loop",
+      "siteCount": 7,
+      "siteIds": [
+        "crystal-valley-path",
+        "stone-shelf-loop",
+        "lantern-stone-hollow",
+        "starling-hollow-trail",
+        "foxglove-field-cave",
+        "heather-ridge-hollow",
+        "bright-path-cave"
+      ]
+    },
+    {
+      "id": "rhondda-cynon",
+      "name": "Rhondda & Cynon Valleys",
+      "headSiteId": "fern-warren-walk",
+      "siteCount": 16,
+      "siteIds": [
+        "spring-copse-ridge",
+        "hidden-coast-hollow",
+        "dusk-hollow-ramble",
+        "harbour-coast-cave",
+        "misty-ridge-walk",
+        "cedar-coast-ridge",
+        "hidden-drift-trail",
+        "sparrow-moor-trail",
+        "oak-dale-trail",
+        "robin-spring-trail",
+        "misty-pool-cave",
+        "elder-cove-ridge",
+        "fern-warren-walk",
+        "river-edge-loop",
+        "golden-basin-ramble",
+        "sunset-shore-path"
+      ]
+    },
+    {
+      "id": "bridgend-maesteg",
+      "name": "Bridgend & Maesteg",
+      "headSiteId": "maple-camp-walk",
+      "siteCount": 10,
+      "siteIds": [
+        "honey-haven-cave",
+        "amber-loop-ramble",
+        "crystal-arch-cave",
+        "elm-grove-hollow",
+        "bluebell-field-cave",
+        "maple-camp-walk",
+        "elm-view-trail",
+        "starling-thicket-trail",
+        "high-water-walk",
+        "dawn-spring-trail"
+      ]
+    },
+    {
+      "id": "upper-valleys-west",
+      "name": "Upper Valleys West",
+      "headSiteId": "pebble-arch-hollow",
+      "siteCount": 6,
+      "siteIds": [
+        "cinder-mill-cave",
+        "pebble-arch-hollow",
+        "quiet-shelf-path",
+        "dawn-pool-ramble",
+        "stone-mere-walk",
+        "woodland-cliff-ramble"
+      ]
+    },
+    {
+      "id": "gwent-valleys",
+      "name": "Gwent Valleys",
+      "headSiteId": "brook-thicket-cave",
+      "siteCount": 12,
+      "siteIds": [
+        "bluebell-haven-loop",
+        "meadow-way-hollow",
+        "hazel-bank-trail",
+        "brook-thicket-cave",
+        "velvet-loop-cave",
+        "elder-glen-hollow",
+        "low-ladder-cave",
+        "pebble-vale-ridge",
+        "golden-falls-ridge",
+        "thistle-bend-loop",
+        "ashen-way-hollow",
+        "shadow-camp-trail"
+      ]
+    },
+    {
+      "id": "monmouthshire",
+      "name": "Monmouthshire",
+      "headSiteId": "foxglove-quarry-path",
+      "siteCount": 5,
+      "siteIds": [
+        "winter-tarn-ridge",
+        "maple-warren-trail",
+        "heather-field-cave",
+        "foxglove-quarry-path",
+        "shadow-stone-path"
+      ]
+    },
+    {
+      "id": "newport-east",
+      "name": "Newport & East",
+      "headSiteId": "spring-falls-loop",
+      "siteCount": 16,
+      "siteIds": [
+        "iron-tor-trail",
+        "drift-vale-hollow",
+        "cairn-gate-ridge",
+        "green-view-trail",
+        "drift-lantern-hollow",
+        "meadow-camp-path",
+        "emerald-arch-loop",
+        "low-lane-path",
+        "misty-dale-loop",
+        "spring-falls-loop",
+        "bright-harbour-cave",
+        "dawn-well-loop",
+        "elm-tarn-cave",
+        "amber-drift-hollow",
+        "shadow-pool-ridge",
+        "bramble-ledge-cave"
+      ]
+    },
+    {
+      "id": "vale-coast",
+      "name": "Vale & Coast",
+      "headSiteId": "red-vale-hollow",
+      "siteCount": 4,
+      "siteIds": [
+        "bracken-basin-ramble",
+        "summer-ford-hollow",
+        "red-vale-hollow",
+        "ivy-ford-ramble"
+      ]
+    }
+  ],
+  "siteDetails": [
+    {
+      "siteId": "bluebell-haven-loop",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          40,
+          43,
+          46
+        ],
+        "frequenciesMHz": [
+          626,
+          650,
+          674
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "golden-falls-ridge",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          46,
+          39,
+          42
+        ],
+        "frequenciesMHz": [
+          674,
+          618,
+          642
+        ],
+        "powerDbm": -68.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.1.xx"
+    },
+    {
+      "siteId": "cinder-mill-cave",
+      "clusterId": "upper-valleys-west",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          29,
+          31,
+          37
+        ],
+        "frequenciesMHz": [
+          538,
+          554,
+          602
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "stone-mere-walk",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          31,
+          37,
+          29
+        ],
+        "frequenciesMHz": [
+          554,
+          602,
+          538
+        ],
+        "powerDbm": -72.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.27.2.xx"
+    },
+    {
+      "siteId": "spring-copse-ridge",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          21,
+          24,
+          27
+        ],
+        "frequenciesMHz": [
+          474,
+          498,
+          522
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "river-edge-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          24,
+          27,
+          25
+        ],
+        "frequenciesMHz": [
+          498,
+          522,
+          506
+        ],
+        "powerDbm": -59.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.3.xx"
+    },
+    {
+      "siteId": "hidden-coast-hollow",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          24,
+          27,
+          25
+        ],
+        "frequenciesMHz": [
+          498,
+          522,
+          506
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "elder-cove-ridge",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          28,
+          21,
+          24
+        ],
+        "frequenciesMHz": [
+          530,
+          474,
+          498
+        ],
+        "powerDbm": -48.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.4.xx"
+    },
+    {
+      "siteId": "dusk-hollow-ramble",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          27,
+          25,
+          22
+        ],
+        "frequenciesMHz": [
+          522,
+          506,
+          482
+        ],
+        "powerKw": 0.025
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "cedar-coast-ridge",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          28,
+          21,
+          24
+        ],
+        "frequenciesMHz": [
+          530,
+          474,
+          498
+        ],
+        "powerDbm": -53.2
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.5.xx"
+    },
+    {
+      "siteId": "meadow-way-hollow",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          43,
+          46,
+          39
+        ],
+        "frequenciesMHz": [
+          650,
+          674,
+          618
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "shadow-camp-trail",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          45,
+          40,
+          43
+        ],
+        "frequenciesMHz": [
+          666,
+          626,
+          650
+        ],
+        "powerDbm": -70.5
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.6.xx"
+    },
+    {
+      "siteId": "honey-haven-cave",
+      "clusterId": "bridgend-maesteg",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          23,
+          26,
+          30
+        ],
+        "frequenciesMHz": [
+          490,
+          514,
+          546
+        ],
+        "powerKw": 0.01
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "dawn-spring-trail",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          23,
+          26,
+          30
+        ],
+        "frequenciesMHz": [
+          490,
+          514,
+          546
+        ],
+        "powerDbm": -71.9
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.26.7.xx"
+    },
+    {
+      "siteId": "hazel-bank-trail",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          46,
+          39,
+          42
+        ],
+        "frequenciesMHz": [
+          674,
+          618,
+          642
+        ],
+        "powerKw": 0.01
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "bluebell-haven-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          40,
+          43,
+          46
+        ],
+        "frequenciesMHz": [
+          626,
+          650,
+          674
+        ],
+        "powerDbm": -58.5
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.8.xx"
+    },
+    {
+      "siteId": "crystal-valley-path",
+      "clusterId": "wenvoe-central",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          41,
+          44,
+          47
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682
+        ],
+        "powerKw": 0.025
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "starling-hollow-trail",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          42,
+          45,
+          39
+        ],
+        "frequenciesMHz": [
+          642,
+          666,
+          618
+        ],
+        "powerDbm": -53.6
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.24.9.xx"
+    },
+    {
+      "siteId": "pebble-arch-hollow",
+      "clusterId": "upper-valleys-west",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF panel array",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          31,
+          37,
+          29
+        ],
+        "frequenciesMHz": [
+          554,
+          602,
+          538
+        ],
+        "powerKw": 0.5
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "stone-shelf-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF log-periodic receiving antenna",
+        "channels": [
+          41,
+          44,
+          47
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682
+        ],
+        "powerDbm": -60.9
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.27.10.xx"
+    },
+    {
+      "siteId": "iron-tor-trail",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerKw": 0.01
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "elm-tarn-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerDbm": -52.2
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.11.xx"
+    },
+    {
+      "siteId": "harbour-coast-cave",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          25,
+          22,
+          28
+        ],
+        "frequenciesMHz": [
+          506,
+          482,
+          530
+        ],
+        "powerKw": 0.01
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "misty-ridge-walk",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          28,
+          21
+        ],
+        "frequenciesMHz": [
+          482,
+          530,
+          474
+        ],
+        "powerDbm": -59.7
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.12.xx"
+    },
+    {
+      "siteId": "stone-shelf-loop",
+      "clusterId": "wenvoe-central",
+      "siteType": "main",
+      "serviceType": "dtt",
+      "multiplexCount": 6,
+      "transmitterType": "Demo DTT main transmitter",
+      "outputAntennaType": "Demo UHF main panel array",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          41,
+          44,
+          47,
+          42,
+          45,
+          39
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682,
+          642,
+          666,
+          618
+        ],
+        "powerKw": 50.0
+      },
+      "rx": {
+        "inputMode": "network",
+        "fromSiteId": null,
+        "receiverType": "Demo DTT network receiver",
+        "receivingAntennaType": null,
+        "channels": [],
+        "frequenciesMHz": [],
+        "powerDbm": null
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.24.13.xx"
+    },
+    {
+      "siteId": "drift-vale-hollow",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          25,
+          28,
+          22
+        ],
+        "frequenciesMHz": [
+          506,
+          530,
+          482
+        ],
+        "powerKw": 0.005
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "spring-falls-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerDbm": -64.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.14.xx"
+    },
+    {
+      "siteId": "misty-ridge-walk",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          22,
+          28,
+          21
+        ],
+        "frequenciesMHz": [
+          482,
+          530,
+          474
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "river-edge-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          24,
+          27,
+          25
+        ],
+        "frequenciesMHz": [
+          498,
+          522,
+          506
+        ],
+        "powerDbm": -58.8
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.15.xx"
+    },
+    {
+      "siteId": "amber-loop-ramble",
+      "clusterId": "bridgend-maesteg",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          26,
+          30,
+          23
+        ],
+        "frequenciesMHz": [
+          514,
+          546,
+          490
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "honey-haven-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          23,
+          26,
+          30
+        ],
+        "frequenciesMHz": [
+          490,
+          514,
+          546
+        ],
+        "powerDbm": -63.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.26.16.xx"
+    },
+    {
+      "siteId": "brook-thicket-cave",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 6,
+      "transmitterType": "Demo DTT high-capacity relay transmitter",
+      "outputAntennaType": "Demo UHF panel array",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          40,
+          43,
+          46,
+          39,
+          42,
+          45
+        ],
+        "frequenciesMHz": [
+          626,
+          650,
+          674,
+          618,
+          642,
+          666
+        ],
+        "powerKw": 2.5
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "stone-shelf-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF log-periodic receiving antenna",
+        "channels": [
+          41,
+          44,
+          47,
+          42,
+          45,
+          39
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682,
+          642,
+          666,
+          618
+        ],
+        "powerDbm": -54.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.17.xx"
+    },
+    {
+      "siteId": "velvet-loop-cave",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          42,
+          45,
+          40
+        ],
+        "frequenciesMHz": [
+          642,
+          666,
+          626
+        ],
+        "powerKw": 0.002
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "thistle-bend-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          39,
+          42,
+          45
+        ],
+        "frequenciesMHz": [
+          618,
+          642,
+          666
+        ],
+        "powerDbm": -63.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.18.xx"
+    },
+    {
+      "siteId": "cedar-coast-ridge",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          28,
+          21,
+          24
+        ],
+        "frequenciesMHz": [
+          530,
+          474,
+          498
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "misty-pool-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          28,
+          21
+        ],
+        "frequenciesMHz": [
+          482,
+          530,
+          474
+        ],
+        "powerDbm": -51.0
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.19.xx"
+    },
+    {
+      "siteId": "elder-glen-hollow",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          45,
+          40,
+          43
+        ],
+        "frequenciesMHz": [
+          666,
+          626,
+          650
+        ],
+        "powerKw": 0.002
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "brook-thicket-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          40,
+          43,
+          46
+        ],
+        "frequenciesMHz": [
+          626,
+          650,
+          674
+        ],
+        "powerDbm": -55.1
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.20.xx"
+    },
+    {
+      "siteId": "cairn-gate-ridge",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          28,
+          22,
+          25
+        ],
+        "frequenciesMHz": [
+          530,
+          482,
+          506
+        ],
+        "powerKw": 0.005
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "emerald-arch-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerDbm": -58.6
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.21.xx"
+    },
+    {
+      "siteId": "winter-tarn-ridge",
+      "clusterId": "monmouthshire",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          34,
+          35,
+          36
+        ],
+        "frequenciesMHz": [
+          578,
+          586,
+          594
+        ],
+        "powerKw": 0.025
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "foxglove-quarry-path",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          34,
+          35,
+          36
+        ],
+        "frequenciesMHz": [
+          578,
+          586,
+          594
+        ],
+        "powerDbm": -52.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.29.22.xx"
+    },
+    {
+      "siteId": "green-view-trail",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "drift-lantern-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          25,
+          28,
+          22
+        ],
+        "frequenciesMHz": [
+          506,
+          530,
+          482
+        ],
+        "powerDbm": -60.7
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.23.xx"
+    },
+    {
+      "siteId": "drift-lantern-hollow",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          25,
+          28,
+          22
+        ],
+        "frequenciesMHz": [
+          506,
+          530,
+          482
+        ],
+        "powerKw": 0.002
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "misty-dale-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          28,
+          22,
+          25
+        ],
+        "frequenciesMHz": [
+          530,
+          482,
+          506
+        ],
+        "powerDbm": -59.1
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.24.xx"
+    },
+    {
+      "siteId": "meadow-camp-path",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          28,
+          22,
+          25
+        ],
+        "frequenciesMHz": [
+          530,
+          482,
+          506
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "bright-harbour-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          25,
+          28,
+          22
+        ],
+        "frequenciesMHz": [
+          506,
+          530,
+          482
+        ],
+        "powerDbm": -72.6
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.25.xx"
+    },
+    {
+      "siteId": "emerald-arch-loop",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerKw": 0.025
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "meadow-camp-path",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          28,
+          22,
+          25
+        ],
+        "frequenciesMHz": [
+          530,
+          482,
+          506
+        ],
+        "powerDbm": -49.2
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.26.xx"
+    },
+    {
+      "siteId": "low-lane-path",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          25,
+          28,
+          22
+        ],
+        "frequenciesMHz": [
+          506,
+          530,
+          482
+        ],
+        "powerKw": 0.005
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "meadow-camp-path",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          28,
+          22,
+          25
+        ],
+        "frequenciesMHz": [
+          530,
+          482,
+          506
+        ],
+        "powerDbm": -57.5
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.27.xx"
+    },
+    {
+      "siteId": "misty-dale-loop",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          28,
+          22,
+          25
+        ],
+        "frequenciesMHz": [
+          530,
+          482,
+          506
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "bramble-ledge-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerDbm": -71.6
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.28.xx"
+    },
+    {
+      "siteId": "spring-falls-loop",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF panel array",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerKw": 0.5
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "stone-shelf-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF log-periodic receiving antenna",
+        "channels": [
+          41,
+          44,
+          47
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682
+        ],
+        "powerDbm": -50.1
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.29.xx"
+    },
+    {
+      "siteId": "bright-harbour-cave",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          25,
+          28,
+          22
+        ],
+        "frequenciesMHz": [
+          506,
+          530,
+          482
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "drift-vale-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          25,
+          28,
+          22
+        ],
+        "frequenciesMHz": [
+          506,
+          530,
+          482
+        ],
+        "powerDbm": -49.6
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.30.xx"
+    },
+    {
+      "siteId": "crystal-arch-cave",
+      "clusterId": "bridgend-maesteg",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          30,
+          23,
+          26
+        ],
+        "frequenciesMHz": [
+          546,
+          490,
+          514
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "bluebell-field-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          26,
+          30,
+          23
+        ],
+        "frequenciesMHz": [
+          514,
+          546,
+          490
+        ],
+        "powerDbm": -65.5
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.26.31.xx"
+    },
+    {
+      "siteId": "low-ladder-cave",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          40,
+          43,
+          46
+        ],
+        "frequenciesMHz": [
+          626,
+          650,
+          674
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "shadow-camp-trail",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          45,
+          40,
+          43
+        ],
+        "frequenciesMHz": [
+          666,
+          626,
+          650
+        ],
+        "powerDbm": -54.0
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.32.xx"
+    },
+    {
+      "siteId": "bracken-basin-ramble",
+      "clusterId": "vale-coast",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          32,
+          33,
+          34
+        ],
+        "frequenciesMHz": [
+          562,
+          570,
+          578
+        ],
+        "powerKw": 0.005
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "red-vale-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          34,
+          32,
+          33
+        ],
+        "frequenciesMHz": [
+          578,
+          562,
+          570
+        ],
+        "powerDbm": -73.5
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.31.33.xx"
+    },
+    {
+      "siteId": "lantern-stone-hollow",
+      "clusterId": "wenvoe-central",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          47,
+          42,
+          45
+        ],
+        "frequenciesMHz": [
+          682,
+          642,
+          666
+        ],
+        "powerKw": 0.002
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "stone-shelf-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          41,
+          44,
+          47
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682
+        ],
+        "powerDbm": -58.1
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.24.34.xx"
+    },
+    {
+      "siteId": "starling-hollow-trail",
+      "clusterId": "wenvoe-central",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          42,
+          45,
+          39
+        ],
+        "frequenciesMHz": [
+          642,
+          666,
+          618
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "lantern-stone-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          47,
+          42,
+          45
+        ],
+        "frequenciesMHz": [
+          682,
+          642,
+          666
+        ],
+        "powerDbm": -59.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.24.35.xx"
+    },
+    {
+      "siteId": "maple-warren-trail",
+      "clusterId": "monmouthshire",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          35,
+          36,
+          34
+        ],
+        "frequenciesMHz": [
+          586,
+          594,
+          578
+        ],
+        "powerKw": 0.01
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "heather-field-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          36,
+          34,
+          35
+        ],
+        "frequenciesMHz": [
+          594,
+          578,
+          586
+        ],
+        "powerDbm": -62.7
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.29.36.xx"
+    },
+    {
+      "siteId": "heather-field-cave",
+      "clusterId": "monmouthshire",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          36,
+          34,
+          35
+        ],
+        "frequenciesMHz": [
+          594,
+          578,
+          586
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "foxglove-quarry-path",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          34,
+          35,
+          36
+        ],
+        "frequenciesMHz": [
+          578,
+          586,
+          594
+        ],
+        "powerDbm": -73.8
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.29.37.xx"
+    },
+    {
+      "siteId": "foxglove-field-cave",
+      "clusterId": "wenvoe-central",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          45,
+          39,
+          41
+        ],
+        "frequenciesMHz": [
+          666,
+          618,
+          634
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "heather-ridge-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          39,
+          41,
+          44
+        ],
+        "frequenciesMHz": [
+          618,
+          634,
+          658
+        ],
+        "powerDbm": -59.5
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.24.38.xx"
+    },
+    {
+      "siteId": "quiet-shelf-path",
+      "clusterId": "upper-valleys-west",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          37,
+          29,
+          31
+        ],
+        "frequenciesMHz": [
+          602,
+          538,
+          554
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "dawn-pool-ramble",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          29,
+          31,
+          37
+        ],
+        "frequenciesMHz": [
+          538,
+          554,
+          602
+        ],
+        "powerDbm": -53.0
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.27.39.xx"
+    },
+    {
+      "siteId": "foxglove-quarry-path",
+      "clusterId": "monmouthshire",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF panel array",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          34,
+          35,
+          36
+        ],
+        "frequenciesMHz": [
+          578,
+          586,
+          594
+        ],
+        "powerKw": 0.5
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "stone-shelf-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF log-periodic receiving antenna",
+        "channels": [
+          41,
+          44,
+          47
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682
+        ],
+        "powerDbm": -68.1
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.29.40.xx"
+    },
+    {
+      "siteId": "pebble-vale-ridge",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          43,
+          46,
+          39
+        ],
+        "frequenciesMHz": [
+          650,
+          674,
+          618
+        ],
+        "powerKw": 0.005
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "brook-thicket-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          40,
+          43,
+          46
+        ],
+        "frequenciesMHz": [
+          626,
+          650,
+          674
+        ],
+        "powerDbm": -68.8
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.41.xx"
+    },
+    {
+      "siteId": "shadow-stone-path",
+      "clusterId": "monmouthshire",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          35,
+          36,
+          34
+        ],
+        "frequenciesMHz": [
+          586,
+          594,
+          578
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "foxglove-quarry-path",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          34,
+          35,
+          36
+        ],
+        "frequenciesMHz": [
+          578,
+          586,
+          594
+        ],
+        "powerDbm": -58.7
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.29.42.xx"
+    },
+    {
+      "siteId": "dawn-pool-ramble",
+      "clusterId": "upper-valleys-west",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          29,
+          31,
+          37
+        ],
+        "frequenciesMHz": [
+          538,
+          554,
+          602
+        ],
+        "powerKw": 0.01
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "pebble-arch-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          31,
+          37,
+          29
+        ],
+        "frequenciesMHz": [
+          554,
+          602,
+          538
+        ],
+        "powerDbm": -66.1
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.27.43.xx"
+    },
+    {
+      "siteId": "elm-grove-hollow",
+      "clusterId": "bridgend-maesteg",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          23,
+          26,
+          30
+        ],
+        "frequenciesMHz": [
+          490,
+          514,
+          546
+        ],
+        "powerKw": 0.01
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "honey-haven-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          23,
+          26,
+          30
+        ],
+        "frequenciesMHz": [
+          490,
+          514,
+          546
+        ],
+        "powerDbm": -61.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.26.44.xx"
+    },
+    {
+      "siteId": "golden-falls-ridge",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          46,
+          39,
+          42
+        ],
+        "frequenciesMHz": [
+          674,
+          618,
+          642
+        ],
+        "powerKw": 0.025
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "elder-glen-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          45,
+          40,
+          43
+        ],
+        "frequenciesMHz": [
+          666,
+          626,
+          650
+        ],
+        "powerDbm": -56.9
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.45.xx"
+    },
+    {
+      "siteId": "thistle-bend-loop",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          39,
+          42,
+          45
+        ],
+        "frequenciesMHz": [
+          618,
+          642,
+          666
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "brook-thicket-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          40,
+          43,
+          46
+        ],
+        "frequenciesMHz": [
+          626,
+          650,
+          674
+        ],
+        "powerDbm": -52.0
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.46.xx"
+    },
+    {
+      "siteId": "stone-mere-walk",
+      "clusterId": "upper-valleys-west",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          31,
+          37,
+          29
+        ],
+        "frequenciesMHz": [
+          554,
+          602,
+          538
+        ],
+        "powerKw": 0.002
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "woodland-cliff-ramble",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          37,
+          29,
+          31
+        ],
+        "frequenciesMHz": [
+          602,
+          538,
+          554
+        ],
+        "powerDbm": -72.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.27.47.xx"
+    },
+    {
+      "siteId": "bluebell-field-cave",
+      "clusterId": "bridgend-maesteg",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          26,
+          30,
+          23
+        ],
+        "frequenciesMHz": [
+          514,
+          546,
+          490
+        ],
+        "powerKw": 0.002
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "high-water-walk",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          30,
+          23,
+          26
+        ],
+        "frequenciesMHz": [
+          546,
+          490,
+          514
+        ],
+        "powerDbm": -51.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.26.48.xx"
+    },
+    {
+      "siteId": "maple-camp-walk",
+      "clusterId": "bridgend-maesteg",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF panel array",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          30,
+          23,
+          26
+        ],
+        "frequenciesMHz": [
+          546,
+          490,
+          514
+        ],
+        "powerKw": 0.5
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "stone-shelf-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF log-periodic receiving antenna",
+        "channels": [
+          41,
+          44,
+          47
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682
+        ],
+        "powerDbm": -73.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.26.49.xx"
+    },
+    {
+      "siteId": "hidden-drift-trail",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          21,
+          24,
+          27
+        ],
+        "frequenciesMHz": [
+          474,
+          498,
+          522
+        ],
+        "powerKw": 0.005
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "dusk-hollow-ramble",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          27,
+          25,
+          22
+        ],
+        "frequenciesMHz": [
+          522,
+          506,
+          482
+        ],
+        "powerDbm": -68.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.50.xx"
+    },
+    {
+      "siteId": "heather-ridge-hollow",
+      "clusterId": "wenvoe-central",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          39,
+          41,
+          44
+        ],
+        "frequenciesMHz": [
+          618,
+          634,
+          658
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "bright-path-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          41,
+          44,
+          47
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682
+        ],
+        "powerDbm": -70.7
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.24.51.xx"
+    },
+    {
+      "siteId": "bright-path-cave",
+      "clusterId": "wenvoe-central",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          41,
+          44,
+          47
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "crystal-valley-path",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          41,
+          44,
+          47
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682
+        ],
+        "powerDbm": -64.5
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.24.52.xx"
+    },
+    {
+      "siteId": "woodland-cliff-ramble",
+      "clusterId": "upper-valleys-west",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          37,
+          29,
+          31
+        ],
+        "frequenciesMHz": [
+          602,
+          538,
+          554
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "pebble-arch-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          31,
+          37,
+          29
+        ],
+        "frequenciesMHz": [
+          554,
+          602,
+          538
+        ],
+        "powerDbm": -57.1
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.27.53.xx"
+    },
+    {
+      "siteId": "sparrow-moor-trail",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          24,
+          27,
+          25
+        ],
+        "frequenciesMHz": [
+          498,
+          522,
+          506
+        ],
+        "powerKw": 0.025
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "misty-ridge-walk",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          28,
+          21
+        ],
+        "frequenciesMHz": [
+          482,
+          530,
+          474
+        ],
+        "powerDbm": -68.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.54.xx"
+    },
+    {
+      "siteId": "oak-dale-trail",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          27,
+          25,
+          22
+        ],
+        "frequenciesMHz": [
+          522,
+          506,
+          482
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "hidden-coast-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          24,
+          27,
+          25
+        ],
+        "frequenciesMHz": [
+          498,
+          522,
+          506
+        ],
+        "powerDbm": -65.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.55.xx"
+    },
+    {
+      "siteId": "elm-view-trail",
+      "clusterId": "bridgend-maesteg",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          23,
+          26,
+          30
+        ],
+        "frequenciesMHz": [
+          490,
+          514,
+          546
+        ],
+        "powerKw": 0.002
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "elm-grove-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          23,
+          26,
+          30
+        ],
+        "frequenciesMHz": [
+          490,
+          514,
+          546
+        ],
+        "powerDbm": -70.6
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.26.56.xx"
+    },
+    {
+      "siteId": "dawn-well-loop",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          28,
+          22,
+          25
+        ],
+        "frequenciesMHz": [
+          530,
+          482,
+          506
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "amber-drift-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          25,
+          28,
+          22
+        ],
+        "frequenciesMHz": [
+          506,
+          530,
+          482
+        ],
+        "powerDbm": -61.2
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.57.xx"
+    },
+    {
+      "siteId": "elm-tarn-cave",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "spring-falls-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerDbm": -73.1
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.58.xx"
+    },
+    {
+      "siteId": "amber-drift-hollow",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          25,
+          28,
+          22
+        ],
+        "frequenciesMHz": [
+          506,
+          530,
+          482
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "bramble-ledge-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerDbm": -63.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.59.xx"
+    },
+    {
+      "siteId": "shadow-pool-ridge",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          28,
+          22,
+          25
+        ],
+        "frequenciesMHz": [
+          530,
+          482,
+          506
+        ],
+        "powerKw": 0.005
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "emerald-arch-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerDbm": -52.1
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.60.xx"
+    },
+    {
+      "siteId": "ashen-way-hollow",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          42,
+          45,
+          40
+        ],
+        "frequenciesMHz": [
+          642,
+          666,
+          626
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "pebble-vale-ridge",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          43,
+          46,
+          39
+        ],
+        "frequenciesMHz": [
+          650,
+          674,
+          618
+        ],
+        "powerDbm": -55.0
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.61.xx"
+    },
+    {
+      "siteId": "shadow-camp-trail",
+      "clusterId": "gwent-valleys",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          45,
+          40,
+          43
+        ],
+        "frequenciesMHz": [
+          666,
+          626,
+          650
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "ashen-way-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          42,
+          45,
+          40
+        ],
+        "frequenciesMHz": [
+          642,
+          666,
+          626
+        ],
+        "powerDbm": -50.2
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.28.62.xx"
+    },
+    {
+      "siteId": "starling-thicket-trail",
+      "clusterId": "bridgend-maesteg",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          26,
+          30,
+          23
+        ],
+        "frequenciesMHz": [
+          514,
+          546,
+          490
+        ],
+        "powerKw": 0.025
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "maple-camp-walk",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          30,
+          23,
+          26
+        ],
+        "frequenciesMHz": [
+          546,
+          490,
+          514
+        ],
+        "powerDbm": -64.9
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.26.63.xx"
+    },
+    {
+      "siteId": "robin-spring-trail",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          25,
+          22,
+          28
+        ],
+        "frequenciesMHz": [
+          506,
+          482,
+          530
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "fern-warren-walk",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          21,
+          24,
+          27
+        ],
+        "frequenciesMHz": [
+          474,
+          498,
+          522
+        ],
+        "powerDbm": -52.8
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.64.xx"
+    },
+    {
+      "siteId": "misty-pool-cave",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          22,
+          28,
+          21
+        ],
+        "frequenciesMHz": [
+          482,
+          530,
+          474
+        ],
+        "powerKw": 0.025
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "fern-warren-walk",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          21,
+          24,
+          27
+        ],
+        "frequenciesMHz": [
+          474,
+          498,
+          522
+        ],
+        "powerDbm": -66.5
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.65.xx"
+    },
+    {
+      "siteId": "elder-cove-ridge",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          28,
+          21,
+          24
+        ],
+        "frequenciesMHz": [
+          530,
+          474,
+          498
+        ],
+        "powerKw": 0.002
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "hidden-drift-trail",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          21,
+          24,
+          27
+        ],
+        "frequenciesMHz": [
+          474,
+          498,
+          522
+        ],
+        "powerDbm": -59.7
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.66.xx"
+    },
+    {
+      "siteId": "fern-warren-walk",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 6,
+      "transmitterType": "Demo DTT high-capacity relay transmitter",
+      "outputAntennaType": "Demo UHF panel array",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          21,
+          24,
+          27,
+          25,
+          22,
+          28
+        ],
+        "frequenciesMHz": [
+          474,
+          498,
+          522,
+          506,
+          482,
+          530
+        ],
+        "powerKw": 2.5
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "stone-shelf-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF log-periodic receiving antenna",
+        "channels": [
+          41,
+          44,
+          47,
+          42,
+          45,
+          39
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682,
+          642,
+          666,
+          618
+        ],
+        "powerDbm": -72.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.67.xx"
+    },
+    {
+      "siteId": "high-water-walk",
+      "clusterId": "bridgend-maesteg",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          30,
+          23,
+          26
+        ],
+        "frequenciesMHz": [
+          546,
+          490,
+          514
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "maple-camp-walk",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          30,
+          23,
+          26
+        ],
+        "frequenciesMHz": [
+          546,
+          490,
+          514
+        ],
+        "powerDbm": -65.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.26.68.xx"
+    },
+    {
+      "siteId": "summer-ford-hollow",
+      "clusterId": "vale-coast",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          33,
+          34,
+          32
+        ],
+        "frequenciesMHz": [
+          570,
+          578,
+          562
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "bracken-basin-ramble",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          32,
+          33,
+          34
+        ],
+        "frequenciesMHz": [
+          562,
+          570,
+          578
+        ],
+        "powerDbm": -58.0
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.31.69.xx"
+    },
+    {
+      "siteId": "river-edge-loop",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          24,
+          27,
+          25
+        ],
+        "frequenciesMHz": [
+          498,
+          522,
+          506
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "robin-spring-trail",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          25,
+          22,
+          28
+        ],
+        "frequenciesMHz": [
+          506,
+          482,
+          530
+        ],
+        "powerDbm": -68.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.70.xx"
+    },
+    {
+      "siteId": "golden-basin-ramble",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          27,
+          25,
+          22
+        ],
+        "frequenciesMHz": [
+          522,
+          506,
+          482
+        ],
+        "powerKw": 0.2
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "misty-pool-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          28,
+          21
+        ],
+        "frequenciesMHz": [
+          482,
+          530,
+          474
+        ],
+        "powerDbm": -63.2
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.71.xx"
+    },
+    {
+      "siteId": "dawn-spring-trail",
+      "clusterId": "bridgend-maesteg",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          23,
+          26,
+          30
+        ],
+        "frequenciesMHz": [
+          490,
+          514,
+          546
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "starling-thicket-trail",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          26,
+          30,
+          23
+        ],
+        "frequenciesMHz": [
+          514,
+          546,
+          490
+        ],
+        "powerDbm": -66.8
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.26.72.xx"
+    },
+    {
+      "siteId": "sunset-shore-path",
+      "clusterId": "rhondda-cynon",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          25,
+          22,
+          28
+        ],
+        "frequenciesMHz": [
+          506,
+          482,
+          530
+        ],
+        "powerKw": 0.1
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "hidden-drift-trail",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          21,
+          24,
+          27
+        ],
+        "frequenciesMHz": [
+          474,
+          498,
+          522
+        ],
+        "powerDbm": -51.3
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.25.73.xx"
+    },
+    {
+      "siteId": "red-vale-hollow",
+      "clusterId": "vale-coast",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF panel array",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          34,
+          32,
+          33
+        ],
+        "frequenciesMHz": [
+          578,
+          562,
+          570
+        ],
+        "powerKw": 0.5
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "stone-shelf-loop",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF log-periodic receiving antenna",
+        "channels": [
+          41,
+          44,
+          47
+        ],
+        "frequenciesMHz": [
+          634,
+          658,
+          682
+        ],
+        "powerDbm": -60.4
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.31.74.xx"
+    },
+    {
+      "siteId": "bramble-ledge-cave",
+      "clusterId": "newport-east",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerKw": 0.005
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "elm-tarn-cave",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          22,
+          25,
+          28
+        ],
+        "frequenciesMHz": [
+          482,
+          506,
+          530
+        ],
+        "powerDbm": -56.6
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.30.75.xx"
+    },
+    {
+      "siteId": "ivy-ford-ramble",
+      "clusterId": "vale-coast",
+      "siteType": "relay",
+      "serviceType": "dtt",
+      "multiplexCount": 3,
+      "transmitterType": "Demo DTT relay transmitter",
+      "outputAntennaType": "Demo UHF relay panel",
+      "bandwidthMHz": 8,
+      "tx": {
+        "channels": [
+          32,
+          33,
+          34
+        ],
+        "frequenciesMHz": [
+          562,
+          570,
+          578
+        ],
+        "powerKw": 0.05
+      },
+      "rx": {
+        "inputMode": "off-air-demo",
+        "fromSiteId": "red-vale-hollow",
+        "receiverType": "Demo UHF off-air receiver",
+        "receivingAntennaType": "Demo UHF yagi receiving antenna",
+        "channels": [
+          34,
+          32,
+          33
+        ],
+        "frequenciesMHz": [
+          578,
+          562,
+          570
+        ],
+        "powerDbm": -73.8
+      },
+      "telemetryType": "Demo telemetry unit",
+      "siteServiceIp": "10.31.76.xx"
+    }
+  ],
+  "paths": [
+    {
+      "feedingSiteId": "stone-shelf-loop",
+      "receivingSiteId": "fern-warren-walk",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 6,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "stone-shelf-loop",
+      "receivingSiteId": "maple-camp-walk",
+      "clusterId": "bridgend-maesteg",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "stone-shelf-loop",
+      "receivingSiteId": "pebble-arch-hollow",
+      "clusterId": "upper-valleys-west",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "stone-shelf-loop",
+      "receivingSiteId": "brook-thicket-cave",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 6,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "stone-shelf-loop",
+      "receivingSiteId": "foxglove-quarry-path",
+      "clusterId": "monmouthshire",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "stone-shelf-loop",
+      "receivingSiteId": "spring-falls-loop",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "stone-shelf-loop",
+      "receivingSiteId": "red-vale-hollow",
+      "clusterId": "vale-coast",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "stone-shelf-loop",
+      "receivingSiteId": "lantern-stone-hollow",
+      "clusterId": "wenvoe-central",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "lantern-stone-hollow",
+      "receivingSiteId": "starling-hollow-trail",
+      "clusterId": "wenvoe-central",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "starling-hollow-trail",
+      "receivingSiteId": "crystal-valley-path",
+      "clusterId": "wenvoe-central",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "crystal-valley-path",
+      "receivingSiteId": "bright-path-cave",
+      "clusterId": "wenvoe-central",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "bright-path-cave",
+      "receivingSiteId": "heather-ridge-hollow",
+      "clusterId": "wenvoe-central",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "heather-ridge-hollow",
+      "receivingSiteId": "foxglove-field-cave",
+      "clusterId": "wenvoe-central",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "fern-warren-walk",
+      "receivingSiteId": "robin-spring-trail",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "robin-spring-trail",
+      "receivingSiteId": "river-edge-loop",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "river-edge-loop",
+      "receivingSiteId": "spring-copse-ridge",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "river-edge-loop",
+      "receivingSiteId": "misty-ridge-walk",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "misty-ridge-walk",
+      "receivingSiteId": "sparrow-moor-trail",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "misty-ridge-walk",
+      "receivingSiteId": "harbour-coast-cave",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "fern-warren-walk",
+      "receivingSiteId": "misty-pool-cave",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "misty-pool-cave",
+      "receivingSiteId": "cedar-coast-ridge",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "cedar-coast-ridge",
+      "receivingSiteId": "dusk-hollow-ramble",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "dusk-hollow-ramble",
+      "receivingSiteId": "hidden-drift-trail",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "hidden-drift-trail",
+      "receivingSiteId": "elder-cove-ridge",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "hidden-drift-trail",
+      "receivingSiteId": "sunset-shore-path",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "elder-cove-ridge",
+      "receivingSiteId": "hidden-coast-hollow",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "hidden-coast-hollow",
+      "receivingSiteId": "oak-dale-trail",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "misty-pool-cave",
+      "receivingSiteId": "golden-basin-ramble",
+      "clusterId": "rhondda-cynon",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "maple-camp-walk",
+      "receivingSiteId": "starling-thicket-trail",
+      "clusterId": "bridgend-maesteg",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "maple-camp-walk",
+      "receivingSiteId": "high-water-walk",
+      "clusterId": "bridgend-maesteg",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "high-water-walk",
+      "receivingSiteId": "bluebell-field-cave",
+      "clusterId": "bridgend-maesteg",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "starling-thicket-trail",
+      "receivingSiteId": "dawn-spring-trail",
+      "clusterId": "bridgend-maesteg",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "dawn-spring-trail",
+      "receivingSiteId": "honey-haven-cave",
+      "clusterId": "bridgend-maesteg",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "honey-haven-cave",
+      "receivingSiteId": "elm-grove-hollow",
+      "clusterId": "bridgend-maesteg",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "elm-grove-hollow",
+      "receivingSiteId": "elm-view-trail",
+      "clusterId": "bridgend-maesteg",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "bluebell-field-cave",
+      "receivingSiteId": "crystal-arch-cave",
+      "clusterId": "bridgend-maesteg",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "honey-haven-cave",
+      "receivingSiteId": "amber-loop-ramble",
+      "clusterId": "bridgend-maesteg",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "pebble-arch-hollow",
+      "receivingSiteId": "dawn-pool-ramble",
+      "clusterId": "upper-valleys-west",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "pebble-arch-hollow",
+      "receivingSiteId": "woodland-cliff-ramble",
+      "clusterId": "upper-valleys-west",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "dawn-pool-ramble",
+      "receivingSiteId": "quiet-shelf-path",
+      "clusterId": "upper-valleys-west",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "woodland-cliff-ramble",
+      "receivingSiteId": "stone-mere-walk",
+      "clusterId": "upper-valleys-west",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "stone-mere-walk",
+      "receivingSiteId": "cinder-mill-cave",
+      "clusterId": "upper-valleys-west",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "brook-thicket-cave",
+      "receivingSiteId": "pebble-vale-ridge",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "brook-thicket-cave",
+      "receivingSiteId": "elder-glen-hollow",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "elder-glen-hollow",
+      "receivingSiteId": "golden-falls-ridge",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "brook-thicket-cave",
+      "receivingSiteId": "thistle-bend-loop",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "pebble-vale-ridge",
+      "receivingSiteId": "ashen-way-hollow",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "ashen-way-hollow",
+      "receivingSiteId": "shadow-camp-trail",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "shadow-camp-trail",
+      "receivingSiteId": "low-ladder-cave",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "golden-falls-ridge",
+      "receivingSiteId": "bluebell-haven-loop",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "bluebell-haven-loop",
+      "receivingSiteId": "hazel-bank-trail",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "thistle-bend-loop",
+      "receivingSiteId": "velvet-loop-cave",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "shadow-camp-trail",
+      "receivingSiteId": "meadow-way-hollow",
+      "clusterId": "gwent-valleys",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "foxglove-quarry-path",
+      "receivingSiteId": "winter-tarn-ridge",
+      "clusterId": "monmouthshire",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "foxglove-quarry-path",
+      "receivingSiteId": "shadow-stone-path",
+      "clusterId": "monmouthshire",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "foxglove-quarry-path",
+      "receivingSiteId": "heather-field-cave",
+      "clusterId": "monmouthshire",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "heather-field-cave",
+      "receivingSiteId": "maple-warren-trail",
+      "clusterId": "monmouthshire",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "spring-falls-loop",
+      "receivingSiteId": "elm-tarn-cave",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "spring-falls-loop",
+      "receivingSiteId": "drift-vale-hollow",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "drift-vale-hollow",
+      "receivingSiteId": "bright-harbour-cave",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "bright-harbour-cave",
+      "receivingSiteId": "meadow-camp-path",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "meadow-camp-path",
+      "receivingSiteId": "low-lane-path",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "meadow-camp-path",
+      "receivingSiteId": "emerald-arch-loop",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "elm-tarn-cave",
+      "receivingSiteId": "bramble-ledge-cave",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "bramble-ledge-cave",
+      "receivingSiteId": "amber-drift-hollow",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "amber-drift-hollow",
+      "receivingSiteId": "dawn-well-loop",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "bramble-ledge-cave",
+      "receivingSiteId": "misty-dale-loop",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "misty-dale-loop",
+      "receivingSiteId": "drift-lantern-hollow",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "drift-lantern-hollow",
+      "receivingSiteId": "green-view-trail",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "emerald-arch-loop",
+      "receivingSiteId": "cairn-gate-ridge",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "elm-tarn-cave",
+      "receivingSiteId": "iron-tor-trail",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "emerald-arch-loop",
+      "receivingSiteId": "shadow-pool-ridge",
+      "clusterId": "newport-east",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "red-vale-hollow",
+      "receivingSiteId": "ivy-ford-ramble",
+      "clusterId": "vale-coast",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "red-vale-hollow",
+      "receivingSiteId": "bracken-basin-ramble",
+      "clusterId": "vale-coast",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    },
+    {
+      "feedingSiteId": "bracken-basin-ramble",
+      "receivingSiteId": "summer-ford-hollow",
+      "clusterId": "vale-coast",
+      "routeType": "primary",
+      "bundleCount": 3,
+      "feedMethod": "off-air-demo",
+      "confidence": "synthetic-demo"
+    }
+  ],
+  "_endOfFile": "Bottom/end of file: data/rf/wenvoe-dtt-details.json"
+}
