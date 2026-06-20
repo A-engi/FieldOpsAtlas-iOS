@@ -1,14 +1,14 @@
 /* ========================================================================== 
    FieldOps Atlas map quick tools and weather preview
    File: FieldOpsAtlas/Features/maps/OSMweather-menu.css
-   Version: 1.0.21-stable-service-paths
+   Version: 1.0.23-input-svg-assets
    Purpose:
    - Styles the collapsible DTT, DAB, FM, and Weather button rail.
    - Styles the existing lazy-loaded map weather preview panel.
    - Styles checkbox multi-cluster selection and rendering warnings.
    - Styles collision-aware RF transmitter and path labels.
    - Uses compact stacked service/bundle badges over service-coloured paths.
-   - Styles CSS-only virtual satellite backup nodes.
+   - Styles external SVG satellite and fibre virtual input nodes.
    ========================================================================== */
 
 .map-quick-tools {
@@ -661,55 +661,51 @@
     0 7px 17px rgba(0, 9, 22, 0.36);
 }
 
-.osmmaps-rf-satellite-icon {
+.osmmaps-rf-input-icon {
   border: 0;
   background: transparent;
   pointer-events: none;
 }
 
-.osmmaps-rf-satellite-node {
-  width: 42px;
-  height: 42px;
+.osmmaps-rf-input-node {
+  width: 58px;
+  height: 58px;
   display: grid;
-  place-content: center;
-  gap: 1px;
-  border: 2px dashed rgba(255, 255, 255, 0.92);
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid #15803d;
   border-radius: 999px;
-  background: #15803d;
-  color: #f0fdf4;
+  background: rgba(255, 255, 255, 0.97);
   box-shadow:
     0 0 0 5px rgba(22, 163, 74, 0.18),
     0 7px 16px rgba(0, 9, 22, 0.30);
-  text-align: center;
-  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
-.osmmaps-rf-satellite-node strong {
-  font-size: 9px;
-  font-weight: 950;
-  line-height: 1;
-  letter-spacing: 0.08em;
+.osmmaps-rf-input-node img {
+  width: 46px;
+  height: 46px;
+  display: block;
+  object-fit: contain;
 }
 
-.osmmaps-rf-satellite-node small {
-  max-width: 34px;
-  overflow: hidden;
-  font-size: 7px;
-  font-weight: 850;
-  line-height: 1;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.osmmaps-rf-input-icon.is-fibre .osmmaps-rf-input-node {
+  border-radius: 13px;
 }
 
-.osmmaps-rf-satellite-icon.is-dab .osmmaps-rf-satellite-node {
-  background: #0369a1;
+.osmmaps-rf-input-icon.is-fibre .osmmaps-rf-input-node img {
+  width: 50px;
+  height: 50px;
+}
+
+.osmmaps-rf-input-icon.is-dab .osmmaps-rf-input-node {
+  border-color: #0369a1;
   box-shadow:
     0 0 0 5px rgba(22, 134, 217, 0.18),
     0 7px 16px rgba(0, 9, 22, 0.30);
 }
 
-.osmmaps-rf-satellite-icon.is-fm .osmmaps-rf-satellite-node {
-  background: #86198f;
+.osmmaps-rf-input-icon.is-fm .osmmaps-rf-input-node {
+  border-color: #86198f;
   box-shadow:
     0 0 0 5px rgba(162, 59, 183, 0.18),
     0 7px 16px rgba(0, 9, 22, 0.30);
