@@ -1,19 +1,19 @@
 /* ==========================================================================
    FieldOps Atlas map service controls and weather preview
    File: FieldOpsAtlas/Features/maps/OSMweather-menu.js
-   Version: 1.0.15-service-cluster-picker
+   Version: 1.0.17-cluster-list-fix
    Purpose:
    - Controls the collapsible DTT, DAB, FM, and Weather rail.
    - Opens an attached map-cluster picker for service controls.
    - Loads only public demo RF cluster metadata.
-   - Focuses the existing Leaflet map on the selected 25-to-40-site cluster.
+   - Focuses the existing Leaflet map on the selected service cluster.
    - Controls the existing lazy Weather preview.
    ========================================================================== */
 
 (function fieldOpsOSMServiceControls() {
   "use strict";
 
-  var VERSION = "1.0.15-service-cluster-picker";
+  var VERSION = "1.0.17-cluster-list-fix";
   var PRESELI = {
     name: "Preseli area",
     lat: 51.921,
@@ -165,11 +165,11 @@
     var heading = qs("[data-map-service-title]");
 
     if (kicker) {
-      kicker.textContent = service ? service.label + " map" : "Service map";
+      kicker.textContent = service ? service.label : "Service";
     }
 
     if (heading) {
-      heading.textContent = title || "Choose area";
+      heading.textContent = title || "Choose cluster";
     }
   }
 
@@ -208,7 +208,7 @@
     picker.dataset.activeService = serviceId;
     toolbar.classList.add("has-service-picker");
     setActiveService(serviceId);
-    setServiceHeading(serviceId, "Choose Wenvoe area");
+    setServiceHeading(serviceId, "Choose cluster");
 
     if (!service.url) {
       renderServiceUnavailable(serviceId);
@@ -243,7 +243,7 @@
       options.innerHTML = "";
     }
 
-    setServiceStatus((service ? service.label : "This service") + " cluster data has not been added yet.");
+    setServiceStatus("No " + (service ? service.label : "service") + " demo clusters yet.");
   }
 
   function renderServiceError(message) {
@@ -288,15 +288,14 @@
     });
   }
 
-  function mapClustersFrom(payload) {
-    if (payload && Array.isArray(payload.mapClusters)) {
-      return payload.mapClusters.filter(function validCluster(cluster) {
+  function clustersFrom(payload) {
+    if (payload && Array.isArray(payload.clusters)) {
+      return payload.clusters.filter(function validCluster(cluster) {
         return cluster &&
           cluster.id &&
           cluster.name &&
           Array.isArray(cluster.siteIds) &&
-          cluster.siteIds.length >= 25 &&
-          cluster.siteIds.length <= 40;
+          cluster.siteIds.length > 0;
       });
     }
 
@@ -305,7 +304,7 @@
 
   function renderServiceClusters(serviceId, payload) {
     var options = qs("[data-map-service-options]");
-    var clusters = mapClustersFrom(payload);
+    var clusters = clustersFrom(payload);
 
     if (!options) {
       return;
@@ -313,7 +312,7 @@
 
     if (!clusters.length) {
       options.innerHTML = "";
-      setServiceStatus("No 25-to-40-site map clusters were found.");
+      setServiceStatus("No clusters found.");
       return;
     }
 
@@ -334,7 +333,7 @@
       ].join("");
     }).join("");
 
-    setServiceStatus("Choose one area. Only its sites will remain visible.");
+    setServiceStatus("Select a cluster to show its sites.");
   }
 
   function waitForMapApi() {
@@ -397,7 +396,7 @@
       .then(function prepareCluster(values) {
         var payload = values[0];
         var mapApi = values[1];
-        var cluster = mapClustersFrom(payload).find(function findCluster(item) {
+        var cluster = clustersFrom(payload).find(function findCluster(item) {
           return item.id === clusterId;
         });
 
