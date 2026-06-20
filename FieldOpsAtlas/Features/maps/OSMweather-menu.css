@@ -1,40 +1,173 @@
 /* ========================================================================== 
-   FieldOps Atlas OSM weather preview
+   FieldOps Atlas map quick tools and weather preview
    File: FieldOpsAtlas/Features/maps/OSMweather-menu.css
-   Version: 1.0.10-lazy-weather-preview
+   Version: 1.0.11-map-quick-tools
    Purpose:
-   - Styles the small map weather preview entry point.
-   - Does not load the full Weather feature or provider maps.
+   - Styles the collapsible DTT, DAB, FM, and Weather button rail.
+   - Styles the existing lazy-loaded map weather preview panel.
    ========================================================================== */
 
-.weather-map-icon-strip {
+.map-quick-tools {
   position: fixed;
   z-index: 58;
-  right: calc(14px + env(safe-area-inset-right));
-  top: calc(86px + env(safe-area-inset-top));
+  right: auto;
+  bottom: calc(54px + env(safe-area-inset-bottom));
+  left: 50%;
+  width: min(calc(100vw - 14px), 416px);
   display: grid;
+  justify-items: center;
   pointer-events: none;
+  transform: translateX(-50%);
 }
 
-.weather-map-icon-button {
+.map-quick-tools__rail {
+  width: 100%;
+  max-height: 82px;
+  padding: 6px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 6px;
+  overflow: hidden;
+  border: 1px solid rgba(139, 194, 231, 0.22);
+  border-radius: 21px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(121, 198, 255, 0.10), transparent 48%),
+    rgba(5, 20, 39, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 14px 32px rgba(0, 0, 0, 0.30);
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition:
+    max-height 180ms ease,
+    padding 180ms ease,
+    border-width 180ms ease,
+    opacity 150ms ease,
+    transform 180ms ease;
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+}
+
+.map-quick-tools.is-collapsed .map-quick-tools__rail {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  border-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(12px);
+}
+
+.map-quick-tool {
   appearance: none;
   -webkit-appearance: none;
-  width: 42px;
-  height: 42px;
+  min-width: 0;
+  min-height: 66px;
+  padding: 8px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(176, 217, 245, 0.22);
+  border-radius: 15px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    0 8px 18px rgba(0, 0, 0, 0.20);
+  text-decoration: none;
+  font: inherit;
+  font-size: clamp(12px, 3.8vw, 17px);
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.map-quick-tool img {
+  width: clamp(23px, 6.8vw, 30px);
+  height: clamp(23px, 6.8vw, 30px);
+  flex: 0 0 auto;
+  display: block;
+  object-fit: contain;
+}
+
+.map-quick-tool span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-quick-tool.is-dtt {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(85, 255, 149, 0.20), transparent 48%),
+    linear-gradient(135deg, rgba(26, 145, 72, 0.96), rgba(5, 94, 51, 0.96));
+}
+
+.map-quick-tool.is-dab {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(104, 199, 255, 0.22), transparent 48%),
+    linear-gradient(135deg, rgba(31, 120, 201, 0.98), rgba(8, 75, 150, 0.98));
+}
+
+.map-quick-tool.is-fm {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(237, 145, 255, 0.22), transparent 48%),
+    linear-gradient(135deg, rgba(137, 48, 162, 0.98), rgba(91, 22, 115, 0.98));
+}
+
+.map-quick-tool.is-weather {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(125, 198, 255, 0.18), transparent 48%),
+    linear-gradient(135deg, rgba(27, 71, 110, 0.98), rgba(8, 35, 67, 0.98));
+}
+
+.map-quick-tool:active {
+  transform: translateY(1px);
+}
+
+.map-quick-tool:focus-visible,
+.map-quick-tools__toggle:focus-visible {
+  outline: 2px solid rgba(255, 220, 138, 0.94);
+  outline-offset: 2px;
+}
+
+.map-quick-tools__toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 76px;
+  height: 17px;
+  margin-top: 0;
   display: grid;
   place-items: center;
-  border: 1px solid rgba(128, 199, 255, 0.28);
-  border-radius: 15px;
-  background: rgba(8, 31, 58, 0.82);
-  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(188, 207, 222, 0.42);
+  border-top: 0;
+  border-radius: 0 0 999px 999px;
+  background: linear-gradient(180deg, rgba(201, 213, 225, 0.94), rgba(116, 129, 145, 0.96));
+  box-shadow: 0 7px 15px rgba(0, 0, 0, 0.24);
   cursor: pointer;
   pointer-events: auto;
 }
 
-.weather-map-icon-image {
-  width: 22px;
-  height: 22px;
+.map-quick-tools__toggle-mark {
+  width: 20px;
+  height: 7px;
   display: block;
+  border-right: 2px solid rgba(15, 36, 57, 0.84);
+  border-bottom: 2px solid rgba(15, 36, 57, 0.84);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 180ms ease;
+}
+
+.map-quick-tools.is-collapsed .map-quick-tools__toggle {
+  border-top: 1px solid rgba(188, 207, 222, 0.42);
+  border-radius: 999px;
+}
+
+.map-quick-tools.is-collapsed .map-quick-tools__toggle-mark {
+  transform: translateY(2px) rotate(225deg);
 }
 
 .weather-api-panel[hidden] {
@@ -44,8 +177,8 @@
 .weather-api-panel {
   position: fixed;
   z-index: 68;
-  right: calc(14px + env(safe-area-inset-right));
-  top: calc(138px + env(safe-area-inset-top));
+  right: max(14px, calc((100vw - min(100vw, 430px)) / 2 + 14px));
+  top: calc(82px + env(safe-area-inset-top));
   width: min(330px, calc(100vw - 28px));
   max-height: min(520px, calc(100vh - 188px));
   overflow: auto;
@@ -177,4 +310,28 @@
   color: rgba(232, 246, 255, 0.68);
 }
 
+@media (max-width: 380px) {
+  .map-quick-tools {
+    width: calc(100vw - 12px);
+  }
+
+  .map-quick-tools__rail {
+    padding: 5px;
+    gap: 4px;
+  }
+
+  .map-quick-tool {
+    min-height: 59px;
+    padding-inline: 4px;
+    gap: 4px;
+    font-size: 12px;
+  }
+
+  .map-quick-tool img {
+    width: 23px;
+    height: 23px;
+  }
+}
+
+/* Destination: FieldOpsAtlas/Features/maps/OSMweather-menu.css */
 /* End of file: FieldOpsAtlas/Features/maps/OSMweather-menu.css | bottom/end of file */
