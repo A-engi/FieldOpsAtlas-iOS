@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas saved RF path styles
    File: FieldOpsAtlas/Features/maps/OSMrf-paths.css
-   Version: 1.0.9-subtle-linear-chevrons
+   Version: 1.0.10-thicker-gold-chevrons
    Purpose:
    - Hide the large path badges.
    - Show one compact route label for the selected path.
@@ -54,13 +54,18 @@
 }
 
 .osmmaps-rf-ribbon-chevron-image {
-  opacity: 0.76;
+  opacity: 0.96;
+  filter:
+    drop-shadow(0.7px 0 0 #ffdda0)
+    drop-shadow(-0.7px 0 0 #ffdda0)
+    drop-shadow(0 0.7px 0 #ffdda0)
+    drop-shadow(0 -0.7px 0 #ffdda0);
   transform-box: fill-box;
   transform-origin: center;
 }
 
 .osmmaps-rf-ribbon-chevron {
-  opacity: 0.84;
+  opacity: 1;
 }
 
 /* Destination: FieldOpsAtlas/Features/maps/OSMrf-paths.css */
