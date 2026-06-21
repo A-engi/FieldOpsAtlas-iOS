@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas saved RF path renderer
    File: FieldOpsAtlas/Features/maps/OSMrf-paths.js
-   Version: 1.1.17-centre-edge-routes
+   Version: 1.1.18-bright-path-mode
    Purpose:
    - Ask OSMpath-generator.js for a route only when no saved route exists.
    - Render saved geographic path points without rerouting on pan or zoom.
@@ -13,7 +13,7 @@
 (function fieldOpsOSMRfPaths() {
   "use strict";
 
-  var VERSION = "1.1.17-centre-edge-routes";
+  var VERSION = "1.1.18-bright-path-mode";
   var REGION_STORAGE_KEY = "fieldops-osmmaps-selected-region-v1";
   var REGION_SITES_URL = "../../../data/regions/";
   var REGIONS_URL = "../../../data/regions.json";
@@ -200,7 +200,7 @@
         style: {
           color: color,
           weight: 6,
-          opacity: 0.62
+          opacity: 0.90
         }
       }
     ];
@@ -268,7 +268,7 @@
       className: "osmmaps-rf-ribbon-highlight",
       color: "#e6fff5",
       weight: ROUTE_HIGHLIGHT_WEIGHT,
-      opacity: 0.46,
+      opacity: 0.56,
       lineCap: "round",
       lineJoin: "round"
     };
