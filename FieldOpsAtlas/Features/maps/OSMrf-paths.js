@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas saved RF path renderer
    File: FieldOpsAtlas/Features/maps/OSMrf-paths.js
-   Version: 1.1.13-node-rim-connection
+   Version: 1.1.14-half-speed-chevron
    Purpose:
    - Ask OSMpath-generator.js for a route only when no saved route exists.
    - Render saved geographic path points without rerouting on pan or zoom.
@@ -13,14 +13,14 @@
 (function fieldOpsOSMRfPaths() {
   "use strict";
 
-  var VERSION = "1.1.13-node-rim-connection";
+  var VERSION = "1.1.14-half-speed-chevron";
   var REGION_STORAGE_KEY = "fieldops-osmmaps-selected-region-v1";
   var REGION_SITES_URL = "../../../data/regions/";
   var REGIONS_URL = "../../../data/regions.json";
   var LAYOUT_DELAY_MS = 0;
-  var CHEVRON_ICON_URL = "../../../data/icons/path-pane-chevron-gold.svg?v=1.0.1";
+  var CHEVRON_ICON_URL = "../../../data/icons/path-pane-chevron-gold.svg?v=1.1.0-shadow-gradient";
   var CHEVRON_COUNT = 3;
-  var CHEVRON_DURATION_SECONDS = 6.6;
+  var CHEVRON_DURATION_SECONDS = 13.2;
   var CHEVRON_WIDTH = 10;
   var CHEVRON_HEIGHT = 14;
   var ROUTE_HIGHLIGHT_OFFSET_PX = 4;
@@ -373,7 +373,7 @@
       ? Number(mainPath.getTotalLength()) || 0
       : 0;
     chevronCount = clamp(Math.round(totalLength / 180) || CHEVRON_COUNT, 2, 4);
-    duration = clamp(totalLength / 70, CHEVRON_DURATION_SECONDS, 8.8);
+    duration = clamp(totalLength / 35, CHEVRON_DURATION_SECONDS, 17.6);
     stagger = duration / chevronCount;
 
     ribbonSequence += 1;
