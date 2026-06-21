@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.1.3-sat-fit-and-icon
+   Version: 1.1.4-attached-sat-input
    Purpose:
    - Own the Leaflet map, regions, sites, service clusters, RF paths, labels, and fitting.
    - Keep service-menu opening fast by returning cached cluster metadata without rerendering.
@@ -14,13 +14,14 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.1.3-sat-fit-and-icon";
+  var VERSION = "1.1.4-attached-sat-input";
   var REGION_TOAST_MS = 3000;
   var UK_BOUNDS = [[49.75, -8.7], [60.95, 1.95]];
   var UK_CENTER = [54.55, -3.15];
   var REGION_STORAGE_KEY = "fieldops-osmmaps-selected-region-v1";
+  var ATTACHED_INPUT_OFFSET_PX = 30;
   var INPUT_ICON_URLS = {
-    satellite: "../../../data/icons/satellite-dish.svg?v=1.5.2-rx-glass",
+    satellite: "../../../data/icons/satellite-dish.svg?v=1.5.5-rx-outside-straight",
     fibre: "../../../data/icons/ethernet-fibre.svg?v=1.0.5"
   };
   var DATA_FILES = {
@@ -91,6 +92,9 @@
       siteDetails: new Map(),
       pathLines: new Map(),
       virtualEndpoints: new Map(),
+      virtualMarkers: new Map(),
+      attachedInputs: new Map(),
+      overlayFrame: 0,
       selectedPathId: "",
       serviceId: "",
       regionId: "",
@@ -1011,6 +1015,7 @@
     }
 
     ensurePane("fieldopsRfPaths", 430);
+    ensurePane("fieldopsRfAttachedInputs", 440);
     ensurePane("fieldopsRfEndpoints", 625);
     ensurePane("fieldopsRfLabels", 650);
 
@@ -1023,8 +1028,8 @@
     }
 
     if (!state.rf.mapEventsBound) {
-      ["zoomend", "moveend", "resize", "viewreset"].forEach(function bindLabelLayout(eventName) {
-        state.map.on(eventName, scheduleRfLabelLayout);
+      ["zoom", "zoomend", "moveend", "resize", "viewreset"].forEach(function bindOverlayLayout(eventName) {
+        state.map.on(eventName, scheduleRfOverlayLayout);
       });
       state.rf.mapEventsBound = true;
     }
@@ -1049,6 +1054,8 @@
     state.rf.siteDetails = new Map();
     state.rf.pathLines = new Map();
     state.rf.virtualEndpoints = new Map();
+    state.rf.virtualMarkers = new Map();
+    state.rf.attachedInputs = new Map();
     state.rf.selectedPathId = "";
     state.rf.serviceId = "";
     state.rf.regionId = "";
@@ -1056,6 +1063,11 @@
     if (state.rf.redrawTimer) {
       window.clearTimeout(state.rf.redrawTimer);
       state.rf.redrawTimer = 0;
+    }
+
+    if (state.rf.overlayFrame) {
+      window.cancelAnimationFrame(state.rf.overlayFrame);
+      state.rf.overlayFrame = 0;
     }
 
     state.rf.stagedTimers.forEach(function clearTimer(timerId) {
@@ -1091,8 +1103,130 @@
         iconUrl,
         '" alt="" aria-hidden="true"></span>'
       ].join(""),
-      iconSize: [34, 34],
-      iconAnchor: [7, 28]
+      iconSize: [28, 28],
+      iconAnchor: [14, 14]
+    });
+  }
+
+  function attachedInputForPath(path, fromWalk, toWalk) {
+    if (fromWalk && fromWalk.isVirtual && toWalk && !toWalk.isVirtual) {
+      return {
+        path: path,
+        virtualSide: "feeding",
+        virtualEndpoint: fromWalk,
+        anchorWalk: toWalk
+      };
+    }
+
+    if (toWalk && toWalk.isVirtual && fromWalk && !fromWalk.isVirtual) {
+      return {
+        path: path,
+        virtualSide: "receiving",
+        virtualEndpoint: toWalk,
+        anchorWalk: fromWalk
+      };
+    }
+
+    return null;
+  }
+
+  function attachedInputLatLng(endpoint, anchorWalk) {
+    var anchorPoint = state.map.latLngToContainerPoint([anchorWalk.lat, anchorWalk.lng]);
+    var configuredPoint = state.map.latLngToContainerPoint([endpoint.lat, endpoint.lng]);
+    var dx = configuredPoint.x - anchorPoint.x;
+    var dy = configuredPoint.y - anchorPoint.y;
+    var length = Math.sqrt(dx * dx + dy * dy);
+
+    if (!Number.isFinite(length) || length < 1) {
+      dx = -1;
+      dy = -0.55;
+      length = Math.sqrt(dx * dx + dy * dy);
+    }
+
+    return state.map.containerPointToLatLng(window.L.point(
+      anchorPoint.x + dx / length * ATTACHED_INPUT_OFFSET_PX,
+      anchorPoint.y + dy / length * ATTACHED_INPUT_OFFSET_PX
+    ));
+  }
+
+  function ensureVirtualInputMarker(displayEndpoint, serviceId, path) {
+    var endpointId = String(displayEndpoint.id);
+    var marker = state.rf.virtualMarkers.get(endpointId);
+
+    if (!marker) {
+      marker = window.L.marker([displayEndpoint.lat, displayEndpoint.lng], {
+        pane: "fieldopsRfEndpoints",
+        icon: virtualInputIcon(displayEndpoint, serviceId, path),
+        interactive: false,
+        keyboard: false
+      }).addTo(state.rf.virtualLayer);
+
+      state.rf.virtualMarkers.set(endpointId, marker);
+    } else {
+      marker.setLatLng([displayEndpoint.lat, displayEndpoint.lng]);
+    }
+
+    return marker;
+  }
+
+  function displayPathEndpoint(path, side, walksById) {
+    var endpoint = pathEndpoint(path, side, walksById);
+    var attached = state.rf.attachedInputs.get(String(path.id));
+
+    if (
+      endpoint &&
+      endpoint.isVirtual &&
+      attached &&
+      attached.virtualSide === side &&
+      attached.displayEndpoint
+    ) {
+      return attached.displayEndpoint;
+    }
+
+    return endpoint;
+  }
+
+  function updateAttachedInput(record) {
+    var displayLatLng = attachedInputLatLng(record.virtualEndpoint, record.anchorWalk);
+    var displayEndpoint = record.displayEndpoint;
+
+    displayEndpoint.lat = displayLatLng.lat;
+    displayEndpoint.lng = displayLatLng.lng;
+
+    if (record.marker) {
+      record.marker.setLatLng(displayLatLng);
+    }
+
+    if (record.line) {
+      var fromEndpoint = record.virtualSide === "feeding"
+        ? displayEndpoint
+        : record.anchorWalk;
+      var toEndpoint = record.virtualSide === "receiving"
+        ? displayEndpoint
+        : record.anchorWalk;
+
+      record.line.setLatLngs([
+        [fromEndpoint.lat, fromEndpoint.lng],
+        [toEndpoint.lat, toEndpoint.lng]
+      ]);
+    }
+  }
+
+  function layoutRfAttachedInputs() {
+    state.rf.attachedInputs.forEach(function positionAttachedInput(record) {
+      updateAttachedInput(record);
+    });
+  }
+
+  function scheduleRfOverlayLayout() {
+    if (state.rf.overlayFrame) {
+      return;
+    }
+
+    state.rf.overlayFrame = window.requestAnimationFrame(function redrawOverlay() {
+      state.rf.overlayFrame = 0;
+      layoutRfAttachedInputs();
+      scheduleRfLabelLayout();
     });
   }
 
@@ -1137,25 +1271,68 @@
     activePaths.forEach(function addPathLine(path) {
       var fromWalk = pathEndpoint(path, "feeding", walksById);
       var toWalk = pathEndpoint(path, "receiving", walksById);
+      var attached = attachedInputForPath(path, fromWalk, toWalk);
+      var displayFrom = fromWalk;
+      var displayTo = toWalk;
+      var line;
+      var style = lineStyle(path, false);
 
-      [fromWalk, toWalk].forEach(function addVirtualEndpoint(endpoint) {
-        if (!endpoint || !endpoint.isVirtual || state.rf.virtualEndpoints.has(String(endpoint.id))) {
-          return;
+      if (attached) {
+        var displayLatLng = attachedInputLatLng(
+          attached.virtualEndpoint,
+          attached.anchorWalk
+        );
+        var displayEndpoint = Object.assign({}, attached.virtualEndpoint, {
+          lat: displayLatLng.lat,
+          lng: displayLatLng.lng,
+          attachedToSiteId: attached.anchorWalk.id
+        });
+
+        attached.displayEndpoint = displayEndpoint;
+        attached.marker = ensureVirtualInputMarker(
+          displayEndpoint,
+          serviceId,
+          path
+        );
+
+        state.rf.virtualEndpoints.set(
+          String(displayEndpoint.id),
+          displayEndpoint
+        );
+
+        if (attached.virtualSide === "feeding") {
+          displayFrom = displayEndpoint;
+        } else {
+          displayTo = displayEndpoint;
         }
 
-        state.rf.virtualEndpoints.set(String(endpoint.id), endpoint);
-        window.L.marker([endpoint.lat, endpoint.lng], {
-          pane: "fieldopsRfEndpoints",
-          icon: virtualInputIcon(endpoint, serviceId, path),
-          interactive: false,
-          keyboard: false
-        }).addTo(state.rf.virtualLayer);
-      });
+        style = Object.assign({}, style, {
+          pane: "fieldopsRfAttachedInputs"
+        });
 
-      var line = window.L.polyline(
-        [[fromWalk.lat, fromWalk.lng], [toWalk.lat, toWalk.lng]],
-        lineStyle(path, false)
-      );
+        /*
+         * Attached inputs use a plain Leaflet polyline. This short site-level
+         * connection must not be expanded by the RF fan optimiser.
+         */
+        line = new window.L.Polyline(
+          [[displayFrom.lat, displayFrom.lng], [displayTo.lat, displayTo.lng]],
+          style
+        );
+      } else {
+        [fromWalk, toWalk].forEach(function addVirtualEndpoint(endpoint) {
+          if (!endpoint || !endpoint.isVirtual || state.rf.virtualEndpoints.has(String(endpoint.id))) {
+            return;
+          }
+
+          state.rf.virtualEndpoints.set(String(endpoint.id), endpoint);
+          ensureVirtualInputMarker(endpoint, serviceId, path);
+        });
+
+        line = window.L.polyline(
+          [[displayFrom.lat, displayFrom.lng], [displayTo.lat, displayTo.lng]],
+          style
+        );
+      }
 
       line.on("click", function selectLine(event) {
         selectRfPath(path.id, true, event.latlng);
@@ -1163,8 +1340,14 @@
 
       line.addTo(state.rf.lineLayer);
       state.rf.pathLines.set(String(path.id), line);
+
+      if (attached) {
+        attached.line = line;
+        state.rf.attachedInputs.set(String(path.id), attached);
+      }
     });
 
+    layoutRfAttachedInputs();
     scheduleRfLabelLayoutStaged();
   }
 
@@ -1275,7 +1458,7 @@
 
     return endpoints.map(function markerRect(walk) {
       var point = state.map.latLngToContainerPoint([walk.lat, walk.lng]);
-      var radius = walk.isVirtual ? 18 : 14;
+      var radius = walk.isVirtual ? 15 : 14;
 
       return {
         left: point.x - radius,
@@ -1290,8 +1473,8 @@
     var walksById = walkMap(state.walks);
 
     state.rf.activePaths.forEach(function addPathLabel(path) {
-      var fromWalk = pathEndpoint(path, "feeding", walksById);
-      var toWalk = pathEndpoint(path, "receiving", walksById);
+      var fromWalk = displayPathEndpoint(path, "feeding", walksById);
+      var toWalk = displayPathEndpoint(path, "receiving", walksById);
 
       if (!fromWalk || !toWalk) {
         return;
@@ -1558,7 +1741,7 @@
     });
 
     ["feeding", "receiving"].forEach(function addEndpoint(side, index) {
-      var endpoint = pathEndpoint(selectedPath, side, walksById);
+      var endpoint = displayPathEndpoint(selectedPath, side, walksById);
 
       if (!endpoint) {
         return;
