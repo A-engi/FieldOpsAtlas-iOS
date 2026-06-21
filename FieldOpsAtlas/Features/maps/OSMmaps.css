@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM map and RF overlay
    File: FieldOpsAtlas/Features/maps/OSMmaps.css
-   Version: 1.0.20-path-only-muted-map
+   Version: 1.0.21-green-neon-download
    Purpose:
    - Style the map canvas, region chooser, site markers, RF labels, endpoints, and path popups.
    ========================================================================== */
@@ -43,16 +43,26 @@ body {
   background: rgba(3, 12, 24, 0.94);
 }
 
-.osmmaps-page .leaflet-tile-pane {
-  transition: filter 180ms ease;
+.osmmaps-page[data-theme="dark"] .leaflet-tile-pane {
+  filter: invert(0.88) hue-rotate(178deg) saturate(0.86) brightness(0.78) contrast(1.08);
 }
 
-.osmmaps-page[data-rf-path-active="true"] .leaflet-tile-pane {
+.osmmaps-page[data-rf-path-active="true"]:not([data-theme="dark"]) .leaflet-tile-pane {
   filter:
     saturate(0.38)
     brightness(0.70)
     contrast(0.92)
     grayscale(0.10);
+}
+
+.osmmaps-page[data-theme="dark"][data-rf-path-active="true"] .leaflet-tile-pane {
+  filter:
+    invert(0.88)
+    hue-rotate(178deg)
+    saturate(0.34)
+    brightness(0.62)
+    contrast(0.96)
+    grayscale(0.08);
 }
 
 .osmmaps-region-overlay {
@@ -375,7 +385,12 @@ body {
 }
 
 .osmmaps-rf-satellite-progress {
-  filter: drop-shadow(0 0 1.1px rgba(34, 197, 94, 0.34));
+  stroke: #46ff7d;
+  filter:
+    drop-shadow(0 0 1px rgba(205, 255, 222, 0.98))
+    drop-shadow(0 0 3px rgba(70, 255, 125, 0.98))
+    drop-shadow(0 0 7px rgba(24, 255, 101, 0.86))
+    drop-shadow(0 0 13px rgba(0, 255, 76, 0.62));
 }
 
 .osmmaps-rf-satellite-download-chevron {
@@ -391,14 +406,19 @@ body {
 }
 
 .osmmaps-rf-satellite-download-chevron-shadow {
-  stroke: rgba(3, 10, 7, 0.82);
-  stroke-width: 3.5px;
-  transform: translate(0.55px, 0.7px);
+  stroke: rgba(0, 18, 7, 0.82);
+  stroke-width: 5px;
+  transform: translate(0.45px, 0.65px);
 }
 
 .osmmaps-rf-satellite-download-chevron-main {
-  stroke: #16a34a;
-  stroke-width: 2.5px;
+  stroke: #46ff7d;
+  stroke-width: 3.2px;
+  filter:
+    drop-shadow(0 0 1px rgba(205, 255, 222, 1))
+    drop-shadow(0 0 3px rgba(70, 255, 125, 1))
+    drop-shadow(0 0 7px rgba(24, 255, 101, 0.92))
+    drop-shadow(0 0 13px rgba(0, 255, 76, 0.68));
 }
 
 .osmmaps-rf-input-node img {
