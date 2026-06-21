@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas saved RF path styles
    File: FieldOpsAtlas/Features/maps/OSMrf-paths.css
-   Version: 1.0.12-solid-chevron-translucent-path
+   Version: 1.0.13-baked-chevron-shadow
    Purpose:
    - Hide the large path badges.
    - Show one compact route label for the selected path.
@@ -55,9 +55,6 @@
 
 .osmmaps-rf-ribbon-chevron-image {
   opacity: 1;
-  filter:
-    drop-shadow(-0.45px -0.45px 0 rgba(255, 239, 191, 0.82))
-    drop-shadow(0.75px 0.75px 0 rgba(0, 0, 0, 0.88));
   transform-box: fill-box;
   transform-origin: center;
 }
