@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM map and RF overlay
    File: FieldOpsAtlas/Features/maps/OSMmaps.css
-   Version: 1.0.2-virtual-input-glass
+   Version: 1.0.3-attached-input
    Purpose:
    - Style the map canvas, region chooser, site markers, RF labels, endpoints, and path popups.
    ========================================================================== */
@@ -319,8 +319,8 @@ body {
 }
 
 .osmmaps-rf-input-node {
-  width: 34px;
-  height: 34px;
+  width: 28px;
+  height: 28px;
   display: grid;
   place-items: center;
   overflow: hidden;
@@ -336,8 +336,8 @@ body {
 }
 
 .osmmaps-rf-input-node img {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   display: block;
   object-fit: contain;
 }
@@ -347,8 +347,8 @@ body {
 }
 
 .osmmaps-rf-input-icon.is-fibre .osmmaps-rf-input-node img {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 
 .osmmaps-rf-input-icon.is-dab .osmmaps-rf-input-node {
