@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.1.18-sat-chevron-hold-glow
+   Version: 1.1.19-sat-marker-chevron
    Purpose:
    - Own the Leaflet map, regions, sites, service clusters, RF paths, labels, and fitting.
    - Keep service-menu opening fast by returning cached cluster metadata without rerendering.
@@ -14,7 +14,7 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.1.18-sat-chevron-hold-glow";
+  var VERSION = "1.1.19-sat-marker-chevron";
   var REGION_TOAST_MS = 3000;
   var UK_BOUNDS = [[49.75, -8.7], [60.95, 1.95]];
   var UK_CENTER = [54.55, -3.15];
@@ -23,10 +23,8 @@
   var ATTACHED_SITE_LINE_START_PX = 15;
   var ATTACHED_ARROW_OFFSET_PX = 19;
   var ATTACHED_INPUT_RADIUS_PX = 17;
-  var SATELLITE_CHEVRON_TRAVEL_SECONDS = 4;
-  var SATELLITE_CHEVRON_HOLD_SECONDS = 2;
-  var SVG_XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
-  var satelliteChevronSequence = 0;
+  var SATELLITE_CHEVRON_TRAVEL_MS = 4000;
+  var SATELLITE_CHEVRON_HOLD_MS = 2000;
   var INPUT_ICON_URLS = {
     satellite: "../../../data/icons/satellite-dish.svg?v=1.5.7-large-rx-farther-right",
     fibre: "../../../data/icons/ethernet-fibre.svg?v=1.0.5"
@@ -101,6 +99,8 @@
       virtualEndpoints: new Map(),
       virtualMarkers: new Map(),
       attachedInputs: new Map(),
+      satelliteChevronFrame: 0,
+      satelliteChevronStartedAt: 0,
       overlayFrame: 0,
       selectedPathId: "",
       serviceId: "",
@@ -1083,10 +1083,7 @@
 
   function clearRfOverlay() {
     setRfPathMode(false);
-
-    state.rf.attachedInputs.forEach(function clearSatelliteChevron(record) {
-      removeSatelliteLineChevron(record);
-    });
+    stopSatelliteChevronAnimation();
 
     [
       state.rf.lineLayer,
@@ -1160,130 +1157,173 @@
     });
   }
 
-  function setSvgHref(element, value) {
-    element.setAttribute("href", value);
-    element.setAttributeNS(SVG_XLINK_NAMESPACE, "href", value);
+  function satelliteMovingChevronIcon(angleDegrees) {
+    return window.L.divIcon({
+      className: "osmmaps-rf-satellite-moving-icon",
+      html: [
+        '<span class="osmmaps-rf-satellite-moving-chevron" aria-hidden="true" style="--osmmaps-rf-sat-arrow-angle:',
+        escapeHtml(angleDegrees),
+        'deg"></span>'
+      ].join(""),
+      iconSize: [12, 12],
+      iconAnchor: [6, 6]
+    });
   }
 
-  function removeSatelliteLineChevron(record) {
-    if (
-      record &&
-      record.satelliteChevron &&
-      record.satelliteChevron.parentNode
-    ) {
-      record.satelliteChevron.parentNode.removeChild(
-        record.satelliteChevron
-      );
+  function satelliteChevronEndpoints(record) {
+    var latlngs = record && record.line
+      ? record.line.getLatLngs()
+      : [];
+
+    if (!Array.isArray(latlngs) || latlngs.length < 2) {
+      return null;
     }
 
-    if (record) {
-      record.satelliteChevron = null;
-      record.satelliteChevronPath = null;
+    if (record.virtualSide === "feeding") {
+      return {
+        start: latlngs[0],
+        end: latlngs[latlngs.length - 1]
+      };
     }
+
+    return {
+      start: latlngs[latlngs.length - 1],
+      end: latlngs[0]
+    };
   }
 
-  function ensureSatelliteLineChevron(record) {
-    var linePath;
-    var parent;
-    var namespace;
-    var pathId;
-    var group;
-    var shadow;
-    var chevron;
-    var motion;
-    var motionPath;
-    var totalDuration;
-    var travelFraction;
-    var feedsTransmitter;
+  function ensureSatelliteMovingChevron(record, angleDegrees) {
+    var endpoints;
 
     if (
       !record ||
-      !record.line ||
       virtualInputKind(record.virtualEndpoint, record.path) !== "satellite"
     ) {
+      return null;
+    }
+
+    endpoints = satelliteChevronEndpoints(record);
+
+    if (!endpoints) {
+      return null;
+    }
+
+    if (!record.movingChevron) {
+      record.movingChevron = window.L.marker(endpoints.start, {
+        pane: "fieldopsRfEndpoints",
+        icon: satelliteMovingChevronIcon(angleDegrees),
+        interactive: false,
+        keyboard: false
+      }).addTo(state.rf.virtualLayer);
+      record.movingChevronAngle = angleDegrees;
+      return record.movingChevron;
+    }
+
+    if (record.movingChevronAngle !== angleDegrees) {
+      record.movingChevron.setIcon(
+        satelliteMovingChevronIcon(angleDegrees)
+      );
+      record.movingChevronAngle = angleDegrees;
+    }
+
+    return record.movingChevron;
+  }
+
+  function stopSatelliteChevronAnimation() {
+    if (state.rf.satelliteChevronFrame) {
+      window.cancelAnimationFrame(state.rf.satelliteChevronFrame);
+      state.rf.satelliteChevronFrame = 0;
+    }
+
+    state.rf.satelliteChevronStartedAt = 0;
+  }
+
+  function renderSatelliteChevrons(timestamp) {
+    var cycleDuration =
+      SATELLITE_CHEVRON_TRAVEL_MS +
+      SATELLITE_CHEVRON_HOLD_MS;
+    var elapsed;
+    var progress;
+    var activeCount = 0;
+
+    state.rf.satelliteChevronFrame = 0;
+
+    if (!state.map || !state.rf.attachedInputs.size) {
+      state.rf.satelliteChevronStartedAt = 0;
       return;
     }
 
-    linePath = record.line._path;
-
-    if (!linePath || !linePath.parentNode || !linePath.namespaceURI) {
-      return;
+    if (!state.rf.satelliteChevronStartedAt) {
+      state.rf.satelliteChevronStartedAt = timestamp;
     }
 
+    elapsed =
+      (timestamp - state.rf.satelliteChevronStartedAt) %
+      cycleDuration;
+    progress = elapsed < SATELLITE_CHEVRON_TRAVEL_MS
+      ? elapsed / SATELLITE_CHEVRON_TRAVEL_MS
+      : 1;
+
+    state.rf.attachedInputs.forEach(
+      function moveSatelliteChevron(record) {
+        var endpoints;
+        var startPoint;
+        var endPoint;
+        var point;
+        var marker;
+
+        if (
+          virtualInputKind(record.virtualEndpoint, record.path) !==
+          "satellite"
+        ) {
+          return;
+        }
+
+        endpoints = satelliteChevronEndpoints(record);
+
+        if (!endpoints) {
+          return;
+        }
+
+        marker = ensureSatelliteMovingChevron(
+          record,
+          record.satelliteChevronAngle
+        );
+
+        if (!marker) {
+          return;
+        }
+
+        startPoint = state.map.latLngToContainerPoint(endpoints.start);
+        endPoint = state.map.latLngToContainerPoint(endpoints.end);
+        point = window.L.point(
+          startPoint.x + ((endPoint.x - startPoint.x) * progress),
+          startPoint.y + ((endPoint.y - startPoint.y) * progress)
+        );
+
+        marker.setLatLng(state.map.containerPointToLatLng(point));
+        activeCount += 1;
+      }
+    );
+
+    if (activeCount) {
+      state.rf.satelliteChevronFrame =
+        window.requestAnimationFrame(renderSatelliteChevrons);
+    } else {
+      state.rf.satelliteChevronStartedAt = 0;
+    }
+  }
+
+  function startSatelliteChevronAnimation() {
     if (
-      record.satelliteChevron &&
-      record.satelliteChevron.parentNode &&
-      record.satelliteChevronPath === linePath
+      state.rf.satelliteChevronFrame ||
+      !state.rf.attachedInputs.size
     ) {
       return;
     }
 
-    removeSatelliteLineChevron(record);
-
-    parent = linePath.parentNode;
-    namespace = linePath.namespaceURI;
-    satelliteChevronSequence += 1;
-    pathId = "fieldops-satellite-feed-" + String(satelliteChevronSequence);
-    linePath.setAttribute("id", pathId);
-
-    group = document.createElementNS(namespace, "g");
-    shadow = document.createElementNS(namespace, "path");
-    chevron = document.createElementNS(namespace, "path");
-    motion = document.createElementNS(namespace, "animateMotion");
-    motionPath = document.createElementNS(namespace, "mpath");
-
-    group.setAttribute("class", "osmmaps-rf-satellite-chevron");
-    group.setAttribute("aria-hidden", "true");
-
-    shadow.setAttribute("d", "M -4 -4 L 0 0 L -4 4");
-    shadow.setAttribute("fill", "none");
-    shadow.setAttribute("stroke", "#050505");
-    shadow.setAttribute("stroke-opacity", "0.78");
-    shadow.setAttribute("stroke-width", "3.4");
-    shadow.setAttribute("stroke-linecap", "round");
-    shadow.setAttribute("stroke-linejoin", "round");
-    shadow.setAttribute("transform", "translate(0.55 0.7)");
-
-    chevron.setAttribute("d", "M -4 -4 L 0 0 L -4 4");
-    chevron.setAttribute("fill", "none");
-    chevron.setAttribute("stroke", "#d6a43a");
-    chevron.setAttribute("stroke-width", "2.4");
-    chevron.setAttribute("stroke-linecap", "round");
-    chevron.setAttribute("stroke-linejoin", "round");
-
-    totalDuration =
-      SATELLITE_CHEVRON_TRAVEL_SECONDS +
-      SATELLITE_CHEVRON_HOLD_SECONDS;
-    travelFraction =
-      SATELLITE_CHEVRON_TRAVEL_SECONDS / totalDuration;
-    feedsTransmitter = record.virtualSide === "feeding";
-
-    motion.setAttribute("dur", String(totalDuration) + "s");
-    motion.setAttribute("begin", "0s");
-    motion.setAttribute("repeatCount", "indefinite");
-    motion.setAttribute("calcMode", "linear");
-    motion.setAttribute(
-      "keyPoints",
-      feedsTransmitter ? "0;1;1" : "1;0;0"
-    );
-    motion.setAttribute(
-      "keyTimes",
-      "0;" + String(travelFraction) + ";1"
-    );
-    motion.setAttribute(
-      "rotate",
-      feedsTransmitter ? "auto" : "auto-reverse"
-    );
-
-    setSvgHref(motionPath, "#" + pathId);
-    motion.appendChild(motionPath);
-    group.appendChild(shadow);
-    group.appendChild(chevron);
-    group.appendChild(motion);
-    parent.appendChild(group);
-
-    record.satelliteChevron = group;
-    record.satelliteChevronPath = linePath;
+    state.rf.satelliteChevronFrame =
+      window.requestAnimationFrame(renderSatelliteChevrons);
   }
 
   function satelliteLineArrowIcon(angleDegrees) {
@@ -1504,6 +1544,8 @@
     }
 
     updateSatelliteLineArrow(record, layout);
+    record.satelliteChevronAngle =
+      layout.arrowAngleDegrees + 180;
 
     if (record.line) {
       var fromLatLng = record.virtualSide === "feeding"
@@ -1520,7 +1562,10 @@
         record.glowLine.setLatLngs(satelliteLatLngs);
       }
 
-      ensureSatelliteLineChevron(record);
+      ensureSatelliteMovingChevron(
+        record,
+        record.satelliteChevronAngle
+      );
     }
   }
 
@@ -1635,9 +1680,9 @@
         ];
 
         if (virtualInputKind(attached.virtualEndpoint, path) === "satellite") {
-          style.color = "#111111";
+          style.color = "#343a40";
           style.weight = 2;
-          style.opacity = 1;
+          style.opacity = 0.90;
           style.dashArray = "7 5";
           style.className = [
             style.className || "",
@@ -1647,8 +1692,8 @@
           glowLine = new window.L.Polyline(attachedLatLngs, {
             pane: "fieldopsRfAttachedInputs",
             color: "#d6a43a",
-            weight: 5,
-            opacity: 0.58,
+            weight: 3.5,
+            opacity: 0.24,
             dashArray: "7 5",
             lineCap: "round",
             lineJoin: "round",
@@ -1695,12 +1740,18 @@
       if (attached) {
         attached.line = line;
         attached.glowLine = glowLine;
+        attached.satelliteChevronAngle =
+          attachedLayout.arrowAngleDegrees + 180;
         state.rf.attachedInputs.set(String(path.id), attached);
-        ensureSatelliteLineChevron(attached);
+        ensureSatelliteMovingChevron(
+          attached,
+          attached.satelliteChevronAngle
+        );
       }
     });
 
     layoutRfAttachedInputs();
+    startSatelliteChevronAnimation();
     scheduleRfLabelLayoutStaged();
   }
 
