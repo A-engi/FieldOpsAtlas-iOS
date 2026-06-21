@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM map and RF overlay
    File: FieldOpsAtlas/Features/maps/OSMmaps.css
-   Version: 1.0.10-chevron-gradient-asset
+   Version: 1.0.10-visible-sat-line-arrow
    Purpose:
    - Style the map canvas, region chooser, site markers, RF labels, endpoints, and path popups.
    ========================================================================== */
@@ -348,29 +348,19 @@ body {
   -webkit-backdrop-filter: none;
 }
 
-.osmmaps-rf-input-direction {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 0;
-  height: 0;
-  transform: rotate(var(--osmmaps-rf-sat-arrow-angle, 0deg));
-  transform-origin: center;
+.osmmaps-rf-input-arrow-icon {
+  border: 0;
+  background: transparent;
   pointer-events: none;
 }
 
-.osmmaps-rf-input-direction::before {
-  content: "";
-  position: absolute;
-  left: -22px;
-  top: -7px;
-  width: 10px;
-  height: 14px;
-  background:
-    url("../../../data/icons/path-pane-chevron-gold.svg?v=1.1.0-shadow-gradient")
-    center / contain
-    no-repeat;
+.osmmaps-rf-input-arrow {
+  width: 14px;
+  height: 20px;
+  display: block;
   opacity: 1;
+  transform: rotate(var(--osmmaps-rf-sat-arrow-angle, 0deg));
+  transform-origin: center;
 }
 
 .osmmaps-rf-input-node img {
