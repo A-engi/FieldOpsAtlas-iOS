@@ -1,12 +1,11 @@
 /* ==========================================================================
-   FieldOps Atlas OSM panes
+   FieldOps Atlas OSM panes and map controls
    File: FieldOpsAtlas/Features/maps/OSMpanes.css
-   Version: 1.0.3
+   Version: 1.0.4-map-controls
    Purpose:
-   - Leaflet marker popup styling.
-   - Bottom details pane styling.
-   - Temporary region-loaded toast styling.
-   - Edit form styling.
+   - Style Leaflet popup and selected-walk panes.
+   - Style quick-tool buttons, service picker, and cluster checkboxes.
+   - Style temporary region toast and edit forms.
    ========================================================================== */
 
 .leaflet-popup-content-wrapper,
@@ -329,6 +328,364 @@
   gap: 8px;
 }
 
+/* Quick tools and service picker ------------------------------------------ */
+
+.map-quick-tools {
+  position: fixed;
+  z-index: 58;
+  top: calc(var(--safe-top) + var(--top-height) - 1px);
+  left: 50%;
+  width: min(calc(100vw - 14px), 416px);
+  display: grid;
+  justify-items: center;
+  pointer-events: none;
+  transform: translateX(-50%);
+}
+
+.map-quick-tools__rail {
+  width: 100%;
+  height: 50px;
+  max-height: 50px;
+  padding: 6px;
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 5px;
+  overflow: hidden;
+  border: 1px solid rgba(139, 194, 231, 0.22);
+  border-top: 0;
+  border-radius: 0 0 15px 15px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(121, 198, 255, 0.10), transparent 48%),
+    rgba(5, 20, 39, 0.82);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.26);
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+  transition:
+    height 180ms ease,
+    max-height 180ms ease,
+    padding 180ms ease,
+    border-width 180ms ease,
+    opacity 150ms ease,
+    transform 180ms ease;
+  backdrop-filter: blur(16px) saturate(130%);
+  -webkit-backdrop-filter: blur(16px) saturate(130%);
+}
+
+.map-quick-tools.is-collapsed .map-quick-tools__rail {
+  height: 0;
+  max-height: 0;
+  padding-block: 0;
+  border-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-10px);
+}
+
+.map-quick-tool {
+  appearance: none;
+  -webkit-appearance: none;
+  min-width: 0;
+  height: var(--top-control-height);
+  min-height: var(--top-control-height);
+  padding: 0 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  overflow: hidden;
+  color: rgba(255, 255, 255, 0.96);
+  border: 1px solid rgba(176, 217, 245, 0.22);
+  border-radius: 10px;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    0 5px 12px rgba(0, 0, 0, 0.18);
+  text-decoration: none;
+  font: inherit;
+  font-size: clamp(11px, 3.2vw, 14px);
+  font-weight: 850;
+  line-height: 1;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+}
+
+.map-quick-tool img {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+  display: block;
+  object-fit: contain;
+}
+
+.map-quick-tool span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-quick-tool.is-dtt {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(85, 255, 149, 0.20), transparent 48%),
+    linear-gradient(135deg, rgba(26, 145, 72, 0.96), rgba(5, 94, 51, 0.96));
+}
+
+.map-quick-tool.is-dab {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(104, 199, 255, 0.22), transparent 48%),
+    linear-gradient(135deg, rgba(31, 120, 201, 0.98), rgba(8, 75, 150, 0.98));
+}
+
+.map-quick-tool.is-fm {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(237, 145, 255, 0.22), transparent 48%),
+    linear-gradient(135deg, rgba(137, 48, 162, 0.98), rgba(91, 22, 115, 0.98));
+}
+
+.map-quick-tool.is-weather {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(125, 198, 255, 0.18), transparent 48%),
+    linear-gradient(135deg, rgba(27, 71, 110, 0.98), rgba(8, 35, 67, 0.98));
+}
+
+.map-quick-tool.is-weather img {
+  width: 26px;
+  height: 26px;
+}
+
+.map-quick-tool:active {
+  transform: translateY(1px);
+}
+
+.map-quick-tool:focus-visible,
+.map-quick-tools__toggle:focus-visible {
+  outline: 2px solid rgba(255, 220, 138, 0.94);
+  outline-offset: 2px;
+}
+
+.map-quick-tool.is-active {
+  border-color: rgba(255, 224, 150, 0.72);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    0 0 0 1px rgba(255, 216, 122, 0.10),
+    0 5px 14px rgba(0, 0, 0, 0.20);
+}
+
+.map-service-picker[hidden],
+.map-quick-tools.is-collapsed .map-service-picker {
+  display: none !important;
+}
+
+.map-service-picker {
+  width: calc(100% - 12px);
+  max-height: min(280px, calc(100dvh - var(--safe-top) - 154px));
+  overflow: auto;
+  padding: 10px;
+  color: rgba(244, 251, 255, 0.96);
+  border: 1px solid rgba(139, 194, 231, 0.28);
+  border-top: 0;
+  border-radius: 0 0 16px 16px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(121, 198, 255, 0.10), transparent 42%),
+    rgba(5, 20, 39, 0.96);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.30);
+  pointer-events: auto;
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+}
+
+.map-service-picker__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.map-service-picker__header > div {
+  min-width: 0;
+  display: grid;
+  gap: 2px;
+}
+
+.map-service-picker__header small {
+  color: rgba(195, 225, 245, 0.68);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.map-service-picker__header strong {
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-service-picker__header button,
+.map-service-cluster {
+  min-height: 46px;
+  padding: 7px 10px;
+  border: 1px solid rgba(176, 217, 245, 0.20);
+  border-radius: 12px;
+  color: rgba(244, 251, 255, 0.96);
+  background: rgba(9, 35, 62, 0.82);
+  font: inherit;
+}
+
+.map-service-picker__header button {
+  width: auto;
+  min-height: 34px;
+  cursor: pointer;
+}
+
+.map-service-cluster {
+  width: 100%;
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  text-align: left;
+  cursor: pointer;
+}
+
+.map-service-cluster:hover {
+  border-color: rgba(255, 224, 150, 0.48);
+}
+
+.map-service-cluster.is-selected {
+  border-color: rgba(255, 224, 150, 0.72);
+  background:
+    linear-gradient(180deg, rgba(53, 105, 147, 0.94), rgba(12, 48, 83, 0.94));
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 0 0 1px rgba(255, 216, 122, 0.08);
+}
+
+.map-service-cluster__checkbox {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 19px;
+  height: 19px;
+  margin: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(205, 232, 250, 0.58);
+  border-radius: 6px;
+  background: rgba(4, 22, 40, 0.82);
+  cursor: pointer;
+}
+
+.map-service-cluster__checkbox::after {
+  width: 9px;
+  height: 5px;
+  border-left: 2px solid #1a2937;
+  border-bottom: 2px solid #1a2937;
+  content: "";
+  opacity: 0;
+  transform: translateY(-1px) rotate(-45deg);
+}
+
+.map-service-cluster__checkbox:checked {
+  border-color: rgba(255, 226, 158, 0.94);
+  background: #f3bd4e;
+}
+
+.map-service-cluster__checkbox:checked::after {
+  opacity: 1;
+}
+
+.map-service-cluster__checkbox:focus-visible,
+.map-service-picker__header button:focus-visible {
+  outline: 2px solid rgba(255, 220, 138, 0.94);
+  outline-offset: 2px;
+}
+
+.map-service-cluster__body {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.map-service-cluster__body strong {
+  min-width: 0;
+  overflow: hidden;
+  font-size: 13px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.map-service-cluster__body > span {
+  color: rgba(215, 237, 251, 0.70);
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.map-service-picker__status {
+  margin: 8px 2px 0;
+  color: rgba(215, 237, 251, 0.66);
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.map-service-picker__status.is-warning {
+  padding: 8px 9px;
+  border: 1px solid rgba(255, 211, 112, 0.44);
+  border-radius: 10px;
+  color: rgba(255, 232, 178, 0.96);
+  background: rgba(89, 58, 7, 0.36);
+}
+
+.map-quick-tools.has-service-picker .map-quick-tools__toggle {
+  border-top: 1px solid rgba(188, 207, 222, 0.42);
+  border-radius: 999px;
+}
+
+.map-quick-tools__toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 66px;
+  height: 14px;
+  margin-top: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(188, 207, 222, 0.42);
+  border-top: 0;
+  border-radius: 0 0 999px 999px;
+  background:
+    linear-gradient(180deg, rgba(201, 213, 225, 0.94), rgba(116, 129, 145, 0.96));
+  box-shadow: 0 7px 15px rgba(0, 0, 0, 0.24);
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.map-quick-tools__toggle-mark {
+  width: 20px;
+  height: 7px;
+  display: block;
+  border-right: 2px solid rgba(15, 36, 57, 0.84);
+  border-bottom: 2px solid rgba(15, 36, 57, 0.84);
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform 180ms ease;
+}
+
+.map-quick-tools.is-collapsed .map-quick-tools__toggle {
+  border-top: 1px solid rgba(188, 207, 222, 0.42);
+  border-radius: 999px;
+}
+
+.map-quick-tools.is-collapsed .map-quick-tools__toggle-mark {
+  transform: translateY(2px) rotate(225deg);
+}
+
 .osmmaps-page[data-theme="light"] .osmpanes-details {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(235, 246, 255, 0.76)),
@@ -379,4 +736,31 @@
   .osmpanes-edit-grid {
     grid-template-columns: 1fr;
   }
+
+  .map-quick-tools {
+    width: calc(100vw - 12px);
+  }
+
+  .map-quick-tools__rail {
+    gap: 4px;
+  }
+
+  .map-quick-tool {
+    padding-inline: 4px;
+    gap: 4px;
+    font-size: 11px;
+  }
+
+  .map-quick-tool img {
+    width: 20px;
+    height: 20px;
+  }
+
+  .map-quick-tool.is-weather img {
+    width: 24px;
+    height: 24px;
+  }
 }
+
+/* Destination: FieldOpsAtlas/Features/maps/OSMpanes.css */
+/* End of file: FieldOpsAtlas/Features/maps/OSMpanes.css | bottom/end of file */
