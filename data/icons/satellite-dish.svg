@@ -9,8 +9,23 @@
   <title id="title">Ground satellite dish</title>
 
   <desc id="desc">
-    Original ground satellite dish shape with the dish bowl coloured gold.
+    Original ground satellite dish shape with black outer structure, gold dish interior fill, and RX text.
   </desc>
+
+  <!-- Gold interior fill so the map does not show through the bowl -->
+  <path
+    fill="#D6A43A"
+    d="
+      M92 103
+      C114 109 139 123 163 143
+      C189 164 211 189 230 218
+      C214 226 190 227 166 220
+      C134 210 105 188 84 158
+      C74 144 68 129 66 113
+      C74 109 83 105 92 103
+      Z
+    "
+  />
 
   <g fill="currentColor">
 
@@ -50,9 +65,8 @@
       "
     />
 
-    <!-- Dish: original geometry, colour only changed to gold -->
+    <!-- Dish outer body kept black -->
     <path
-      fill="#D6A43A"
       d="
         M62 62
         C44 70 41 103 46 139
@@ -88,6 +102,17 @@
     <circle cx="202" cy="114" r="18" />
 
   </g>
+
+  <!-- RX label -->
+  <text
+    x="144"
+    y="175"
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="34"
+    font-weight="700"
+    fill="#111111"
+    transform="rotate(34 144 175)"
+  >RX</text>
 
   <!-- Transmission arcs -->
   <g
