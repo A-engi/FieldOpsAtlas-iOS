@@ -1,11 +1,11 @@
 /* ==========================================================================
    FieldOps Atlas saved RF path styles
    File: FieldOpsAtlas/Features/maps/OSMrf-paths.css
-   Version: 1.0.7-clean-ribbon-stack
+   Version: 1.0.8-gold-chevron-flow
    Purpose:
    - Hide the large path badges.
    - Show one compact route label for the selected path.
-   - Style the saved route underlay, highlight, and animated flow.
+   - Style the saved route underlay, service path, and moving gold chevrons.
    ========================================================================== */
 
 .osmmaps-page .osmmaps-rf-path-label-icon {
@@ -48,26 +48,13 @@
 
 .osmmaps-rf-ribbon-under,
 .osmmaps-rf-ribbon-main,
-.osmmaps-rf-ribbon-flow {
+.osmmaps-rf-ribbon-chevron {
   pointer-events: none;
   shape-rendering: geometricPrecision;
 }
 
-.osmmaps-rf-ribbon-flow {
-  animation: osmmaps-rf-ribbon-flow 1.35s linear infinite;
-  will-change: stroke-dashoffset;
-}
-
-@keyframes osmmaps-rf-ribbon-flow {
-  to {
-    stroke-dashoffset: -26;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .osmmaps-rf-ribbon-flow {
-    animation: none;
-  }
+.osmmaps-rf-ribbon-chevron-image {
+  opacity: 0.98;
 }
 
 /* Destination: FieldOpsAtlas/Features/maps/OSMrf-paths.css */
