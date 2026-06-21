@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM map and RF overlay
    File: FieldOpsAtlas/Features/maps/OSMmaps.css
-   Version: 1.0.10-visible-sat-line-arrow
+   Version: 1.0.11-black-sat-arrowhead
    Purpose:
    - Style the map canvas, region chooser, site markers, RF labels, endpoints, and path popups.
    ========================================================================== */
@@ -354,13 +354,15 @@ body {
   pointer-events: none;
 }
 
-.osmmaps-rf-input-arrow {
-  width: 14px;
-  height: 20px;
+.osmmaps-rf-input-arrowhead {
+  width: 0;
+  height: 0;
   display: block;
-  opacity: 1;
+  border-top: 4px solid transparent;
+  border-bottom: 4px solid transparent;
+  border-left: 7px solid #111111;
   transform: rotate(var(--osmmaps-rf-sat-arrow-angle, 0deg));
-  transform-origin: center;
+  transform-origin: 50% 50%;
 }
 
 .osmmaps-rf-input-node img {
