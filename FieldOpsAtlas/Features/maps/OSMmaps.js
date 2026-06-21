@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.1.15-black-sat-arrowhead
+   Version: 1.1.16-no-white-node-rim
    Purpose:
    - Own the Leaflet map, regions, sites, service clusters, RF paths, labels, and fitting.
    - Keep service-menu opening fast by returning cached cluster metadata without rerendering.
@@ -14,7 +14,7 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.1.15-black-sat-arrowhead";
+  var VERSION = "1.1.16-no-white-node-rim";
   var REGION_TOAST_MS = 3000;
   var UK_BOUNDS = [[49.75, -8.7], [60.95, 1.95]];
   var UK_CENTER = [54.55, -3.15];
@@ -462,6 +462,17 @@
       iconAnchor: [9, 9],
       popupAnchor: [0, -10]
     });
+  }
+
+  function setRfPathMarkerMode(active) {
+    var page = qs("[data-osmmaps-page]");
+
+    if (page) {
+      page.classList.toggle(
+        "has-visible-rf-paths",
+        Boolean(active)
+      );
+    }
   }
 
   function visibleWalks() {
@@ -1070,6 +1081,8 @@
   }
 
   function clearRfOverlay() {
+    setRfPathMarkerMode(false);
+
     [
       state.rf.lineLayer,
       state.rf.endpointLayer,
@@ -1423,6 +1436,7 @@
     state.rf.siteDetails = lightweightSiteDetails(cluster, walks, activePaths);
     state.rf.serviceId = serviceId;
     state.rf.regionId = state.selectedRegionId;
+    setRfPathMarkerMode(activePaths.length > 0);
 
     activePaths.forEach(function addPathLine(path) {
       var fromWalk = pathEndpoint(path, "feeding", walksById);
