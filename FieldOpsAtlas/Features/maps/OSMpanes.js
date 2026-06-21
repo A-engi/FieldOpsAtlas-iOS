@@ -1,16 +1,27 @@
 /* ==========================================================================
-   FieldOps Atlas OSM panes
+   FieldOps Atlas OSM panes and map controls
    File: FieldOpsAtlas/Features/maps/OSMpanes.js
-   Version: 1.0.3
+   Version: 1.0.4-map-controls
    Purpose:
-   - Own Leaflet popup markup.
-   - Own collapsed, expanded, and edit selected-walk pane markup.
-   - Own temporary region-loaded toast markup.
-   - Own details copy buttons.
+   - Own Leaflet popup and selected-walk pane markup.
+   - Own temporary region-loaded toast and edit forms.
+   - Own quick-tool buttons, service picker, cluster checkbox UI, and weather panel UI.
+   - Emit service and cluster selections to OSMmaps.js.
+   - Ask the weather data module for forecast data and render it.
    ========================================================================== */
 
 (function fieldOpsOSMpanes() {
   "use strict";
+
+  var VERSION = "1.0.4-map-controls";
+  var TOOLBAR_STORAGE_KEY = "fieldops.maps.quick-tools.collapsed";
+  var TOOLBAR_COLLAPSED_CLASS = "is-collapsed";
+  var controlHandlers = {
+    onServiceOpen: null,
+    onClusterChange: null
+  };
+  var controlsBound = false;
+  var activeServiceId = "";
 
   var copySvg = [
     '<span class="osmpanes-copy-icon" aria-hidden="true">',
@@ -20,6 +31,14 @@
     '</svg>',
     '</span>'
   ].join("");
+
+  function qs(selector, root) {
+    return (root || document).querySelector(selector);
+  }
+
+  function qsa(selector, root) {
+    return Array.prototype.slice.call((root || document).querySelectorAll(selector));
+  }
 
   function escapeHtml(value) {
     return String(value == null ? "" : value).replace(/[&<>"']/g, function replaceCharacter(character) {
@@ -40,19 +59,17 @@
 
   function asList(value) {
     if (Array.isArray(value)) {
-      return value
-        .map(function mapItem(item) {
-          if (typeof item === "string") {
-            return item.trim();
-          }
+      return value.map(function mapItem(item) {
+        if (typeof item === "string") {
+          return item.trim();
+        }
 
-          if (item && typeof item === "object") {
-            return String(item.name || item.label || item.title || item.service || item.id || "").trim();
-          }
+        if (item && typeof item === "object") {
+          return String(item.name || item.label || item.title || item.service || item.id || "").trim();
+        }
 
-          return "";
-        })
-        .filter(Boolean);
+        return "";
+      }).filter(Boolean);
     }
 
     if (typeof value === "string" && value.trim()) {
@@ -103,9 +120,7 @@
   function sectionHtml(title, bodyHtml) {
     return [
       '<section class="osmpanes-section">',
-      '<h3 class="osmpanes-section-title">',
-      escapeHtml(title),
-      '</h3>',
+      '<h3 class="osmpanes-section-title">', escapeHtml(title), '</h3>',
       bodyHtml,
       '</section>'
     ].join("");
@@ -114,14 +129,10 @@
   function copyRowHtml(label, value) {
     return sectionHtml(label, [
       '<div class="osmpanes-copy-row">',
-      '<span class="osmpanes-value">',
-      escapeHtml(value),
-      '</span>',
+      '<span class="osmpanes-value">', escapeHtml(value), '</span>',
       '<button class="osmpanes-icon-button" type="button" data-copy-value="',
       escapeHtml(value),
-      '" aria-label="Copy ',
-      escapeHtml(label),
-      '">',
+      '" aria-label="Copy ', escapeHtml(label), '">',
       copySvg,
       '</button>',
       '</div>'
@@ -131,9 +142,7 @@
   function popupHtml(walk) {
     return [
       '<article class="osmpanes-popup">',
-      '<h2 class="osmpanes-popup-title">',
-      escapeHtml(walk.name),
-      '</h2>',
+      '<h2 class="osmpanes-popup-title">', escapeHtml(walk.name), '</h2>',
       '<div class="osmpanes-popup-actions">',
       '<button class="osmpanes-popup-button" type="button" data-open-details="',
       escapeHtml(walk.id),
@@ -159,13 +168,8 @@
     return [
       '<div class="osmpanes-title-row">',
       '<div>',
-      '<h2 class="osmpanes-title">',
-      escapeHtml(region.name),
-      '</h2>',
-      '<p class="osmpanes-subtitle">',
-      Number(walkCount || 0),
-      ' walks loaded',
-      '</p>',
+      '<h2 class="osmpanes-title">', escapeHtml(region.name), '</h2>',
+      '<p class="osmpanes-subtitle">', Number(walkCount || 0), ' walks loaded</p>',
       '</div>',
       modePillHtml(),
       '</div>'
@@ -175,9 +179,7 @@
   function collapsedWalkHtml(walk) {
     return [
       '<div class="osmpanes-title-row osmpanes-title-row--three">',
-      '<h2 class="osmpanes-title">',
-      escapeHtml(walk.name),
-      '</h2>',
+      '<h2 class="osmpanes-title">', escapeHtml(walk.name), '</h2>',
       '<button class="osmpanes-button" type="button" data-expand-details="',
       escapeHtml(walk.id),
       '">Expand</button>',
@@ -192,23 +194,21 @@
     }
 
     return sectionHtml("Region", [
-      '<p class="osmpanes-line">',
-      escapeHtml(region.name),
-      '</p>',
+      '<p class="osmpanes-line">', escapeHtml(region.name), '</p>',
       region.notes ? '<p class="osmpanes-line">' + escapeHtml(region.notes) + '</p>' : "",
       region.id ? '<p class="osmpanes-line">ID: ' + escapeHtml(region.id) + '</p>' : ""
     ].join(""));
   }
 
   function hasWalkthrough(walkthrough) {
-    if (!walkthrough || typeof walkthrough !== "object") {
-      return false;
-    }
-
     return Boolean(
-      String(walkthrough.type || "").trim() ||
-      String(walkthrough.url || "").trim() ||
-      String(walkthrough.notes || "").trim()
+      walkthrough &&
+      typeof walkthrough === "object" &&
+      (
+        String(walkthrough.type || "").trim() ||
+        String(walkthrough.url || "").trim() ||
+        String(walkthrough.notes || "").trim()
+      )
     );
   }
 
@@ -251,9 +251,7 @@
     return [
       '<article>',
       '<div class="osmpanes-title-row osmpanes-title-row--three">',
-      '<h2 class="osmpanes-title">',
-      escapeHtml(walk.name),
-      '</h2>',
+      '<h2 class="osmpanes-title">', escapeHtml(walk.name), '</h2>',
       modePillHtml(),
       '<button class="osmpanes-button osmpanes-button--quiet" type="button" data-close-pane>Close</button>',
       '</div>',
@@ -261,15 +259,20 @@
       regionSectionHtml(region),
       copyRowHtml("Coordinates", coordinates),
       copyRowHtml("w3w", what3words),
-      sectionHtml("Access info", accessLines.length ? listHtml(accessLines, "No access info recorded.") : '<p class="osmpanes-line">No access info recorded.</p>'),
+      sectionHtml(
+        "Access info",
+        accessLines.length
+          ? listHtml(accessLines, "No access info recorded.")
+          : '<p class="osmpanes-line">No access info recorded.</p>'
+      ),
       sectionHtml("Services", listHtml(walk.services, "No services recorded.")),
       optionalExtraSections(walk),
       sectionHtml("Weather", [
         '<div class="osmpanes-actions">',
         '<button class="osmpanes-button" type="button" data-load-weather="',
         escapeHtml(walk.id),
-        '">Weather</button>',
-        '<p class="osmpanes-weather-output" data-weather-output>',
+        '">Load weather</button>',
+        '<p class="osmpanes-weather-output" data-site-weather-output>',
         escapeHtml(weatherText),
         '</p>',
         '</div>'
@@ -295,18 +298,9 @@
     var attrs = textarea ? "" : ' type="text"';
 
     return [
-      '<label class="osmpanes-edit-field',
-      fullClass,
-      '">',
-      '<span>',
-      escapeHtml(label),
-      '</span>',
-      '<',
-      tag,
-      attrs,
-      ' name="',
-      escapeHtml(name),
-      '">',
+      '<label class="osmpanes-edit-field', fullClass, '">',
+      '<span>', escapeHtml(label), '</span>',
+      '<', tag, attrs, ' name="', escapeHtml(name), '">',
       textarea ? escapeHtml(value || "") + '</textarea>' : escapeHtml(value || "") + '</input>',
       '</label>'
     ].join("").replace(/<input([^>]*)>(.*?)<\/input>/g, '<input$1 value="$2">');
@@ -314,12 +308,11 @@
 
   function editPaneHtml(walk, region, statusText) {
     var walkthrough = walk.walkthrough || {};
+
     return [
       '<article>',
       '<div class="osmpanes-title-row osmpanes-title-row--three">',
-      '<h2 class="osmpanes-title">Edit ',
-      escapeHtml(walk.name),
-      '</h2>',
+      '<h2 class="osmpanes-title">Edit ', escapeHtml(walk.name), '</h2>',
       modePillHtml(),
       '<button class="osmpanes-button osmpanes-button--quiet" type="button" data-edit-cancel="',
       escapeHtml(walk.id),
@@ -330,9 +323,7 @@
       '" data-region-id="',
       escapeHtml(region ? region.id : walk.regionId),
       '">',
-      '<p class="osmpanes-edit-note" data-edit-status>',
-      escapeHtml(statusText || ""),
-      '</p>',
+      '<p class="osmpanes-edit-note" data-edit-status>', escapeHtml(statusText || ""), '</p>',
       '<div class="osmpanes-edit-grid">',
       fieldHtml("name", "Name", walk.name, true, false),
       fieldHtml("siteType", "Type", walk.siteType, false, false),
@@ -427,15 +418,15 @@
     render(panel, "edit", editPaneHtml(walk, region, statusText));
   }
 
-  function setWeatherText(message) {
-    var output = document.querySelector("[data-weather-output]");
+  function setSiteWeatherText(message) {
+    var output = qs("[data-site-weather-output]");
     if (output) {
       output.textContent = message;
     }
   }
 
   function setEditStatus(message) {
-    var output = document.querySelector("[data-edit-status]");
+    var output = qs("[data-edit-status]");
     if (output) {
       output.textContent = message;
     }
@@ -472,13 +463,340 @@
     }
   }
 
-  document.addEventListener("click", function onDocumentClick(event) {
-    var copyButton = event.target.closest("[data-copy-value]");
+  function readToolbarCollapsed() {
+    try {
+      return window.localStorage.getItem(TOOLBAR_STORAGE_KEY) === "true";
+    } catch (error) {
+      return false;
+    }
+  }
 
-    if (!copyButton) {
+  function saveToolbarCollapsed(collapsed) {
+    try {
+      window.localStorage.setItem(TOOLBAR_STORAGE_KEY, String(collapsed));
+    } catch (error) {
+      // Storage can be blocked inside previews and webviews.
+    }
+  }
+
+  function setToolbarCollapsed(collapsed, persist) {
+    var toolbar = qs("[data-map-quick-tools]");
+    var toggle = qs("[data-map-quick-toggle]");
+
+    if (!toolbar || !toggle) {
       return;
     }
 
+    toolbar.classList.toggle(TOOLBAR_COLLAPSED_CLASS, collapsed);
+    toggle.setAttribute("aria-expanded", String(!collapsed));
+    toggle.setAttribute(
+      "aria-label",
+      collapsed ? "Expand map quick tools" : "Collapse map quick tools"
+    );
+
+    if (collapsed) {
+      closeServicePicker();
+      setWeatherPanelOpen(false);
+    }
+
+    if (persist !== false) {
+      saveToolbarCollapsed(collapsed);
+    }
+  }
+
+  function setActiveService(serviceId) {
+    activeServiceId = String(serviceId || "");
+
+    qsa("[data-map-service]").forEach(function syncButton(button) {
+      var active = button.getAttribute("data-map-service") === activeServiceId;
+      button.classList.toggle("is-active", active);
+      button.setAttribute("aria-pressed", String(active));
+    });
+  }
+
+  function setPickerExpanded(serviceId, expanded) {
+    qsa("[data-map-service]").forEach(function syncButton(button) {
+      var matches = button.getAttribute("data-map-service") === serviceId;
+      button.setAttribute("aria-expanded", String(Boolean(expanded && matches)));
+    });
+  }
+
+  function setServiceHeading(serviceId, title) {
+    var kicker = qs("[data-map-service-kicker]");
+    var heading = qs("[data-map-service-title]");
+
+    if (kicker) {
+      kicker.textContent = String(serviceId || "service").toUpperCase();
+    }
+
+    if (heading) {
+      heading.textContent = title || "Choose one or more clusters";
+    }
+  }
+
+  function setServiceStatus(message, warning) {
+    var output = qs("[data-map-service-status]");
+
+    if (output) {
+      output.textContent = message || "";
+      output.classList.toggle("is-warning", Boolean(warning));
+    }
+  }
+
+  function renderServiceLoading(message) {
+    var options = qs("[data-map-service-options]");
+
+    if (options) {
+      options.innerHTML = "";
+    }
+
+    setServiceStatus(message || "Loading clusters...");
+  }
+
+  function renderServiceClusters(result) {
+    var options = qs("[data-map-service-options]");
+    var clusters = result && Array.isArray(result.clusters) ? result.clusters : [];
+    var selected = new Set((result && result.selectedIds ? result.selectedIds : []).map(String));
+    var serviceId = String(result && result.serviceId ? result.serviceId : activeServiceId);
+
+    if (!options) {
+      return;
+    }
+
+    if (!clusters.length) {
+      options.innerHTML = "";
+      setServiceStatus(
+        Number(result && result.siteCount || 0) + " " +
+        serviceId.toUpperCase() +
+        " sites. No clusters are configured."
+      );
+      return;
+    }
+
+    options.innerHTML = clusters.map(function clusterCheckbox(cluster) {
+      var checked = selected.has(String(cluster.id));
+
+      return [
+        '<label class="map-service-cluster', checked ? ' is-selected' : '', '">',
+        '<input class="map-service-cluster__checkbox" type="checkbox" data-map-cluster="',
+        escapeHtml(cluster.id),
+        '" data-map-service-id="',
+        escapeHtml(serviceId),
+        '"',
+        checked ? ' checked' : '',
+        '>',
+        '<span class="map-service-cluster__body">',
+        '<strong>', escapeHtml(cluster.name), '</strong>',
+        '<span>', escapeHtml(cluster.siteCount || (cluster.siteIds || []).length), ' sites</span>',
+        '</span>',
+        '</label>'
+      ].join("");
+    }).join("");
+
+    setServiceStatus(
+      result && result.status
+        ? result.status
+        : Number(result && result.siteCount || 0) + " " +
+          serviceId.toUpperCase() +
+          " sites. Tick one or more clusters.",
+      Boolean(result && result.warning)
+    );
+  }
+
+  function closeServicePicker() {
+    var toolbar = qs("[data-map-quick-tools]");
+    var picker = qs("[data-map-service-picker]");
+
+    if (picker) {
+      picker.hidden = true;
+      delete picker.dataset.activeService;
+    }
+
+    if (toolbar) {
+      toolbar.classList.remove("has-service-picker");
+    }
+
+    setPickerExpanded("", false);
+  }
+
+  function showServicePicker(serviceId) {
+    var toolbar = qs("[data-map-quick-tools]");
+    var picker = qs("[data-map-service-picker]");
+
+    if (!toolbar || !picker) {
+      return;
+    }
+
+    picker.hidden = false;
+    picker.dataset.activeService = serviceId;
+    toolbar.classList.add("has-service-picker");
+    setPickerExpanded(serviceId, true);
+  }
+
+  function openServicePicker(serviceId) {
+    var picker = qs("[data-map-service-picker]");
+    var id = String(serviceId || "");
+
+    if (!picker || !id) {
+      return;
+    }
+
+    if (!picker.hidden && picker.dataset.activeService === id) {
+      closeServicePicker();
+      return;
+    }
+
+    setWeatherPanelOpen(false);
+    setActiveService(id);
+    setServiceHeading(id, "Choose one or more clusters");
+    showServicePicker(id);
+    renderServiceLoading("Loading " + id.toUpperCase() + " clusters...");
+
+    if (typeof controlHandlers.onServiceOpen !== "function") {
+      setServiceStatus("Map controls are not ready.");
+      return;
+    }
+
+    Promise.resolve(controlHandlers.onServiceOpen(id))
+      .then(renderServiceClusters)
+      .catch(function serviceOpenError(error) {
+        setServiceStatus(error.message || "Could not load service clusters.");
+      });
+  }
+
+  function selectedClusterIds(serviceId) {
+    return qsa(
+      'input[data-map-cluster][data-map-service-id="' +
+      String(serviceId || "") +
+      '"]:checked'
+    ).map(function checkboxId(checkbox) {
+      return String(checkbox.getAttribute("data-map-cluster") || "");
+    }).filter(Boolean);
+  }
+
+  function changeClusterSelection(serviceId) {
+    var selectedIds = selectedClusterIds(serviceId);
+
+    qsa('input[data-map-cluster][data-map-service-id="' + serviceId + '"]').forEach(function syncRow(checkbox) {
+      var row = checkbox.closest(".map-service-cluster");
+      if (row) {
+        row.classList.toggle("is-selected", checkbox.checked);
+      }
+    });
+
+    if (typeof controlHandlers.onClusterChange !== "function") {
+      return;
+    }
+
+    setServiceStatus("Updating selected clusters...");
+
+    Promise.resolve(controlHandlers.onClusterChange(serviceId, selectedIds))
+      .then(renderServiceClusters)
+      .catch(function clusterChangeError(error) {
+        setServiceStatus(error.message || "Could not update selected clusters.");
+      });
+  }
+
+  function setWeatherPanelOpen(open) {
+    var panel = qs(".weather-api-panel");
+
+    if (panel) {
+      panel.hidden = !open;
+    }
+
+    qsa("[data-weather-panel-open]").forEach(function syncButton(button) {
+      button.setAttribute("aria-expanded", open ? "true" : "false");
+    });
+  }
+
+  function setWeatherStatus(message) {
+    var output = qs("[data-weather-output]");
+    if (output) {
+      output.textContent = message || "";
+    }
+  }
+
+  function setWeatherUpdated(message) {
+    var output = qs("[data-weather-forecast-updated]");
+    if (output) {
+      output.textContent = message || "";
+    }
+  }
+
+  function renderForecastPlaceholder(message) {
+    var track = qs("[data-weather-forecast-track]");
+
+    if (!track) {
+      return;
+    }
+
+    track.innerHTML = [
+      '<article class="weather-forecast-card weather-forecast-card-placeholder" role="listitem">',
+      escapeHtml(message || "Tap Activate."),
+      '</article>'
+    ].join("");
+  }
+
+  function formatDay(dateText) {
+    var date = new Date(String(dateText || "") + "T12:00:00");
+
+    if (Number.isNaN(date.getTime())) {
+      return String(dateText || "");
+    }
+
+    return date.toLocaleDateString("en-GB", {
+      weekday: "short",
+      day: "numeric",
+      month: "short"
+    });
+  }
+
+  function renderForecast(data) {
+    var track = qs("[data-weather-forecast-track]");
+    var days = data && Array.isArray(data.days) ? data.days : [];
+
+    if (!track || !days.length) {
+      throw new Error("Forecast data is unavailable.");
+    }
+
+    track.innerHTML = days.map(function renderDay(day) {
+      return [
+        '<article class="weather-forecast-card" role="listitem">',
+        '<strong>', escapeHtml(formatDay(day.date)), '</strong>',
+        '<span>', escapeHtml(day.summary), '</span>',
+        '<span>', escapeHtml(day.minimumC), '–', escapeHtml(day.maximumC), '°C</span>',
+        '<span>Rain ', escapeHtml(Number(day.rainMm || 0).toFixed(1)), ' mm</span>',
+        '<span>Wind ', escapeHtml(day.windKmh), ' km/h</span>',
+        '</article>'
+      ].join("");
+    }).join("");
+
+    setWeatherUpdated("Updated now");
+    setWeatherStatus("Preview loaded for " + String(data.location || "Preseli area") + ".");
+  }
+
+  function activateWeatherPreview() {
+    var weather = window.FieldOpsOSMWeatherMenu;
+
+    if (!weather || typeof weather.loadPreseliForecast !== "function") {
+      setWeatherStatus("Weather data module is unavailable.");
+      return;
+    }
+
+    setWeatherUpdated("Loading");
+    setWeatherStatus("Loading Preseli preview...");
+    renderForecastPlaceholder("Loading preview...");
+
+    weather.loadPreseliForecast()
+      .then(renderForecast)
+      .catch(function weatherPreviewError(error) {
+        setWeatherUpdated("Not loaded");
+        setWeatherStatus(error.message || "Preseli preview unavailable.");
+        renderForecastPlaceholder("Preview unavailable. Open full Weather for provider pages.");
+      });
+  }
+
+  function copyButtonClick(copyButton) {
     copyText(copyButton.getAttribute("data-copy-value")).then(function copied() {
       copyButton.setAttribute("aria-label", copied ? "Copied" : "Copy failed");
       copyButton.dataset.copied = copied ? "true" : "false";
@@ -487,18 +805,148 @@
         copyButton.removeAttribute("data-copied");
       }, 900);
     });
-  });
+  }
+
+  function bindDocumentControls() {
+    if (controlsBound) {
+      return;
+    }
+
+    controlsBound = true;
+
+    document.addEventListener("click", function onDocumentClick(event) {
+      var copyButton = event.target.closest("[data-copy-value]");
+      var toolbarToggle = event.target.closest("[data-map-quick-toggle]");
+      var serviceButton = event.target.closest("[data-map-service]");
+      var serviceClose = event.target.closest("[data-map-service-close]");
+      var weatherOpen = event.target.closest("[data-weather-panel-open]");
+      var weatherClose = event.target.closest("[data-weather-panel-close]");
+      var weatherActivate = event.target.closest("[data-weather-activate]");
+
+      if (copyButton) {
+        copyButtonClick(copyButton);
+        return;
+      }
+
+      if (toolbarToggle) {
+        event.preventDefault();
+        event.stopPropagation();
+        var toolbar = qs("[data-map-quick-tools]");
+        setToolbarCollapsed(
+          toolbar && !toolbar.classList.contains(TOOLBAR_COLLAPSED_CLASS)
+        );
+        return;
+      }
+
+      if (serviceButton) {
+        event.preventDefault();
+        event.stopPropagation();
+        openServicePicker(serviceButton.getAttribute("data-map-service"));
+        return;
+      }
+
+      if (serviceClose) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeServicePicker();
+        return;
+      }
+
+      if (weatherOpen) {
+        event.preventDefault();
+        event.stopPropagation();
+        closeServicePicker();
+        setWeatherPanelOpen(true);
+        return;
+      }
+
+      if (weatherClose) {
+        event.preventDefault();
+        event.stopPropagation();
+        setWeatherPanelOpen(false);
+        return;
+      }
+
+      if (weatherActivate) {
+        event.preventDefault();
+        event.stopPropagation();
+        activateWeatherPreview();
+      }
+    }, false);
+
+    document.addEventListener("change", function onDocumentChange(event) {
+      var checkbox = event.target.closest(".map-service-cluster__checkbox[data-map-cluster]");
+
+      if (!checkbox) {
+        return;
+      }
+
+      event.stopPropagation();
+      changeClusterSelection(checkbox.getAttribute("data-map-service-id"));
+    });
+
+    document.addEventListener("keydown", function onDocumentKeydown(event) {
+      if (event.key === "Escape") {
+        closeServicePicker();
+        setWeatherPanelOpen(false);
+      }
+    });
+  }
+
+  function bindMapControls(handlers) {
+    controlHandlers = Object.assign({}, controlHandlers, handlers || {});
+    bindDocumentControls();
+  }
+
+  function init() {
+    setToolbarCollapsed(readToolbarCollapsed(), false);
+    renderForecastPlaceholder("Tap Activate preview.");
+    bindDocumentControls();
+
+    qsa("[data-weather-panel-open]").forEach(function initWeatherButton(button) {
+      button.setAttribute("aria-expanded", "false");
+    });
+
+    qsa("[data-map-service]").forEach(function initServiceButton(button) {
+      button.setAttribute("aria-expanded", "false");
+    });
+  }
 
   window.FieldOpsOSMpanes = {
+    VERSION: VERSION,
+    version: VERSION,
     popupHtml: popupHtml,
     renderEmpty: renderEmpty,
     renderRegionToast: renderRegionToast,
     renderCollapsed: renderCollapsed,
     renderDetails: renderDetails,
     renderEdit: renderEdit,
-    setWeatherText: setWeatherText,
+    setWeatherText: setSiteWeatherText,
+    setSiteWeatherText: setSiteWeatherText,
     setEditStatus: setEditStatus,
     formatCoordinates: formatCoordinates,
-    hide: hide
+    hide: hide,
+    bindMapControls: bindMapControls,
+    renderServiceClusters: renderServiceClusters,
+    setServiceStatus: setServiceStatus,
+    openServicePicker: openServicePicker,
+    closeServicePicker: closeServicePicker,
+    setWeatherPanelOpen: setWeatherPanelOpen,
+    renderForecast: renderForecast,
+    collapseTools: function collapseTools() {
+      setToolbarCollapsed(true);
+    },
+    expandTools: function expandTools() {
+      setToolbarCollapsed(false);
+    }
   };
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init, { once: true });
+  } else {
+    init();
+  }
 }());
+
+/* Destination: FieldOpsAtlas/Features/maps/OSMpanes.js */
+/* End of file: FieldOpsAtlas/Features/maps/OSMpanes.js | bottom/end of file */
