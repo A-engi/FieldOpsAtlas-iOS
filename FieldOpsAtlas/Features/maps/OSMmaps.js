@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.1.12-smooth-attached-feed-zoom
+   Version: 1.1.13-node-border-sat-arrow
    Purpose:
    - Own the Leaflet map, regions, sites, service clusters, RF paths, labels, and fitting.
    - Keep service-menu opening fast by returning cached cluster metadata without rerendering.
@@ -14,13 +14,13 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.1.12-smooth-attached-feed-zoom";
+  var VERSION = "1.1.13-node-border-sat-arrow";
   var REGION_TOAST_MS = 3000;
   var UK_BOUNDS = [[49.75, -8.7], [60.95, 1.95]];
   var UK_CENTER = [54.55, -3.15];
   var REGION_STORAGE_KEY = "fieldops-osmmaps-selected-region-v1";
   var ATTACHED_INPUT_OFFSET_PX = 84;
-  var ATTACHED_SITE_RADIUS_PX = 12;
+  var ATTACHED_SITE_RADIUS_PX = 6;
   var ATTACHED_INPUT_RADIUS_PX = 17;
   var INPUT_ICON_URLS = {
     satellite: "../../../data/icons/satellite-dish.svg?v=1.5.7-large-rx-farther-right",
@@ -1046,7 +1046,7 @@
     }
 
     ensurePane("fieldopsRfPaths", 430);
-    ensurePane("fieldopsRfAttachedInputs", 440);
+    ensurePane("fieldopsRfAttachedInputs", 612);
     ensurePane("fieldopsRfEndpoints", 625);
     ensurePane("fieldopsRfLabels", 650);
 
@@ -1126,6 +1126,9 @@
     var kind = virtualInputKind(endpoint, path);
     var iconUrl = INPUT_ICON_URLS[kind] || INPUT_ICON_URLS.satellite;
     var accessibleName = String(endpoint.name || endpoint.label || kind + " input");
+    var directionArrow = kind === "satellite"
+      ? '<span class="osmmaps-rf-input-direction" aria-hidden="true"></span>'
+      : "";
 
     return window.L.divIcon({
       className: "osmmaps-rf-input-icon is-" + service + " is-" + kind,
@@ -1134,7 +1137,9 @@
         escapeHtml(accessibleName),
         '"><img src="',
         iconUrl,
-        '" alt="" aria-hidden="true"></span>'
+        '" alt="" aria-hidden="true">',
+        directionArrow,
+        '</span>'
       ].join(""),
       iconSize: [28, 28],
       iconAnchor: [14, 14]
@@ -1262,7 +1267,8 @@
     return {
       markerLatLng: state.map.containerPointToLatLng(markerPoint),
       lineStartLatLng: state.map.containerPointToLatLng(lineStartPoint),
-      lineEndLatLng: state.map.containerPointToLatLng(lineEndPoint)
+      lineEndLatLng: state.map.containerPointToLatLng(lineEndPoint),
+      arrowAngleDegrees: Math.atan2(direction.y, direction.x) * 180 / Math.PI
     };
   }
 
@@ -1315,6 +1321,15 @@
 
     if (record.marker) {
       record.marker.setLatLng(layout.markerLatLng);
+
+      var markerElement = record.marker.getElement();
+
+      if (markerElement) {
+        markerElement.style.setProperty(
+          "--osmmaps-rf-sat-arrow-angle",
+          String(layout.arrowAngleDegrees) + "deg"
+        );
+      }
     }
 
     if (record.line) {
