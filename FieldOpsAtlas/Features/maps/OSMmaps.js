@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.1.6-sat-rx-farther-right
+   Version: 1.1.7-region-node-service-ring
    Purpose:
    - Own the Leaflet map, regions, sites, service clusters, RF paths, labels, and fitting.
    - Keep service-menu opening fast by returning cached cluster metadata without rerendering.
@@ -14,7 +14,7 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.1.6-sat-rx-farther-right";
+  var VERSION = "1.1.7-region-node-service-ring";
   var REGION_TOAST_MS = 3000;
   var UK_BOUNDS = [[49.75, -8.7], [60.95, 1.95]];
   var UK_CENTER = [54.55, -3.15];
@@ -442,9 +442,19 @@
   }
 
   function makeMarkerIcon(region) {
+    var activePathColor = state.rf.serviceId
+      ? serviceStyle(state.rf.serviceId).line
+      : "transparent";
+
     return window.L.divIcon({
       className: "osmmaps-pin-shell",
-      html: '<span class="osmmaps-pin" style="--pin-color:' + escapeHtml(region.color) + '"></span>',
+      html: [
+        '<span class="osmmaps-pin" style="--pin-color:',
+        escapeHtml(region.color),
+        ';--pin-path-color:',
+        escapeHtml(activePathColor),
+        '"></span>'
+      ].join(""),
       iconSize: [18, 18],
       iconAnchor: [9, 9],
       popupAnchor: [0, -10]
@@ -1855,6 +1865,12 @@
     });
 
     state.visibleWalkIds = memberIds;
+
+    /*
+     * The node fill always comes directly from data/regions.json.
+     * The active service colour is used only for the outer path ring.
+     */
+    state.rf.serviceId = serviceId;
     renderMarkers();
 
     var visible = visibleWalks();
