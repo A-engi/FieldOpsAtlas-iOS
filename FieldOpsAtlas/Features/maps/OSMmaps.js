@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.1.11-hide-attached-feed-during-zoom
+   Version: 1.1.12-smooth-attached-feed-zoom
    Purpose:
    - Own the Leaflet map, regions, sites, service clusters, RF paths, labels, and fitting.
    - Keep service-menu opening fast by returning cached cluster metadata without rerendering.
@@ -14,7 +14,7 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.1.11-hide-attached-feed-during-zoom";
+  var VERSION = "1.1.12-smooth-attached-feed-zoom";
   var REGION_TOAST_MS = 3000;
   var UK_BOUNDS = [[49.75, -8.7], [60.95, 1.95]];
   var UK_CENTER = [54.55, -3.15];
@@ -1025,34 +1025,18 @@
     return pane;
   }
 
-  function setRfAttachedInputPaneVisible(visible) {
-    var pane = state.map && state.map.getPane
-      ? state.map.getPane("fieldopsRfAttachedInputs")
-      : null;
-
-    if (pane) {
-      pane.style.visibility = visible ? "visible" : "hidden";
-    }
-  }
-
-  function hideRfAttachedInputDuringZoom() {
-    setRfAttachedInputPaneVisible(false);
-  }
-
-  function restoreRfAttachedInputAfterZoom() {
+  function pauseRfAttachedInputLayoutDuringZoom() {
     if (state.rf.overlayFrame) {
       window.cancelAnimationFrame(state.rf.overlayFrame);
       state.rf.overlayFrame = 0;
     }
+  }
 
+  function restoreRfAttachedInputAfterZoom() {
     state.rf.overlayFrame = window.requestAnimationFrame(function redrawAtFinalZoom() {
       state.rf.overlayFrame = 0;
       layoutRfAttachedInputs();
       scheduleRfLabelLayout();
-
-      window.requestAnimationFrame(function revealAttachedInput() {
-        setRfAttachedInputPaneVisible(true);
-      });
     });
   }
 
@@ -1065,7 +1049,6 @@
     ensurePane("fieldopsRfAttachedInputs", 440);
     ensurePane("fieldopsRfEndpoints", 625);
     ensurePane("fieldopsRfLabels", 650);
-    setRfAttachedInputPaneVisible(true);
 
     if (!state.rf.lineLayer) {
       state.rf.lineLayer = window.L.layerGroup().addTo(state.map);
@@ -1079,7 +1062,7 @@
       ["moveend", "resize", "viewreset"].forEach(function bindOverlayLayout(eventName) {
         state.map.on(eventName, scheduleRfOverlayLayout);
       });
-      state.map.on("zoomstart", hideRfAttachedInputDuringZoom);
+      state.map.on("zoomstart", pauseRfAttachedInputLayoutDuringZoom);
       state.map.on("zoomend", restoreRfAttachedInputAfterZoom);
       state.rf.mapEventsBound = true;
     }
