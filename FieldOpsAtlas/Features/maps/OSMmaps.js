@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.1.17-path-mode-focus
+   Version: 1.1.18-sat-chevron-hold-glow
    Purpose:
    - Own the Leaflet map, regions, sites, service clusters, RF paths, labels, and fitting.
    - Keep service-menu opening fast by returning cached cluster metadata without rerendering.
@@ -14,7 +14,7 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.1.17-path-mode-focus";
+  var VERSION = "1.1.18-sat-chevron-hold-glow";
   var REGION_TOAST_MS = 3000;
   var UK_BOUNDS = [[49.75, -8.7], [60.95, 1.95]];
   var UK_CENTER = [54.55, -3.15];
@@ -23,6 +23,10 @@
   var ATTACHED_SITE_LINE_START_PX = 15;
   var ATTACHED_ARROW_OFFSET_PX = 19;
   var ATTACHED_INPUT_RADIUS_PX = 17;
+  var SATELLITE_CHEVRON_TRAVEL_SECONDS = 4;
+  var SATELLITE_CHEVRON_HOLD_SECONDS = 2;
+  var SVG_XLINK_NAMESPACE = "http://www.w3.org/1999/xlink";
+  var satelliteChevronSequence = 0;
   var INPUT_ICON_URLS = {
     satellite: "../../../data/icons/satellite-dish.svg?v=1.5.7-large-rx-farther-right",
     fibre: "../../../data/icons/ethernet-fibre.svg?v=1.0.5"
@@ -1080,6 +1084,10 @@
   function clearRfOverlay() {
     setRfPathMode(false);
 
+    state.rf.attachedInputs.forEach(function clearSatelliteChevron(record) {
+      removeSatelliteLineChevron(record);
+    });
+
     [
       state.rf.lineLayer,
       state.rf.endpointLayer,
@@ -1150,6 +1158,132 @@
       iconSize: [28, 28],
       iconAnchor: [14, 14]
     });
+  }
+
+  function setSvgHref(element, value) {
+    element.setAttribute("href", value);
+    element.setAttributeNS(SVG_XLINK_NAMESPACE, "href", value);
+  }
+
+  function removeSatelliteLineChevron(record) {
+    if (
+      record &&
+      record.satelliteChevron &&
+      record.satelliteChevron.parentNode
+    ) {
+      record.satelliteChevron.parentNode.removeChild(
+        record.satelliteChevron
+      );
+    }
+
+    if (record) {
+      record.satelliteChevron = null;
+      record.satelliteChevronPath = null;
+    }
+  }
+
+  function ensureSatelliteLineChevron(record) {
+    var linePath;
+    var parent;
+    var namespace;
+    var pathId;
+    var group;
+    var shadow;
+    var chevron;
+    var motion;
+    var motionPath;
+    var totalDuration;
+    var travelFraction;
+    var feedsTransmitter;
+
+    if (
+      !record ||
+      !record.line ||
+      virtualInputKind(record.virtualEndpoint, record.path) !== "satellite"
+    ) {
+      return;
+    }
+
+    linePath = record.line._path;
+
+    if (!linePath || !linePath.parentNode || !linePath.namespaceURI) {
+      return;
+    }
+
+    if (
+      record.satelliteChevron &&
+      record.satelliteChevron.parentNode &&
+      record.satelliteChevronPath === linePath
+    ) {
+      return;
+    }
+
+    removeSatelliteLineChevron(record);
+
+    parent = linePath.parentNode;
+    namespace = linePath.namespaceURI;
+    satelliteChevronSequence += 1;
+    pathId = "fieldops-satellite-feed-" + String(satelliteChevronSequence);
+    linePath.setAttribute("id", pathId);
+
+    group = document.createElementNS(namespace, "g");
+    shadow = document.createElementNS(namespace, "path");
+    chevron = document.createElementNS(namespace, "path");
+    motion = document.createElementNS(namespace, "animateMotion");
+    motionPath = document.createElementNS(namespace, "mpath");
+
+    group.setAttribute("class", "osmmaps-rf-satellite-chevron");
+    group.setAttribute("aria-hidden", "true");
+
+    shadow.setAttribute("d", "M -4 -4 L 0 0 L -4 4");
+    shadow.setAttribute("fill", "none");
+    shadow.setAttribute("stroke", "#050505");
+    shadow.setAttribute("stroke-opacity", "0.78");
+    shadow.setAttribute("stroke-width", "3.4");
+    shadow.setAttribute("stroke-linecap", "round");
+    shadow.setAttribute("stroke-linejoin", "round");
+    shadow.setAttribute("transform", "translate(0.55 0.7)");
+
+    chevron.setAttribute("d", "M -4 -4 L 0 0 L -4 4");
+    chevron.setAttribute("fill", "none");
+    chevron.setAttribute("stroke", "#d6a43a");
+    chevron.setAttribute("stroke-width", "2.4");
+    chevron.setAttribute("stroke-linecap", "round");
+    chevron.setAttribute("stroke-linejoin", "round");
+
+    totalDuration =
+      SATELLITE_CHEVRON_TRAVEL_SECONDS +
+      SATELLITE_CHEVRON_HOLD_SECONDS;
+    travelFraction =
+      SATELLITE_CHEVRON_TRAVEL_SECONDS / totalDuration;
+    feedsTransmitter = record.virtualSide === "feeding";
+
+    motion.setAttribute("dur", String(totalDuration) + "s");
+    motion.setAttribute("begin", "0s");
+    motion.setAttribute("repeatCount", "indefinite");
+    motion.setAttribute("calcMode", "linear");
+    motion.setAttribute(
+      "keyPoints",
+      feedsTransmitter ? "0;1;1" : "1;0;0"
+    );
+    motion.setAttribute(
+      "keyTimes",
+      "0;" + String(travelFraction) + ";1"
+    );
+    motion.setAttribute(
+      "rotate",
+      feedsTransmitter ? "auto" : "auto-reverse"
+    );
+
+    setSvgHref(motionPath, "#" + pathId);
+    motion.appendChild(motionPath);
+    group.appendChild(shadow);
+    group.appendChild(chevron);
+    group.appendChild(motion);
+    parent.appendChild(group);
+
+    record.satelliteChevron = group;
+    record.satelliteChevronPath = linePath;
   }
 
   function satelliteLineArrowIcon(angleDegrees) {
@@ -1378,8 +1512,15 @@
       var toLatLng = record.virtualSide === "receiving"
         ? layout.lineEndLatLng
         : layout.lineStartLatLng;
+      var satelliteLatLngs = [fromLatLng, toLatLng];
 
-      record.line.setLatLngs([fromLatLng, toLatLng]);
+      record.line.setLatLngs(satelliteLatLngs);
+
+      if (record.glowLine) {
+        record.glowLine.setLatLngs(satelliteLatLngs);
+      }
+
+      ensureSatelliteLineChevron(record);
     }
   }
 
@@ -1447,6 +1588,8 @@
       var displayFrom = fromWalk;
       var displayTo = toWalk;
       var line;
+      var glowLine = null;
+      var attachedLatLngs = null;
       var style = lineStyle(path, false);
 
       if (attached) {
@@ -1482,6 +1625,15 @@
           pane: "fieldopsRfAttachedInputs"
         });
 
+        attachedLatLngs = [
+          attached.virtualSide === "feeding"
+            ? attachedLayout.lineEndLatLng
+            : attachedLayout.lineStartLatLng,
+          attached.virtualSide === "receiving"
+            ? attachedLayout.lineEndLatLng
+            : attachedLayout.lineStartLatLng
+        ];
+
         if (virtualInputKind(attached.virtualEndpoint, path) === "satellite") {
           style.color = "#111111";
           style.weight = 2;
@@ -1491,6 +1643,19 @@
             style.className || "",
             "osmmaps-rf-satellite-feed"
           ].filter(Boolean).join(" ");
+
+          glowLine = new window.L.Polyline(attachedLatLngs, {
+            pane: "fieldopsRfAttachedInputs",
+            color: "#d6a43a",
+            weight: 5,
+            opacity: 0.58,
+            dashArray: "7 5",
+            lineCap: "round",
+            lineJoin: "round",
+            interactive: false,
+            keyboard: false,
+            className: "osmmaps-rf-satellite-glow"
+          });
         } else {
           style.dashArray = "8 6";
         }
@@ -1499,17 +1664,7 @@
          * The short satellite feed is clipped to the edges of the site and
          * dish markers so the service-coloured line remains clearly visible.
          */
-        line = new window.L.Polyline(
-          [
-            attached.virtualSide === "feeding"
-              ? attachedLayout.lineEndLatLng
-              : attachedLayout.lineStartLatLng,
-            attached.virtualSide === "receiving"
-              ? attachedLayout.lineEndLatLng
-              : attachedLayout.lineStartLatLng
-          ],
-          style
-        );
+        line = new window.L.Polyline(attachedLatLngs, style);
       } else {
         [fromWalk, toWalk].forEach(function addVirtualEndpoint(endpoint) {
           if (!endpoint || !endpoint.isVirtual || state.rf.virtualEndpoints.has(String(endpoint.id))) {
@@ -1530,12 +1685,18 @@
         selectRfPath(path.id, true, event.latlng);
       });
 
+      if (glowLine) {
+        glowLine.addTo(state.rf.lineLayer);
+      }
+
       line.addTo(state.rf.lineLayer);
       state.rf.pathLines.set(String(path.id), line);
 
       if (attached) {
         attached.line = line;
+        attached.glowLine = glowLine;
         state.rf.attachedInputs.set(String(path.id), attached);
+        ensureSatelliteLineChevron(attached);
       }
     });
 
