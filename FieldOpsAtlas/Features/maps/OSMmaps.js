@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.1.7-region-node-service-ring
+   Version: 1.1.8-sat-offset-rx-label
    Purpose:
    - Own the Leaflet map, regions, sites, service clusters, RF paths, labels, and fitting.
    - Keep service-menu opening fast by returning cached cluster metadata without rerendering.
@@ -14,14 +14,14 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.1.7-region-node-service-ring";
+  var VERSION = "1.1.8-sat-offset-rx-label";
   var REGION_TOAST_MS = 3000;
   var UK_BOUNDS = [[49.75, -8.7], [60.95, 1.95]];
   var UK_CENTER = [54.55, -3.15];
   var REGION_STORAGE_KEY = "fieldops-osmmaps-selected-region-v1";
-  var ATTACHED_INPUT_OFFSET_PX = 30;
+  var ATTACHED_INPUT_OFFSET_PX = 60;
   var INPUT_ICON_URLS = {
-    satellite: "../../../data/icons/satellite-dish.svg?v=1.5.7-large-rx-farther-right",
+    satellite: "../../../data/icons/satellite-dish.svg?v=1.5.7-rx-map-refresh",
     fibre: "../../../data/icons/ethernet-fibre.svg?v=1.0.5"
   };
   var DATA_FILES = {
@@ -1103,6 +1103,9 @@
     var kind = virtualInputKind(endpoint, path);
     var iconUrl = INPUT_ICON_URLS[kind] || INPUT_ICON_URLS.satellite;
     var accessibleName = String(endpoint.name || endpoint.label || kind + " input");
+    var rxLabel = kind === "satellite"
+      ? '<small class="osmmaps-rf-input-rx" aria-hidden="true">RX</small>'
+      : "";
 
     return window.L.divIcon({
       className: "osmmaps-rf-input-icon is-" + service + " is-" + kind,
@@ -1111,7 +1114,9 @@
         escapeHtml(accessibleName),
         '"><img src="',
         iconUrl,
-        '" alt="" aria-hidden="true"></span>'
+        '" alt="" aria-hidden="true">',
+        rxLabel,
+        '</span>'
       ].join(""),
       iconSize: [28, 28],
       iconAnchor: [14, 14]
