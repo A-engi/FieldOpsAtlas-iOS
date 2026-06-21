@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.1.16-no-white-node-rim
+   Version: 1.1.16-aligned-dashed-sat-feed
    Purpose:
    - Own the Leaflet map, regions, sites, service clusters, RF paths, labels, and fitting.
    - Keep service-menu opening fast by returning cached cluster metadata without rerendering.
@@ -14,14 +14,14 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.1.16-no-white-node-rim";
+  var VERSION = "1.1.16-aligned-dashed-sat-feed";
   var REGION_TOAST_MS = 3000;
   var UK_BOUNDS = [[49.75, -8.7], [60.95, 1.95]];
   var UK_CENTER = [54.55, -3.15];
   var REGION_STORAGE_KEY = "fieldops-osmmaps-selected-region-v1";
   var ATTACHED_INPUT_OFFSET_PX = 84;
-  var ATTACHED_SITE_RADIUS_PX = 6;
-  var ATTACHED_SITE_LINE_START_PX = 13;
+  var ATTACHED_SITE_LINE_START_PX = 15;
+  var ATTACHED_ARROW_OFFSET_PX = 19;
   var ATTACHED_INPUT_RADIUS_PX = 17;
   var INPUT_ICON_URLS = {
     satellite: "../../../data/icons/satellite-dish.svg?v=1.5.7-large-rx-farther-right",
@@ -462,17 +462,6 @@
       iconAnchor: [9, 9],
       popupAnchor: [0, -10]
     });
-  }
-
-  function setRfPathMarkerMode(active) {
-    var page = qs("[data-osmmaps-page]");
-
-    if (page) {
-      page.classList.toggle(
-        "has-visible-rf-paths",
-        Boolean(active)
-      );
-    }
   }
 
   function visibleWalks() {
@@ -1081,8 +1070,6 @@
   }
 
   function clearRfOverlay() {
-    setRfPathMarkerMode(false);
-
     [
       state.rf.lineLayer,
       state.rf.endpointLayer,
@@ -1176,7 +1163,7 @@
     }
 
     if (!record.arrow) {
-      record.arrow = window.L.marker(layout.lineStartLatLng, {
+      record.arrow = window.L.marker(layout.arrowLatLng, {
         pane: "fieldopsRfEndpoints",
         icon: satelliteLineArrowIcon(layout.arrowAngleDegrees + 180),
         interactive: false,
@@ -1186,7 +1173,7 @@
     }
 
     record.arrow
-      .setLatLng(layout.lineStartLatLng)
+      .setLatLng(layout.arrowLatLng)
       .setIcon(satelliteLineArrowIcon(layout.arrowAngleDegrees + 180));
   }
 
@@ -1307,11 +1294,16 @@
       markerPoint.x - direction.x * ATTACHED_INPUT_RADIUS_PX,
       markerPoint.y - direction.y * ATTACHED_INPUT_RADIUS_PX
     );
+    var arrowPoint = window.L.point(
+      anchorPoint.x + direction.x * ATTACHED_ARROW_OFFSET_PX,
+      anchorPoint.y + direction.y * ATTACHED_ARROW_OFFSET_PX
+    );
 
     return {
       markerLatLng: state.map.containerPointToLatLng(markerPoint),
       lineStartLatLng: state.map.containerPointToLatLng(lineStartPoint),
       lineEndLatLng: state.map.containerPointToLatLng(lineEndPoint),
+      arrowLatLng: state.map.containerPointToLatLng(arrowPoint),
       arrowAngleDegrees: Math.atan2(direction.y, direction.x) * 180 / Math.PI
     };
   }
@@ -1436,7 +1428,6 @@
     state.rf.siteDetails = lightweightSiteDetails(cluster, walks, activePaths);
     state.rf.serviceId = serviceId;
     state.rf.regionId = state.selectedRegionId;
-    setRfPathMarkerMode(activePaths.length > 0);
 
     activePaths.forEach(function addPathLine(path) {
       var fromWalk = pathEndpoint(path, "feeding", walksById);
@@ -1484,7 +1475,11 @@
           style.color = "#111111";
           style.weight = 2;
           style.opacity = 1;
-          style.dashArray = null;
+          style.dashArray = "7 5";
+          style.className = [
+            style.className || "",
+            "osmmaps-rf-satellite-feed"
+          ].filter(Boolean).join(" ");
         } else {
           style.dashArray = "8 6";
         }
