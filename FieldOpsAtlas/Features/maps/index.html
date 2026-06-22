@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Maps v1.0.33-permanent-map-warning</title>
+  <title>Maps v1.0.34-weather-active-collapse</title>
 
   <link rel="stylesheet" href="../../../shell.css">
   <link rel="stylesheet" href="./background.css?v=fade-restore-20260612g">
@@ -137,98 +137,99 @@
     }
 
 
-    .map-weather-warning {
-      position: fixed;
-      z-index: 61;
-      top: calc(env(safe-area-inset-top, 0px) + 92px);
-      right: max(
-        10px,
-        calc((100vw - min(100vw, 430px)) / 2 + 10px)
-      );
-      max-width: min(170px, calc(100vw - 20px));
-      min-height: 30px;
-      padding: 5px 9px;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      overflow: hidden;
-      border: 1px solid rgba(255, 224, 64, 0.82);
-      border-radius: 999px;
-      color: #231b00;
-      background: rgba(255, 221, 48, 0.94);
-      box-shadow: 0 7px 18px rgba(0, 0, 0, 0.24);
-      font: inherit;
-      font-size: 11px;
-      font-weight: 900;
-      line-height: 1;
-      cursor: pointer;
-      pointer-events: auto;
-      backdrop-filter: blur(5px);
-      -webkit-backdrop-filter: blur(5px);
-    }
-
-    .map-weather-warning[hidden],
-    .map-weather-warning-button-badge[hidden] {
-      display: none;
-    }
-
-    .map-weather-warning.is-amber {
-      border-color: rgba(255, 167, 38, 0.94);
-      color: #2b1300;
-      background: rgba(255, 159, 28, 0.95);
-    }
-
-    .map-weather-warning.is-red {
-      border-color: rgba(255, 110, 110, 0.96);
-      color: #fff;
-      background: rgba(198, 24, 44, 0.95);
-    }
-
-    .map-weather-warning__icon {
-      flex: 0 0 auto;
-      font-size: 15px;
-      line-height: 1;
-    }
-
-    .map-weather-warning__label {
-      min-width: 0;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
+    .map-quick-tool.is-weather,
+    .map-weather-collapsed-button {
+      position: relative;
+      overflow: visible;
+      border-color: rgba(255, 107, 116, 0.74);
+      background:
+        radial-gradient(circle at 50% 0%, rgba(255, 223, 92, 0.16), transparent 52%),
+        linear-gradient(135deg, rgba(29, 75, 114, 0.98), rgba(8, 35, 67, 0.98));
+      box-shadow:
+        inset 0 1px 0 rgba(255, 255, 255, 0.14),
+        0 0 0 1px rgba(255, 72, 86, 0.13),
+        0 0 15px rgba(255, 199, 64, 0.22),
+        0 5px 12px rgba(0, 0, 0, 0.22);
     }
 
     .map-quick-tool.is-weather {
-      position: relative;
+      padding-inline: 5px;
+      gap: 5px;
+    }
+
+    .map-weather-active-label {
+      flex: 0 0 auto;
       overflow: visible;
+      color: #fff5a6;
+      font-size: 9px;
+      font-weight: 950;
+      letter-spacing: 0.10em;
+      line-height: 1;
+      text-shadow:
+        0 0 4px rgba(255, 224, 80, 1),
+        0 0 9px rgba(255, 193, 44, 0.92);
     }
 
     .map-weather-warning-button-badge {
-      position: absolute;
-      top: 2px;
-      right: 3px;
+      position: relative;
       z-index: 2;
-      width: 19px;
-      height: 19px;
+      width: 21px;
+      height: 21px;
+      flex: 0 0 auto;
       display: grid;
       place-items: center;
-      border: 1px solid rgba(255, 246, 174, 0.94);
-      border-radius: 999px;
-      color: #211900;
-      background: #ffdd30;
-      box-shadow: 0 3px 9px rgba(0, 0, 0, 0.32);
-      font-size: 12px;
-      font-weight: 900;
+      border: 2px solid #ff5964;
+      border-radius: 6px;
+      color: #ffe568;
+      background: rgba(78, 5, 14, 0.96);
+      box-shadow:
+        inset 0 0 0 1px rgba(255, 224, 110, 0.13),
+        0 0 8px rgba(255, 73, 88, 0.64);
+      font-size: 13px;
+      font-weight: 950;
       line-height: 1;
     }
 
     .map-weather-warning-button-badge.is-amber {
-      color: #2b1300;
-      background: #ff9f1c;
+      color: #ffd166;
     }
 
     .map-weather-warning-button-badge.is-red {
       color: #fff;
-      background: #c6182c;
+      background: rgba(112, 4, 18, 0.98);
+    }
+
+    .map-weather-collapsed-button {
+      appearance: none;
+      -webkit-appearance: none;
+      position: absolute;
+      top: 0;
+      right: 7px;
+      z-index: 3;
+      min-width: 102px;
+      height: 34px;
+      padding: 0 7px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      border-radius: 11px;
+      color: rgba(255, 255, 255, 0.98);
+      font: inherit;
+      cursor: pointer;
+      pointer-events: auto;
+    }
+
+    .map-weather-collapsed-button img {
+      width: 20px;
+      height: 20px;
+      flex: 0 0 auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .map-quick-tools.is-collapsed .map-weather-collapsed-button {
+      display: flex;
     }
 
     .metoffice-details-alert {
@@ -324,7 +325,7 @@
   <main
     class="osmmaps-page"
     data-osmmaps-page
-    data-version="1.0.33-permanent-map-warning"
+    data-version="1.0.34-weather-active-collapse"
   >
     <div id="OSMmaps" class="osmmaps-canvas" aria-label="UK walk marker map"></div>
 
@@ -364,21 +365,6 @@
     ></section>
   </main>
 
-  <button
-    class="map-weather-warning is-yellow"
-    type="button"
-    data-weather-panel-open
-    data-metoffice-warning-map
-    aria-label="Open selected region weather warning"
-  >
-    <span class="map-weather-warning__icon" aria-hidden="true">⚠️</span>
-    <span
-      class="map-weather-warning__label"
-      data-metoffice-warning-map-label
-    >
-      Yellow warning
-    </span>
-  </button>
 
   <section class="map-quick-tools" data-map-quick-tools aria-label="Map quick tools">
     <div class="map-quick-tools__rail" id="mapQuickToolsRail">
@@ -426,15 +412,34 @@
         aria-label="Open selected region weather forecast"
       >
         <img src="../../../data/icons/weather.svg?v=1.1.1" alt="" aria-hidden="true">
+        <span class="map-weather-active-label" aria-hidden="true">ACTIVE</span>
         <span
           class="map-weather-warning-button-badge is-yellow"
           data-metoffice-warning-button
-          aria-hidden="false"
+          aria-hidden="true"
         >
           ⚠
         </span>
       </button>
     </div>
+
+    <button
+      class="map-weather-collapsed-button"
+      type="button"
+      data-weather-panel-open
+      aria-expanded="false"
+      aria-label="Open selected region weather forecast"
+    >
+      <img src="../../../data/icons/weather.svg?v=1.1.1" alt="" aria-hidden="true">
+      <span class="map-weather-active-label" aria-hidden="true">ACTIVE</span>
+      <span
+        class="map-weather-warning-button-badge is-yellow"
+        data-metoffice-warning-button
+        aria-hidden="true"
+      >
+        ⚠
+      </span>
+    </button>
 
     <section
       class="map-service-picker"
@@ -589,7 +594,7 @@
   <script src="./OSMpanes.js?v=1.0.4-map-controls"></script>
   <script src="./OSMmaps.js?v=1.1.23-green-neon-download"></script>
   <script src="./OSMweather-menu.js?v=1.0.27-selected-region-weather"></script>
-  <script src="../Weather/metoffice-warning.js?v=1.0.4-permanent-map-warning"></script>
+  <script src="../Weather/metoffice-warning.js?v=1.0.5-weather-active-collapse"></script>
 </body>
 </html>
 
