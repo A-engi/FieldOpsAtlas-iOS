@@ -1,19 +1,19 @@
 /* ==========================================================================
    FieldOps Atlas RF 3D orbit renderer
    File: FieldOpsAtlas/Features/RF/rf-graph.js
-   Version: 1.1.99-radar-grid-mountains
+   Version: 1.1.100-smooth-radar-mountains
 
    Purpose:
    - Render a genuine WebGL 3D mountain-and-transmitter scene.
    - Orbit the camera through a continuous 360 degrees using drag or touch.
    - Centre the orbit between the two transmitter sites.
-   - Build both mountains as genuine 360-degree radar-grid terrain volumes.
+   - Build both mountains as smooth 360-degree radar-grid terrain surfaces.
    - Preserve the existing [data-rf-graph] mount contract.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.99-radar-grid-mountains";
+  const VERSION = "1.1.100-smooth-radar-mountains";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -98,29 +98,35 @@
   }
 
   function terrainHeight(x, z) {
-    function peakHeight(cx, cz, radiusX, radiusZ, height, ridgeAngle) {
+    function smoothPeak(cx, cz, radiusX, radiusZ, height, ridgeAngle, plateau = 0.14) {
       const dx = (x - cx) / radiusX;
       const dz = (z - cz) / radiusZ;
       const radius = Math.sqrt(dx * dx + dz * dz);
+      if (radius >= 1) return 0;
+
+      const t = clamp((radius - plateau) / (1 - plateau), 0, 1);
+      const smooth = t * t * (3 - 2 * t);
+      const profile = 1 - smooth;
       const angle = Math.atan2(dz, dx);
-      const cone = Math.max(0, 1 - radius);
+      const ridgeWeight = Math.sin(Math.PI * clamp(t, 0, 1));
       const ridges =
         1 +
-        0.16 * Math.sin(angle * 5 + ridgeAngle) * cone +
-        0.08 * Math.sin(angle * 9 - radius * 7);
-      return height * cone * cone * ridges;
+        0.12 * Math.sin(angle * 5 + ridgeAngle) * ridgeWeight +
+        0.055 * Math.sin(angle * 10 - radius * 8 + ridgeAngle * 0.7) * ridgeWeight;
+
+      return height * profile * ridges;
     }
 
-    const leftPeak = peakHeight(-4.0, 0.8, 4.1, 3.5, 6.0, 0.4);
-    const rightPeak = peakHeight(6.0, -1.4, 4.7, 4.0, 6.7, 1.2);
-    const leftShoulder = peakHeight(-6.7, 2.3, 3.6, 3.1, 1.7, 0.8);
-    const rightShoulder = peakHeight(9.0, -0.6, 4.2, 3.2, 1.9, 1.9);
-    const saddle = 0.7 * Math.exp(-((((x - 1.0) / 5.4) ** 2) + (((z + 0.2) / 2.8) ** 2)));
+    const leftPeak = smoothPeak(-4.0, 0.8, 4.25, 3.55, 5.95, 0.38, 0.145);
+    const rightPeak = smoothPeak(6.0, -1.4, 4.85, 4.05, 6.55, 1.18, 0.14);
+    const leftShoulder = smoothPeak(-6.75, 2.25, 3.55, 3.05, 1.65, 0.82, 0.08);
+    const rightShoulder = smoothPeak(9.0, -0.55, 4.10, 3.15, 1.85, 1.92, 0.08);
+    const saddle = 0.68 * Math.exp(-((((x - 1.0) / 5.4) ** 2) + (((z + 0.2) / 2.8) ** 2)));
     const valleyPath = 0.42 * Math.sin((x - 0.3) * 0.45) - 0.18;
-    const valley = -1.18 * Math.exp(-((z - valleyPath) ** 2) / 0.44) * Math.exp(-((x - 1.0) ** 2) / 43);
-    const broadFloor = -0.035 * Math.sqrt(x * x + z * z);
+    const valley = -0.90 * Math.exp(-((z - valleyPath) ** 2) / 0.50) * Math.exp(-((x - 1.0) ** 2) / 45);
+    const broadFloor = -0.032 * Math.sqrt(x * x + z * z);
 
-    return leftPeak + rightPeak + leftShoulder + rightShoulder + saddle + valley + broadFloor - 0.9;
+    return leftPeak + rightPeak + leftShoulder + rightShoulder + saddle + valley + broadFloor - 0.82;
   }
 
   function createTerrain() {
@@ -128,36 +134,25 @@
     const xMax = 13.2;
     const zMin = -7.5;
     const zMax = 7.1;
-    const columns = 32;
-    const rows = 24;
-    const cellWidth = (xMax - xMin) / columns;
-    const cellDepth = (zMax - zMin) / rows;
+    const columns = 72;
+    const rows = 50;
     const baseY = -1.35;
-    const heightStep = 0.23;
     const vertices = [];
     const vertexColors = [];
     const lineVertices = [];
     const lineColors = [];
     const points = [];
     const pointColors = [];
-    const heights = [];
+    const grid = [];
 
-    function quantiseHeight(value) {
-      return Math.max(baseY, Math.round(value / heightStep) * heightStep);
-    }
-
-    for (let row = 0; row < rows; row += 1) {
-      heights[row] = [];
-      const z = zMin + (row + 0.5) * cellDepth;
-      for (let column = 0; column < columns; column += 1) {
-        const x = xMin + (column + 0.5) * cellWidth;
-        heights[row][column] = quantiseHeight(terrainHeight(x, z));
-      }
-    }
-
-    function colourForHeight(y, alpha) {
+    function surfaceColour(y, alpha) {
       const glow = clamp((y - baseY) / 7.8, 0, 1);
-      return [0.01, 0.18 + glow * 0.26, 0.24 + glow * 0.46, alpha];
+      return [0.004, 0.055 + glow * 0.075, 0.095 + glow * 0.14, alpha];
+    }
+
+    function lineColour(y, alpha) {
+      const glow = clamp((y - baseY) / 7.8, 0, 1);
+      return [0.0, 0.48 + glow * 0.30, 0.58 + glow * 0.34, alpha];
     }
 
     function pushVertex(point, colour) {
@@ -165,82 +160,58 @@
       vertexColors.push(...colour);
     }
 
-    function pushTriangle(a, b, c, colour) {
-      pushVertex(a, colour);
-      pushVertex(b, colour);
-      pushVertex(c, colour);
+    function pushTriangle(a, b, c) {
+      pushVertex(a, surfaceColour(a[1], 0.72));
+      pushVertex(b, surfaceColour(b[1], 0.72));
+      pushVertex(c, surfaceColour(c[1], 0.72));
     }
 
-    function pushQuad(a, b, c, d, colour) {
-      pushTriangle(a, b, c, colour);
-      pushTriangle(a, c, d, colour);
+    function pushLine(a, b, alpha = 0.72) {
+      const lift = 0.018;
+      lineVertices.push(
+        a[0], a[1] + lift, a[2],
+        b[0], b[1] + lift, b[2]
+      );
+      lineColors.push(...lineColour(a[1], alpha), ...lineColour(b[1], alpha));
     }
 
-    function pushLine(a, b, alpha = 0.74) {
-      lineVertices.push(a[0], a[1] + 0.012, a[2], b[0], b[1] + 0.012, b[2]);
-      lineColors.push(...colourForHeight(a[1], alpha), ...colourForHeight(b[1], alpha));
-    }
+    for (let row = 0; row <= rows; row += 1) {
+      const z = zMin + ((zMax - zMin) * row) / rows;
+      grid[row] = [];
+      for (let column = 0; column <= columns; column += 1) {
+        const x = xMin + ((xMax - xMin) * column) / columns;
+        const y = Math.max(baseY, terrainHeight(x, z));
+        const point = [x, y, z];
+        grid[row][column] = point;
 
-    function neighbourHeight(row, column) {
-      if (row < 0 || row >= rows || column < 0 || column >= columns) return baseY;
-      return heights[row][column];
+        if ((row + column) % 2 === 0) {
+          points.push(x, y + 0.026, z);
+          pointColors.push(...lineColour(y, 0.46));
+        }
+      }
     }
 
     for (let row = 0; row < rows; row += 1) {
-      const z0 = zMin + row * cellDepth;
-      const z1 = z0 + cellDepth;
       for (let column = 0; column < columns; column += 1) {
-        const x0 = xMin + column * cellWidth;
-        const x1 = x0 + cellWidth;
-        const topY = heights[row][column];
-        const topColour = colourForHeight(topY, 0.62);
-        const sideColour = colourForHeight(topY, 0.30);
+        const a = grid[row][column];
+        const b = grid[row][column + 1];
+        const c = grid[row + 1][column];
+        const d = grid[row + 1][column + 1];
 
-        const a = [x0, topY, z0];
-        const b = [x1, topY, z0];
-        const c = [x1, topY, z1];
-        const d = [x0, topY, z1];
+        pushTriangle(a, c, b);
+        pushTriangle(b, c, d);
+      }
+    }
 
-        pushQuad(a, b, c, d, topColour);
-        pushLine(a, b, 0.78);
-        pushLine(b, c, 0.78);
-        pushLine(c, d, 0.78);
-        pushLine(d, a, 0.78);
+    for (let row = 0; row <= rows; row += 1) {
+      for (let column = 0; column < columns; column += 1) {
+        pushLine(grid[row][column], grid[row][column + 1], row % 4 === 0 ? 0.80 : 0.56);
+      }
+    }
 
-        points.push(x0, topY + 0.02, z0);
-        pointColors.push(...colourForHeight(topY, 0.58));
-
-        const northY = neighbourHeight(row - 1, column);
-        if (topY > northY + 0.01) {
-          const lower = northY;
-          pushQuad([x0, lower, z0], [x1, lower, z0], b, a, sideColour);
-          pushLine([x0, lower, z0], a, 0.46);
-          pushLine([x1, lower, z0], b, 0.46);
-        }
-
-        const eastY = neighbourHeight(row, column + 1);
-        if (topY > eastY + 0.01) {
-          const lower = eastY;
-          pushQuad([x1, lower, z0], [x1, lower, z1], c, b, sideColour);
-          pushLine([x1, lower, z0], b, 0.46);
-          pushLine([x1, lower, z1], c, 0.46);
-        }
-
-        const southY = neighbourHeight(row + 1, column);
-        if (topY > southY + 0.01) {
-          const lower = southY;
-          pushQuad([x1, lower, z1], [x0, lower, z1], d, c, sideColour);
-          pushLine([x1, lower, z1], c, 0.46);
-          pushLine([x0, lower, z1], d, 0.46);
-        }
-
-        const westY = neighbourHeight(row, column - 1);
-        if (topY > westY + 0.01) {
-          const lower = westY;
-          pushQuad([x0, lower, z1], [x0, lower, z0], a, d, sideColour);
-          pushLine([x0, lower, z1], d, 0.46);
-          pushLine([x0, lower, z0], a, 0.46);
-        }
+    for (let column = 0; column <= columns; column += 1) {
+      for (let row = 0; row < rows; row += 1) {
+        pushLine(grid[row][column], grid[row + 1][column], column % 4 === 0 ? 0.80 : 0.56);
       }
     }
 
@@ -328,22 +299,7 @@
       }
     });
 
-    const dishY = origin[1] + height * 0.46;
-    const dishRadius = 0.11 * detailScale;
-    const dishCenter = [origin[0], dishY, origin[2] + baseRadius * 0.82];
-    let previous = null;
-    const dishSegments = 12;
-    for (let index = 0; index <= dishSegments; index += 1) {
-      const angle = (index / dishSegments) * Math.PI * 2;
-      const point = [
-        dishCenter[0] + Math.cos(angle) * dishRadius,
-        dishCenter[1] + Math.sin(angle) * dishRadius,
-        dishCenter[2]
-      ];
-      if (previous) pushSegment(previous, point, [1.0, 0.55, 0.04, 0.9]);
-      previous = point;
-    }
-    pushSegment([origin[0], dishY, origin[2]], dishCenter, [1.0, 0.45, 0.03, 0.8]);
+    /* Original-style tower: lattice and side panels only; no dish. */
 
     return {
       lines: { positions, colors },
@@ -550,10 +506,10 @@
     const pointsLocation = gl.getUniformLocation(program, "u_points");
 
     const terrain = createTerrain();
-    const nearTowerOrigin = [-4.0, Math.round(terrainHeight(-4.0, 0.8) / 0.23) * 0.23 + 0.04, 0.8];
-    const farTowerOrigin = [6.0, Math.round(terrainHeight(6.0, -1.4) / 0.23) * 0.23 + 0.04, -1.4];
-    const nearTower = createTower(nearTowerOrigin, 4.35, 0.50, 1.0);
-    const farTower = createTower(farTowerOrigin, 3.65, 0.45, 0.86);
+    const nearTowerOrigin = [-4.0, terrainHeight(-4.0, 0.8) + 0.025, 0.8];
+    const farTowerOrigin = [6.0, terrainHeight(6.0, -1.4) + 0.025, -1.4];
+    const nearTower = createTower(nearTowerOrigin, 4.25, 0.48, 1.0);
+    const farTower = createTower(farTowerOrigin, 3.55, 0.42, 0.86);
     const path = createValleyPath();
 
     const drawBuffers = [
@@ -640,14 +596,14 @@
       }
 
       const angle = (state.azimuth % 360) * DEG;
-      const distance = 25.4;
+      const distance = 27.2;
       const eye = [
         target[0] + Math.sin(angle) * distance,
         target[1] + 3.2,
         target[2] + Math.cos(angle) * distance
       ];
 
-      mat4Perspective(projection, 48 * DEG, state.width / state.height, 0.1, 80);
+      mat4Perspective(projection, 52 * DEG, state.width / state.height, 0.1, 90);
       mat4LookAt(view, eye, target, [0, 1, 0]);
       gl.uniformMatrix4fv(projectionLocation, false, projection);
       gl.uniformMatrix4fv(viewLocation, false, view);
@@ -729,11 +685,11 @@
 
     mount.dataset.rfGraphLoaded = "true";
     mount.dataset.rfGraphVersion = VERSION;
-    mount.dataset.rfGraphMode = "webgl-radar-grid-mountains";
+    mount.dataset.rfGraphMode = "webgl-smooth-radar-mountains";
     mount.dispatchEvent(
       new CustomEvent(RENDERED_EVENT, {
         bubbles: true,
-        detail: { version: VERSION, selectedPathId: SELECTED_PATH_ID, mode: "webgl-radar-grid-mountains" }
+        detail: { version: VERSION, selectedPathId: SELECTED_PATH_ID, mode: "webgl-smooth-radar-mountains" }
       })
     );
 
