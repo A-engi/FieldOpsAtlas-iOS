@@ -1,19 +1,19 @@
 /* ==========================================================================
    FieldOps Atlas RF 3D orbit renderer
    File: FieldOpsAtlas/Features/RF/rf-graph.js
-   Version: 1.1.95-webgl-orbit
+   Version: 1.1.96-360-between-transmitters
 
    Purpose:
    - Render a genuine WebGL 3D mountain-and-transmitter scene.
-   - Orbit the camera around the first transmitter using drag or touch.
-   - Keep the same first transmitter geometry visible throughout the turn.
-   - Keep the larger, more distant second mountain visible in the scene.
+   - Orbit the camera through a continuous 360 degrees using drag or touch.
+   - Centre the orbit between the two transmitter sites.
+   - Keep both transmitter geometries visible throughout the turn.
    - Preserve the existing [data-rf-graph] mount contract.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.95-webgl-orbit";
+  const VERSION = "1.1.96-360-between-transmitters";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -21,8 +21,7 @@
   const SELECTED_PATH_ID = "site-1-to-site-2";
 
   const DEG = Math.PI / 180;
-  const CAMERA_LIMITS = Object.freeze({ min: -18, max: 76 });
-  const INTRO = Object.freeze({ from: -10, to: 44, delay: 650, duration: 5200 });
+  const INTRO = Object.freeze({ from: -10, to: 350, delay: 650, duration: 11000 });
 
   function clamp(value, min, max) {
     return Math.max(min, Math.min(max, value));
@@ -434,13 +433,13 @@
     const canvas = document.createElement("canvas");
     canvas.className = "rf-webgl-orbit-canvas";
     canvas.setAttribute("role", "img");
-    canvas.setAttribute("aria-label", "Interactive 3D RF mountain scene. Drag left or right to orbit around the first transmitter.");
+    canvas.setAttribute("aria-label", "Interactive 3D RF mountain scene. Drag left or right to orbit 360 degrees around the point between both transmitters.");
     canvas.setAttribute("tabindex", "0");
     canvas.style.cssText = "display:block;width:100%;height:100%;touch-action:none;cursor:grab;outline:none";
 
     const hint = document.createElement("div");
     hint.className = "rf-webgl-orbit-hint";
-    hint.textContent = "Drag to rotate";
+    hint.textContent = "Drag to rotate 360°";
     hint.style.cssText = [
       "position:absolute",
       "left:50%",
@@ -510,7 +509,11 @@
 
     const projection = new Float32Array(16);
     const view = new Float32Array(16);
-    const target = [nearTowerOrigin[0] + 0.62, nearTowerOrigin[1] + 1.25, nearTowerOrigin[2] - 0.45];
+    const target = [
+      (nearTowerOrigin[0] + farTowerOrigin[0]) * 0.5,
+      (nearTowerOrigin[1] + farTowerOrigin[1]) * 0.5 + 1.45,
+      (nearTowerOrigin[2] + farTowerOrigin[2]) * 0.5
+    ];
     const state = {
       azimuth: INTRO.from,
       velocity: 0,
@@ -571,18 +574,15 @@
           if (progress >= 1) state.introCancelled = true;
         }
       } else if (!state.dragging && Math.abs(state.velocity) > 0.001) {
-        state.azimuth = clamp(state.azimuth + state.velocity, CAMERA_LIMITS.min, CAMERA_LIMITS.max);
+        state.azimuth += state.velocity;
         state.velocity *= 0.92;
-        if (state.azimuth === CAMERA_LIMITS.min || state.azimuth === CAMERA_LIMITS.max) {
-          state.velocity = 0;
-        }
       }
 
-      const angle = state.azimuth * DEG;
-      const distance = 17.8;
+      const angle = (state.azimuth % 360) * DEG;
+      const distance = 22.5;
       const eye = [
         target[0] + Math.sin(angle) * distance,
-        target[1] + 4.75,
+        target[1] + 3.8,
         target[2] + Math.cos(angle) * distance
       ];
 
@@ -624,7 +624,7 @@
       const deltaX = event.clientX - state.lastX;
       const deltaTime = Math.max(8, now - state.lastTime);
       const deltaAngle = -deltaX * 0.22;
-      state.azimuth = clamp(state.azimuth + deltaAngle, CAMERA_LIMITS.min, CAMERA_LIMITS.max);
+      state.azimuth += deltaAngle;
       state.velocity = (deltaAngle * 16) / deltaTime;
       state.lastX = event.clientX;
       state.lastTime = now;
@@ -646,11 +646,7 @@
         state.azimuth = INTRO.from;
         state.velocity = 0;
       } else {
-        state.azimuth = clamp(
-          state.azimuth + (event.key === "ArrowLeft" ? -6 : 6),
-          CAMERA_LIMITS.min,
-          CAMERA_LIMITS.max
-        );
+        state.azimuth += event.key === "ArrowLeft" ? -8 : 8;
       }
       event.preventDefault();
     }
@@ -672,11 +668,11 @@
 
     mount.dataset.rfGraphLoaded = "true";
     mount.dataset.rfGraphVersion = VERSION;
-    mount.dataset.rfGraphMode = "webgl-orbit";
+    mount.dataset.rfGraphMode = "webgl-360-between-transmitters";
     mount.dispatchEvent(
       new CustomEvent(RENDERED_EVENT, {
         bubbles: true,
-        detail: { version: VERSION, selectedPathId: SELECTED_PATH_ID, mode: "webgl-orbit" }
+        detail: { version: VERSION, selectedPathId: SELECTED_PATH_ID, mode: "webgl-360-between-transmitters" }
       })
     );
 
