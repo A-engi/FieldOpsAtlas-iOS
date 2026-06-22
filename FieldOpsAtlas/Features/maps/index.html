@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Maps v1.0.30-met-office-region-warning</title>
+  <title>Maps v1.0.31-map-warning-alerts</title>
 
   <link rel="stylesheet" href="../../../shell.css">
   <link rel="stylesheet" href="./background.css?v=fade-restore-20260612g">
@@ -135,6 +135,187 @@
       text-decoration: underline;
       text-underline-offset: 2px;
     }
+
+
+    .map-weather-warning {
+      position: fixed;
+      z-index: 57;
+      top: calc(var(--safe-top) + var(--top-height) + 58px);
+      left: max(
+        10px,
+        calc((100vw - min(100vw, var(--page-width, 430px))) / 2 + 10px)
+      );
+      max-width: min(190px, calc(100vw - 20px));
+      min-height: 30px;
+      padding: 5px 9px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 224, 64, 0.82);
+      border-radius: 999px;
+      color: #231b00;
+      background: rgba(255, 221, 48, 0.94);
+      box-shadow: 0 7px 18px rgba(0, 0, 0, 0.24);
+      font: inherit;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1;
+      cursor: pointer;
+      pointer-events: auto;
+      backdrop-filter: blur(5px);
+      -webkit-backdrop-filter: blur(5px);
+    }
+
+    .map-weather-warning[hidden],
+    .map-weather-warning-button-badge[hidden] {
+      display: none;
+    }
+
+    .map-weather-warning.is-amber {
+      border-color: rgba(255, 167, 38, 0.94);
+      color: #2b1300;
+      background: rgba(255, 159, 28, 0.95);
+    }
+
+    .map-weather-warning.is-red {
+      border-color: rgba(255, 110, 110, 0.96);
+      color: #fff;
+      background: rgba(198, 24, 44, 0.95);
+    }
+
+    .map-weather-warning__icon {
+      flex: 0 0 auto;
+      font-size: 15px;
+      line-height: 1;
+    }
+
+    .map-weather-warning__label {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .map-quick-tool.is-weather {
+      position: relative;
+      overflow: visible;
+    }
+
+    .map-weather-warning-button-badge {
+      position: absolute;
+      top: -6px;
+      right: -5px;
+      z-index: 2;
+      width: 19px;
+      height: 19px;
+      display: grid;
+      place-items: center;
+      border: 1px solid rgba(255, 246, 174, 0.94);
+      border-radius: 999px;
+      color: #211900;
+      background: #ffdd30;
+      box-shadow: 0 3px 9px rgba(0, 0, 0, 0.32);
+      font-size: 12px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .map-weather-warning-button-badge.is-amber {
+      color: #2b1300;
+      background: #ff9f1c;
+    }
+
+    .map-weather-warning-button-badge.is-red {
+      color: #fff;
+      background: #c6182c;
+    }
+
+    .metoffice-details-alert {
+      margin: 0 0 9px;
+      padding: 8px 9px;
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(255, 221, 77, 0.56);
+      border-radius: 12px;
+      background: rgba(92, 68, 6, 0.34);
+    }
+
+    .metoffice-details-alert.is-amber {
+      border-color: rgba(255, 159, 43, 0.68);
+      background: rgba(98, 47, 4, 0.34);
+    }
+
+    .metoffice-details-alert.is-red {
+      border-color: rgba(255, 88, 88, 0.74);
+      background: rgba(101, 9, 20, 0.38);
+    }
+
+    .metoffice-details-alert__icons {
+      position: relative;
+      width: 28px;
+      height: 28px;
+      display: block;
+    }
+
+    .metoffice-details-alert__icons img {
+      width: 25px;
+      height: 25px;
+      display: block;
+      object-fit: contain;
+    }
+
+    .metoffice-details-alert__warning-icon {
+      position: absolute;
+      right: -2px;
+      bottom: -2px;
+      width: 14px;
+      height: 14px;
+      display: grid;
+      place-items: center;
+      border-radius: 999px;
+      background: #ffdd30;
+      color: #211900;
+      font-size: 9px;
+      font-weight: 900;
+      line-height: 1;
+    }
+
+    .metoffice-details-alert.is-amber
+      .metoffice-details-alert__warning-icon {
+      background: #ff9f1c;
+    }
+
+    .metoffice-details-alert.is-red
+      .metoffice-details-alert__warning-icon {
+      color: #fff;
+      background: #c6182c;
+    }
+
+    .metoffice-details-alert__content {
+      min-width: 0;
+      display: grid;
+      gap: 3px;
+    }
+
+    .metoffice-details-alert__content strong {
+      color: rgba(255, 248, 226, 0.98);
+      font-size: 11px;
+      line-height: 1.2;
+    }
+
+    .metoffice-details-alert__content a {
+      overflow: hidden;
+      color: rgba(255, 224, 146, 0.98);
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.25;
+      text-decoration: underline;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
   </style>
 </head>
 <body>
@@ -143,7 +324,7 @@
   <main
     class="osmmaps-page"
     data-osmmaps-page
-    data-version="1.0.30-met-office-region-warning"
+    data-version="1.0.31-map-warning-alerts"
   >
     <div id="OSMmaps" class="osmmaps-canvas" aria-label="UK walk marker map"></div>
 
@@ -182,6 +363,23 @@
       aria-live="polite"
     ></section>
   </main>
+
+  <button
+    class="map-weather-warning is-yellow"
+    type="button"
+    data-weather-panel-open
+    data-metoffice-warning-map
+    aria-label="Open selected region weather warning"
+    hidden
+  >
+    <span class="map-weather-warning__icon" aria-hidden="true">⚠️</span>
+    <span
+      class="map-weather-warning__label"
+      data-metoffice-warning-map-label
+    >
+      Yellow warning
+    </span>
+  </button>
 
   <section class="map-quick-tools" data-map-quick-tools aria-label="Map quick tools">
     <div class="map-quick-tools__rail" id="mapQuickToolsRail">
@@ -229,6 +427,14 @@
         aria-label="Open selected region weather forecast"
       >
         <img src="../../../data/icons/weather.svg?v=1.1.1" alt="" aria-hidden="true">
+        <span
+          class="map-weather-warning-button-badge is-yellow"
+          data-metoffice-warning-button
+          aria-hidden="true"
+          hidden
+        >
+          ⚠
+        </span>
       </button>
     </div>
 
@@ -385,7 +591,7 @@
   <script src="./OSMpanes.js?v=1.0.4-map-controls"></script>
   <script src="./OSMmaps.js?v=1.1.23-green-neon-download"></script>
   <script src="./OSMweather-menu.js?v=1.0.27-selected-region-weather"></script>
-  <script src="../Weather/metoffice-warning.js?v=1.0.1-selected-region-uk-warning"></script>
+  <script src="../Weather/metoffice-warning.js?v=1.0.2-map-warning-alerts"></script>
 </body>
 </html>
 
