@@ -1,18 +1,18 @@
 /* ==========================================================================
-   FieldOps Atlas RF 3D front-face renderer
+   FieldOps Atlas RF 3D front radar-face renderer
    File: FieldOpsAtlas/Features/RF/rf-graph.js
-   Version: 1.1.107-front-face-only
+   Version: 1.1.108-radar-one-face
 
    Purpose:
    - Match the supplied twin-peak reference composition at the front view.
    - Keep all terrain, towers, radar arrays, and path geometry inside WebGL.
-   - Lock this first pass to one front face; orbit work follows in the next version.
+   - Render one upward-facing radar surface first; rear and side faces follow later.
    - Preserve the existing [data-rf-graph] mount contract.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.107-front-face-only";
+  const VERSION = "1.1.108-radar-one-face";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -336,11 +336,14 @@
   function createTower(origin, height, baseRadius, detailScale = 1, radarSide = 1) {
     const positions = [];
     const colors = [];
+    const facePositions = [];
+    const faceColors = [];
     const points = [];
     const pointColors = [];
     const levels = 14;
     const gold = [1.0, 0.68, 0.12, 0.99];
     const warmGold = [1.0, 0.46, 0.02, 0.90];
+    const faceGold = [1.0, 0.34, 0.02, 0.28];
     const glowGold = [1.0, 0.36, 0.01, 0.56];
 
     function pushSegment(a, b, colour = gold) {
@@ -351,6 +354,11 @@
     function pushNode(point, colour = glowGold) {
       points.push(point[0], point[1], point[2]);
       pointColors.push(...colour);
+    }
+
+    function pushFaceTriangle(a, b, c, colour = faceGold) {
+      facePositions.push(...a, ...b, ...c);
+      faceColors.push(...colour, ...colour, ...colour);
     }
 
     function legPoint(leg, level) {
@@ -423,8 +431,8 @@
       const side = radarSide < 0 ? -1 : 1;
       const platformY = origin[1] + height * 0.76;
       const platformInset = baseRadius * 0.18;
-      const platformReach = baseRadius * 1.48;
-      const platformHalfWidth = 0.18 * detailScale;
+      const platformReach = baseRadius * 1.68;
+      const platformHalfWidth = 0.20 * detailScale;
 
       const platformInner = [
         origin[0] + side * platformInset,
@@ -468,7 +476,7 @@
       ];
       const centre = [
         platformOuter[0],
-        platformY + 0.43 * detailScale,
+        platformY + 0.47 * detailScale,
         platformOuter[2]
       ];
 
@@ -484,7 +492,7 @@
       pushSegment(outerRear, pedestal, warmGold);
       pushSegment(pedestal, centre, gold);
 
-      const normal = [side * 0.30, 0.90, 0.31];
+      const normal = [side * 0.16, 0.94, 0.30];
       vec3Normalize(normal, normal);
       const right = [0, 0, 0];
       vec3Cross(right, [0, 1, 0], normal);
@@ -493,10 +501,10 @@
       vec3Cross(up, normal, right);
       vec3Normalize(up, up);
 
-      const radius = 0.36 * detailScale;
-      const depth = 0.14 * detailScale;
-      const ringCount = 3;
-      const segmentCount = 16;
+      const radius = 0.42 * detailScale;
+      const depth = 0.16 * detailScale;
+      const ringCount = 4;
+      const segmentCount = 24;
 
       const dishPoint = (fraction, angle) => {
         const radial = radius * fraction;
@@ -510,6 +518,31 @@
           centre[2] + right[2] * cos * radial + up[2] * sin * radial - normal[2] * bowl
         ];
       };
+
+      /*
+       * First-pass radar body: one visible upward-facing dish surface only.
+       * No rear shell or side thickness is created in this version.
+       */
+      for (let ring = 0; ring < ringCount; ring += 1) {
+        const innerFraction = ring / ringCount;
+        const outerFraction = (ring + 1) / ringCount;
+
+        for (let segment = 0; segment < segmentCount; segment += 1) {
+          const angleA = (segment / segmentCount) * Math.PI * 2;
+          const angleB = ((segment + 1) / segmentCount) * Math.PI * 2;
+          const innerA = dishPoint(innerFraction, angleA);
+          const innerB = dishPoint(innerFraction, angleB);
+          const outerA = dishPoint(outerFraction, angleA);
+          const outerB = dishPoint(outerFraction, angleB);
+
+          if (ring === 0) {
+            pushFaceTriangle(centre, outerA, outerB);
+          } else {
+            pushFaceTriangle(innerA, outerA, outerB);
+            pushFaceTriangle(innerA, outerB, innerB);
+          }
+        }
+      }
 
       for (let ring = 1; ring <= ringCount; ring += 1) {
         const fraction = ring / ringCount;
@@ -540,6 +573,7 @@
     addSideRadar();
 
     return {
+      face: { positions: facePositions, colors: faceColors },
       lines: { positions, colors },
       points: { positions: points, colors: pointColors }
     };
@@ -750,7 +784,7 @@
     canvas.setAttribute("role", "img");
     canvas.setAttribute(
       "aria-label",
-      "Front-facing 3D RF twin-peak mountain scene with integrated upward radar platforms."
+      "Front-facing 3D RF twin-peak scene with one upward radar face on each extended platform."
     );
     canvas.style.cssText =
       "display:block;width:100%;height:100%;outline:none;pointer-events:none";
@@ -814,10 +848,10 @@
       createDrawBuffer(gl, program, path.ribbon, gl.TRIANGLES, 1, true),
       createDrawBuffer(gl, program, path.lines, gl.LINES, 1, true),
       createDrawBuffer(gl, program, path.points, gl.POINTS, 42, true),
-      createDrawBuffer(gl, program, leftTower.lines, gl.LINES, 1, true),
+      createDrawBuffer(gl, program, leftTower.face, gl.TRIANGLES, 1, false),
       createDrawBuffer(gl, program, leftTower.lines, gl.LINES, 1, true),
       createDrawBuffer(gl, program, leftTower.points, gl.POINTS, 92, true),
-      createDrawBuffer(gl, program, rightTower.lines, gl.LINES, 1, true),
+      createDrawBuffer(gl, program, rightTower.face, gl.TRIANGLES, 1, false),
       createDrawBuffer(gl, program, rightTower.lines, gl.LINES, 1, true),
       createDrawBuffer(gl, program, rightTower.points, gl.POINTS, 86, true)
     ];
@@ -921,14 +955,14 @@
 
     mount.dataset.rfGraphLoaded = "true";
     mount.dataset.rfGraphVersion = VERSION;
-    mount.dataset.rfGraphMode = "webgl-front-face-only";
+    mount.dataset.rfGraphMode = "webgl-radar-one-face";
     mount.dispatchEvent(
       new CustomEvent(RENDERED_EVENT, {
         bubbles: true,
         detail: {
           version: VERSION,
           selectedPathId: SELECTED_PATH_ID,
-          mode: "webgl-front-face-only"
+          mode: "webgl-radar-one-face"
         }
       })
     );
