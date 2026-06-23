@@ -1,25 +1,25 @@
 /* ==========================================================================
    FieldOps Atlas RF 3D orbit renderer
    File: FieldOpsAtlas/Features/RF/rf-graph.js
-   Version: 1.1.116-revert-jagged-range
+   Version: 1.1.117-controlled-depth
 
    Purpose:
-   - Preserve the current twin-peak terrain layout, TX positions, valley path,
+   - Preserve the reverted twin-peak terrain, TX positions, valley path,
      360-degree drag behaviour, mount selector, and rendered-event contract.
-   - Add directional face shading so mountain planes define depth like the
-     supplied two-mountain TX reference.
+   - Add only a controlled amount of Z depth to the existing mountain masses and
+     foreground ridge spurs without changing summit heights or camera framing.
    - Keep the complete renderer self-contained with no external libraries.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.116-revert-jagged-range";
+  const VERSION = "1.1.117-controlled-depth";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
   const RENDERED_EVENT = "fieldops:rf-graph-rendered";
   const SELECTED_PATH_ID = "site-1-to-site-2";
-  const MODE = "webgl-360-revert-jagged-range";
+  const MODE = "webgl-360-controlled-depth";
 
   const DEG = Math.PI / 180;
   const FRONT_AZIMUTH = 0;
@@ -205,23 +205,23 @@
       return mountain(cx, cz, radiusX, radiusZ, height, rotation, phase, 0.0);
     }
 
-    const leftBase = mountain(-7.35, 0.85, 8.25, 10.20, 3.40, -0.16, 0.32, 0.010);
-    const leftOuterMass = mountain(-11.45, 2.10, 5.55, 7.85, 1.58, 0.24, 1.36, 0.010);
-    const leftInnerMass = mountain(-4.75, 1.05, 4.65, 6.90, 1.06, -0.62, 0.92, 0.010);
+    const leftBase = mountain(-7.35, 0.85, 8.25, 11.20, 3.40, -0.16, 0.32, 0.010);
+    const leftOuterMass = mountain(-11.45, 2.10, 5.55, 8.50, 1.58, 0.24, 1.36, 0.010);
+    const leftInnerMass = mountain(-4.75, 1.05, 4.65, 7.35, 1.06, -0.62, 0.92, 0.010);
     const leftSummit = summitSpike(-7.22, -0.10, 1.24, 1.48, 1.42, -0.08, 1.02);
     const leftNeedle = summitSpike(-7.52, 0.55, 0.78, 1.02, 0.70, 0.22, 1.78);
     const leftOuterRidge = ridgeSpur(-7.45, 0.22, 8.8, 2.35, 1.28, 0.88, 0.65);
     const leftInnerRidge = ridgeSpur(-7.10, -0.05, 7.2, 1.75, 1.12, -0.68, 2.00);
-    const leftForegroundSpur = ridgeSpur(-8.95, 6.10, 10.4, 2.85, 1.30, 1.22, 0.82);
+    const leftForegroundSpur = ridgeSpur(-8.95, 6.75, 11.6, 2.85, 1.30, 1.22, 0.82);
 
-    const rightBase = mountain(6.65, -0.95, 7.80, 9.40, 3.15, 0.14, 1.42, 0.010);
-    const rightOuterMass = mountain(10.85, 1.55, 5.20, 7.30, 1.42, -0.18, 0.76, 0.010);
-    const rightInnerMass = mountain(3.35, 0.55, 4.55, 6.40, 1.18, 0.60, 1.92, 0.010);
+    const rightBase = mountain(6.65, -0.95, 7.80, 10.30, 3.15, 0.14, 1.42, 0.010);
+    const rightOuterMass = mountain(10.85, 1.55, 5.20, 7.95, 1.42, -0.18, 0.76, 0.010);
+    const rightInnerMass = mountain(3.35, 0.55, 4.55, 6.85, 1.18, 0.60, 1.92, 0.010);
     const rightSummit = summitSpike(6.62, -1.12, 1.40, 1.58, 1.16, 0.10, 2.10);
     const rightNeedle = summitSpike(6.10, -0.45, 0.92, 1.08, 0.48, -0.28, 0.94);
     const rightOuterRidge = ridgeSpur(6.95, -1.05, 8.4, 2.50, 1.05, -0.92, 1.26);
     const rightInnerRidge = ridgeSpur(6.48, -0.90, 7.1, 1.95, 1.14, 0.74, 0.46);
-    const rightForegroundSpur = ridgeSpur(8.55, 5.30, 9.8, 2.80, 1.12, -1.08, 1.64);
+    const rightForegroundSpur = ridgeSpur(8.55, 5.95, 10.9, 2.80, 1.12, -1.08, 1.64);
 
     const rearLeft = ridgeSpur(-2.9, -5.6, 8.3, 2.25, 0.92, 0.18, 2.42);
     const rearRight = ridgeSpur(2.95, -5.85, 8.0, 2.20, 0.84, -0.14, 0.72);
@@ -240,12 +240,12 @@
 
     const frontBasin =
       0.42 *
-      Math.exp(-((z - 11.5) ** 2) / 44) *
+      Math.exp(-((z - 12.4) ** 2) / 52) *
       (0.55 + 0.45 * Math.min(1, Math.abs(x) / 10));
 
     const foregroundUndulation =
-      0.22 * Math.exp(-((z - 15.4) ** 2) / 36) * Math.sin(x * 0.42 + z * 0.18) +
-      0.16 * Math.exp(-((z - 17.1) ** 2) / 18) * Math.cos(x * 0.55 - z * 0.16);
+      0.22 * Math.exp(-((z - 17.0) ** 2) / 45) * Math.sin(x * 0.42 + z * 0.18) +
+      0.16 * Math.exp(-((z - 19.0) ** 2) / 24) * Math.cos(x * 0.55 - z * 0.16);
 
     const baseUndulation =
       -0.40 +
@@ -329,9 +329,9 @@
     const xMin = -17.4;
     const xMax = 17.6;
     const zMin = -8.8;
-    const zMax = 19.2;
+    const zMax = 21.0;
     const columns = 126;
-    const rows = 108;
+    const rows = 114;
     const triangles = emptyGeometry();
     const lines = emptyGeometry();
     const points = emptyGeometry();
@@ -710,7 +710,7 @@
 
     for (let index = 0; index < steps; index += 1) {
       const t = index / (steps - 1);
-      const z = 18.05 - t * 24.45;
+      const z = 19.70 - t * 26.10;
       const x =
         valleyCentreX(z) +
         Math.sin(t * Math.PI * 5.5) * (0.44 - t * 0.14) +
@@ -988,7 +988,7 @@
     mount.replaceChildren(fallback);
     mount.dataset.rfGraphLoaded = "fallback";
     mount.dataset.rfGraphVersion = VERSION;
-    mount.dataset.rfGraphMode = "static-svg-proportioned-fallback";
+    mount.dataset.rfGraphMode = "static-controlled-depth-fallback";
     return fallback;
   }
 
