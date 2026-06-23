@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF 3D orbit renderer
    File: FieldOpsAtlas/Features/RF/rf-graph.js
-   Version: 1.1.158-gltf-mountain
+   Version: 1.1.159-cross-folder-asset
 
    Purpose:
    - Replace the procedural curved terrain with the uploaded ready-made glTF
@@ -14,14 +14,15 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.158-gltf-mountain";
+  const VERSION = "1.1.159-cross-folder-asset";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
   const RENDERED_EVENT = "fieldops:rf-graph-rendered";
   const SELECTED_PATH_ID = "site-1-to-site-2";
   const MODE = "three-gltf-mountain-orbit";
-  const MODEL_URL = "./assets/mountain-terrain/scene.gltf";
+  const MODEL_URL = "../../Feature/RF/scene.gltf";
+  const BINARY_URL = "../../Feature/RF/FieldOpsAtlas_RF_scene.bin";
   const THREE_MODULE_URL =
     "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js";
   const GLTF_LOADER_URL =
@@ -480,8 +481,19 @@
     return model;
   }
 
-  async function loadModel(GLTFLoader) {
-    const loader = new GLTFLoader();
+  async function loadModel(THREE, GLTFLoader) {
+    const manager = new THREE.LoadingManager();
+
+    manager.setURLModifier((url) => {
+      if (url.endsWith("scene.bin")) {
+        return BINARY_URL;
+      }
+
+      return url;
+    });
+
+    const loader = new GLTFLoader(manager);
+
     return new Promise((resolve, reject) => {
       loader.load(
         MODEL_URL,
@@ -546,7 +558,7 @@
 
     setBadge(badge, "Loading 3D terrain…");
 
-    const gltf = await loadModel(GLTFLoader);
+    const gltf = await loadModel(THREE, GLTFLoader);
     if (token.destroyed) {
       renderer.dispose();
       return {
