@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF 3D orbit renderer
    File: FieldOpsAtlas/Features/RF/rf-graph.js
-   Version: 1.1.159-cross-folder-asset
+   Version: 1.1.160-import-map
 
    Purpose:
    - Replace the procedural curved terrain with the uploaded ready-made glTF
@@ -14,7 +14,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.159-cross-folder-asset";
+  const VERSION = "1.1.160-import-map";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -23,10 +23,8 @@
   const MODE = "three-gltf-mountain-orbit";
   const MODEL_URL = "../../Feature/RF/scene.gltf";
   const BINARY_URL = "../../Feature/RF/FieldOpsAtlas_RF_scene.bin";
-  const THREE_MODULE_URL =
-    "https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js";
-  const GLTF_LOADER_URL =
-    "https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/loaders/GLTFLoader.js";
+  const THREE_MODULE_URL = "three";
+  const GLTF_LOADER_URL = "three/addons/loaders/GLTFLoader.js";
 
   const DEG = Math.PI / 180;
   const FRONT_AZIMUTH = 0;
