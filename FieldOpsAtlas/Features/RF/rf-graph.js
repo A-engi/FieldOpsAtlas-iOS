@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF 3D orbit renderer
    File: FieldOpsAtlas/Features/RF/rf-graph.js
-   Version: 1.1.173-quad-summit-dots
+   Version: 1.1.174-faded-summit-dots
 
    Purpose:
    - Keep the uploaded ready-made glTF mountain geometry unchanged.
@@ -14,13 +14,13 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.173-quad-summit-dots";
+  const VERSION = "1.1.174-faded-summit-dots";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
   const RENDERED_EVENT = "fieldops:rf-graph-rendered";
   const SELECTED_PATH_ID = "site-1-to-site-2";
-  const MODE = "three-gltf-quad-summit-dots";
+  const MODE = "three-gltf-faded-summit-dots";
   const MODEL_URL = "../../Feature/RF/scene-mobile-v1.1.163.gltf";
   const THREE_MODULE_URL = "three";
   const GLTF_LOADER_URL = "three/addons/loaders/GLTFLoader.js";
@@ -536,6 +536,7 @@
   }
 
   function buildPeakDots(THREE, meshes, box, size) {
+    const summitHaloPositions = [];
     const summitGlowPositions = [];
     const summitCorePositions = [];
     const centroid = new THREE.Vector3();
@@ -543,6 +544,8 @@
     const edgeAB = new THREE.Vector3();
     const edgeAC = new THREE.Vector3();
     const lifted = new THREE.Vector3();
+    const tangent = new THREE.Vector3();
+    const bitangent = new THREE.Vector3();
 
     forEachWorldTriangle(THREE, meshes, (a, b, c, triangle) => {
       centroid.copy(a).add(b).add(c).multiplyScalar(1 / 3);
@@ -553,7 +556,7 @@
 
       const slope = 1 - clamp(normal.y, 0, 1);
       const heightRatio = (centroid.y - box.min.y) / Math.max(size.y, 0.0001);
-      if (heightRatio < 0.66 || slope < 0.12) return;
+      if (heightRatio < 0.62 || slope < 0.10) return;
 
       const selector = Math.abs(
         Math.sin(
@@ -564,61 +567,60 @@
         )
       );
 
-      const summitThreshold = heightRatio > 0.86 ? 0.52 : heightRatio > 0.78 ? 0.70 : 0.86;
+      const summitThreshold = heightRatio > 0.90 ? 0.42 : heightRatio > 0.82 ? 0.56 : heightRatio > 0.72 ? 0.70 : 0.84;
       if (selector < summitThreshold) return;
 
+      tangent.copy(edgeAB).normalize();
+      bitangent.copy(normal).cross(tangent).normalize();
       lifted.copy(centroid).addScaledVector(normal, Math.max(size.y * 0.0035, 0.014));
+
+      const angle = selector * Math.PI * 2.0 + triangle * 0.131;
+      const dir = tangent.clone().multiplyScalar(Math.cos(angle)).add(bitangent.clone().multiplyScalar(Math.sin(angle))).normalize();
+      const spreadBase = Math.max(size.x * 0.0013, 0.017);
+      const outerSpread = spreadBase * (0.85 + (1 - heightRatio) * 0.95);
+      const innerSpread = spreadBase * (0.30 + (1 - heightRatio) * 0.35);
+      const halo = lifted.clone().addScaledVector(dir, outerSpread);
+      const glowA = lifted.clone().addScaledVector(dir, innerSpread);
+      const glowB = lifted.clone().addScaledVector(dir, -innerSpread * 0.72);
+
+      summitHaloPositions.push(halo.x, halo.y, halo.z);
       summitGlowPositions.push(lifted.x, lifted.y, lifted.z);
 
-      const spread = Math.max(size.x * 0.0014, 0.018);
-      const tangent = edgeAB.clone().normalize();
-      const bitangent = normal.clone().cross(tangent).normalize();
-      const spreadAmount = spread * (0.55 + selector * 0.45);
-      const secondary = lifted.clone().addScaledVector(tangent, spreadAmount);
-      const tertiary = lifted.clone().addScaledVector(bitangent, spreadAmount * 0.82);
-      const quaternary = lifted
-        .clone()
-        .addScaledVector(tangent, -spreadAmount * 0.72)
-        .addScaledVector(bitangent, -spreadAmount * 0.58);
+      if (heightRatio > 0.72 || selector > 0.82) {
+        summitGlowPositions.push(glowA.x, glowA.y, glowA.z);
+      }
 
-      summitGlowPositions.push(
-        secondary.x,
-        secondary.y,
-        secondary.z,
-        tertiary.x,
-        tertiary.y,
-        tertiary.z,
-        quaternary.x,
-        quaternary.y,
-        quaternary.z
-      );
+      if (heightRatio > 0.80 && selector > 0.74) {
+        summitGlowPositions.push(glowB.x, glowB.y, glowB.z);
+      }
 
-      if (heightRatio > 0.80 && selector > 0.88) {
-        summitCorePositions.push(
-          lifted.x,
-          lifted.y,
-          lifted.z,
-          secondary.x,
-          secondary.y,
-          secondary.z,
-          tertiary.x,
-          tertiary.y,
-          tertiary.z,
-          quaternary.x,
-          quaternary.y,
-          quaternary.z
-        );
+      if (heightRatio > 0.86 && selector > 0.84) {
+        const core = lifted.clone().addScaledVector(dir, innerSpread * 0.18);
+        summitCorePositions.push(core.x, core.y, core.z);
       }
     });
 
     const objects = [];
+
+    if (summitHaloPositions.length) {
+      const haloDots = createPointCloud(
+        THREE,
+        summitHaloPositions,
+        0x4fb4c7,
+        Math.max(size.x * 0.0026, 0.034),
+        0.065
+      );
+      haloDots.userData.rfDecoration = true;
+      haloDots.renderOrder = 4;
+      objects.push(haloDots);
+    }
 
     if (summitGlowPositions.length) {
       const glowDots = createPointCloud(
         THREE,
         summitGlowPositions,
         0x72ddec,
-        Math.max(size.x * 0.0024, 0.032),
+        Math.max(size.x * 0.0022, 0.029),
         0.16
       );
       glowDots.userData.rfDecoration = true;
@@ -631,8 +633,8 @@
         THREE,
         summitCorePositions,
         0xe2feff,
-        Math.max(size.x * 0.0016, 0.022),
-        0.52
+        Math.max(size.x * 0.00145, 0.020),
+        0.54
       );
       coreDots.userData.rfDecoration = true;
       coreDots.renderOrder = 6;
