@@ -1,13 +1,13 @@
 /* ==========================================================================
    FieldOps Atlas RF 3D orbit renderer
    File: FieldOpsAtlas/Features/RF/rf-graph.js
-   Version: 1.1.175-moon-dot-field
+   Version: 1.1.177-broken-connected-wireframe
 
    Purpose:
    - Keep the uploaded ready-made glTF mountain geometry unchanged.
-   - Cover the uploaded mountain with one evenly spaced surface dot field.
-   - Light each dot with a broad overhead moon-disc approximation and soften
-     lower-slope dots using nearby higher terrain as a local shadow estimate.
+   - Cover the uploaded mountain with evenly spaced dots and separate chevrons.
+   - Light both surface marks with a broad overhead moon-disc approximation and
+     soften lower slopes using nearby higher terrain as a local shadow estimate.
    - Remove the pre-load RF background image before WebGL initialises.
    - Preserve the RF graph mount selector, error fallback, orbit interaction,
      and rendered-event contract.
@@ -15,13 +15,13 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.175-moon-dot-field";
+  const VERSION = "1.1.177-broken-connected-wireframe";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
   const RENDERED_EVENT = "fieldops:rf-graph-rendered";
   const SELECTED_PATH_ID = "site-1-to-site-2";
-  const MODE = "three-gltf-moon-dot-field";
+  const MODE = "three-gltf-broken-connected-wireframe";
   const MODEL_URL = "../../Feature/RF/scene-mobile-v1.1.163.gltf";
   const THREE_MODULE_URL = "three";
   const GLTF_LOADER_URL = "three/addons/loaders/GLTFLoader.js";
@@ -114,7 +114,7 @@
     canvas.setAttribute("role", "img");
     canvas.setAttribute(
       "aria-label",
-      "Interactive 3D RF mountain made from evenly spaced dots with broad overhead moon lighting and soft terrain shadowing. Drag left or right to orbit 360 degrees."
+      "Interactive 3D RF mountain made from evenly spaced dots and separate chevrons with broad overhead moon lighting and soft terrain shadowing. Drag left or right to orbit 360 degrees."
     );
     canvas.setAttribute("tabindex", "0");
     canvas.style.cssText =
@@ -776,7 +776,7 @@
       if (count === 0) return;
 
       for (let sample = 0; sample < count; sample += 1) {
-          const u = hash01(seed + sample * 2.417 + 0.31);
+        const u = hash01(seed + sample * 2.417 + 0.31);
         const v = hash01(seed + sample * 3.193 + 1.17);
         const rootU = Math.sqrt(u);
         const weightA = 1 - rootU;
@@ -856,9 +856,22 @@
 
     const positions = [];
     const brightnessValues = [];
+    const chevronPositions = [];
+    const chevronBrightnessValues = [];
+    const continuationPositions = [];
+    const continuationBrightnessValues = [];
+    const chevronRecords = [];
     const shadowRange = Math.max(size.y * 0.20, 0.001);
+    const worldDown = new THREE.Vector3(0, -1, 0);
+    const fallbackAxis = new THREE.Vector3(1, 0, 0);
+    const downhill = new THREE.Vector3();
+    const uphill = new THREE.Vector3();
+    const side = new THREE.Vector3();
+    const apex = new THREE.Vector3();
+    const leftBase = new THREE.Vector3();
+    const rightBase = new THREE.Vector3();
 
-    samples.forEach((sample) => {
+    samples.forEach((sample, sampleIndex) => {
       const [gx, gz] = gridCoordinate(sample.position);
       let nearbyMaximum = sample.position.y;
 
@@ -901,6 +914,195 @@
         sample.position.z
       );
       brightnessValues.push(brightness);
+
+      const chevronSelector = hash01(
+        sampleIndex * 0.619 +
+        sample.position.x * 0.173 +
+        sample.position.y * 0.197 +
+        sample.position.z * 0.229
+      );
+
+      if (chevronSelector > 0.42) {
+        downhill
+          .copy(worldDown)
+          .addScaledVector(
+            sample.normal,
+            -worldDown.dot(sample.normal)
+          );
+
+        if (downhill.lengthSq() < 0.0025) {
+          downhill.crossVectors(sample.normal, fallbackAxis);
+          if (downhill.lengthSq() < 0.0025) {
+            downhill.set(0, 0, -1);
+          }
+        }
+
+        downhill.normalize();
+        uphill.copy(downhill).multiplyScalar(-1);
+        side.crossVectors(sample.normal, uphill).normalize();
+
+        const sizeNoise = hash01(sampleIndex * 1.731 + 9.17);
+        const widthNoise = hash01(sampleIndex * 2.119 + 4.63);
+        const chevronScale = spacing * (0.78 + sizeNoise * 0.38);
+        const halfWidth = chevronScale * (0.34 + widthNoise * 0.16);
+        const rise = chevronScale * (0.46 + sizeNoise * 0.15);
+        const baseDrop = rise * 0.40;
+        const surfaceLift = epsilon * 0.72;
+
+        apex
+          .copy(sample.position)
+          .addScaledVector(uphill, rise * 0.58)
+          .addScaledVector(sample.normal, surfaceLift);
+        leftBase
+          .copy(sample.position)
+          .addScaledVector(uphill, -baseDrop)
+          .addScaledVector(side, halfWidth)
+          .addScaledVector(sample.normal, surfaceLift);
+        rightBase
+          .copy(sample.position)
+          .addScaledVector(uphill, -baseDrop)
+          .addScaledVector(side, -halfWidth)
+          .addScaledVector(sample.normal, surfaceLift);
+
+        chevronPositions.push(
+          leftBase.x, leftBase.y, leftBase.z,
+          apex.x, apex.y, apex.z,
+          apex.x, apex.y, apex.z,
+          rightBase.x, rightBase.y, rightBase.z
+        );
+
+        const chevronBrightness = clamp(0.10 + brightness * 0.82, 0.10, 0.94);
+        chevronBrightnessValues.push(
+          chevronBrightness,
+          chevronBrightness,
+          chevronBrightness,
+          chevronBrightness
+        );
+
+        chevronRecords.push({
+          position: sample.position.clone(),
+          apex: apex.clone(),
+          left: leftBase.clone(),
+          right: rightBase.clone(),
+          uphill: uphill.clone(),
+          side: side.clone(),
+          brightness,
+          selector: chevronSelector,
+          gx,
+          gz,
+          index: sampleIndex
+        });
+      }
+    });
+
+    const chevronBuckets = new Map();
+    function bucketKey(gx, gz) {
+      return `${gx}:${gz}`;
+    }
+
+    chevronRecords.forEach((record, recordIndex) => {
+      const key = bucketKey(record.gx, record.gz);
+      if (!chevronBuckets.has(key)) {
+        chevronBuckets.set(key, []);
+      }
+      chevronBuckets.get(key).push(recordIndex);
+    });
+
+    const offset = new THREE.Vector3();
+    const direction = new THREE.Vector3();
+    const usedPairs = new Set();
+
+    chevronRecords.forEach((record, recordIndex) => {
+      const linkBudget = record.selector > 0.74 ? 2 : 1;
+      const candidates = [];
+
+      for (let dz = -2; dz <= 2; dz += 1) {
+        for (let dx = -2; dx <= 2; dx += 1) {
+          const bucket = chevronBuckets.get(bucketKey(record.gx + dx, record.gz + dz));
+          if (!bucket) continue;
+
+          bucket.forEach((neighborIndex) => {
+            if (neighborIndex === recordIndex) return;
+            const neighbor = chevronRecords[neighborIndex];
+            offset.subVectors(neighbor.position, record.position);
+            const distance = offset.length();
+            if (distance < spacing * 0.45 || distance > spacing * 2.15) return;
+            direction.copy(offset).normalize();
+
+            const sideAlignment = Math.abs(direction.dot(record.side));
+            const uphillAlignment = Math.abs(direction.dot(record.uphill));
+            const continuity = Math.max(sideAlignment * 0.92, uphillAlignment * 0.82);
+            if (continuity < 0.34) return;
+
+            const hash = hash01(record.index * 0.143 + neighbor.index * 0.271 + distance * 0.77);
+            const score =
+              continuity * 0.72 +
+              ((record.brightness + neighbor.brightness) * 0.5) * 0.18 +
+              (1 - distance / (spacing * 2.15)) * 0.10 +
+              hash * 0.04;
+
+            candidates.push({
+              neighborIndex,
+              score,
+              sideAlignment,
+              uphillAlignment,
+              directionX: direction.dot(record.side),
+              directionUp: direction.dot(record.uphill)
+            });
+          });
+        }
+      }
+
+      candidates.sort((a, b) => b.score - a.score);
+      let linksMade = 0;
+
+      for (const candidate of candidates) {
+        if (linksMade >= linkBudget) break;
+        const pairKey = recordIndex < candidate.neighborIndex
+          ? `${recordIndex}:${candidate.neighborIndex}`
+          : `${candidate.neighborIndex}:${recordIndex}`;
+        if (usedPairs.has(pairKey)) continue;
+
+        const neighbor = chevronRecords[candidate.neighborIndex];
+        let startPoint;
+        let endPoint;
+
+        if (candidate.sideAlignment >= candidate.uphillAlignment) {
+          if (candidate.directionX >= 0) {
+            startPoint = record.right;
+            endPoint = neighbor.left;
+          } else {
+            startPoint = record.left;
+            endPoint = neighbor.right;
+          }
+        } else {
+          startPoint = record.apex;
+          if (candidate.directionUp >= 0) {
+            endPoint = neighbor.apex;
+          } else {
+            endPoint = candidate.directionX >= 0 ? neighbor.left : neighbor.right;
+          }
+        }
+
+        const linkHash = hash01(record.index * 0.913 + neighbor.index * 0.377);
+        if (linkHash < 0.38) continue;
+
+        continuationPositions.push(
+          startPoint.x, startPoint.y, startPoint.z,
+          endPoint.x, endPoint.y, endPoint.z
+        );
+        const continuationBrightness = clamp(
+          ((record.brightness + neighbor.brightness) * 0.5) * 0.78,
+          0.08,
+          0.82
+        );
+        continuationBrightnessValues.push(
+          continuationBrightness,
+          continuationBrightness
+        );
+        usedPairs.add(pairKey);
+        linksMade += 1;
+      }
     });
 
     const geometry = new THREE.BufferGeometry();
@@ -960,7 +1162,124 @@
     points.userData.rfDecoration = true;
     points.renderOrder = 5;
     points.frustumCulled = true;
-    return points;
+
+    const surfaceField = new THREE.Group();
+    surfaceField.userData.rfDecoration = true;
+    surfaceField.add(points);
+
+    if (chevronPositions.length) {
+      const chevronGeometry = new THREE.BufferGeometry();
+      chevronGeometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(chevronPositions, 3)
+      );
+      chevronGeometry.setAttribute(
+        "aBrightness",
+        new THREE.Float32BufferAttribute(chevronBrightnessValues, 1)
+      );
+      chevronGeometry.computeBoundingSphere();
+
+      const chevronMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          uDarkColour: { value: new THREE.Color(0x103b47) },
+          uBrightColour: { value: new THREE.Color(0x9ceff6) }
+        },
+        vertexShader: `
+          attribute float aBrightness;
+          varying float vBrightness;
+
+          void main() {
+            vBrightness = aBrightness;
+            vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_Position = projectionMatrix * viewPosition;
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 uDarkColour;
+          uniform vec3 uBrightColour;
+          varying float vBrightness;
+
+          void main() {
+            float lightLevel = pow(clamp(vBrightness, 0.0, 1.0), 1.10);
+            vec3 colour = mix(uDarkColour, uBrightColour, lightLevel);
+            float alpha = 0.065 + lightLevel * 0.36;
+            gl_FragColor = vec4(colour, alpha);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        depthTest: true,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false
+      });
+
+      const chevrons = new THREE.LineSegments(
+        chevronGeometry,
+        chevronMaterial
+      );
+      chevrons.userData.rfDecoration = true;
+      chevrons.renderOrder = 4;
+      chevrons.frustumCulled = true;
+      surfaceField.add(chevrons);
+    }
+
+    if (continuationPositions.length) {
+      const continuationGeometry = new THREE.BufferGeometry();
+      continuationGeometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(continuationPositions, 3)
+      );
+      continuationGeometry.setAttribute(
+        "aBrightness",
+        new THREE.Float32BufferAttribute(continuationBrightnessValues, 1)
+      );
+      continuationGeometry.computeBoundingSphere();
+
+      const continuationMaterial = new THREE.ShaderMaterial({
+        uniforms: {
+          uDarkColour: { value: new THREE.Color(0x0d3340) },
+          uBrightColour: { value: new THREE.Color(0x8fe7f1) }
+        },
+        vertexShader: `
+          attribute float aBrightness;
+          varying float vBrightness;
+
+          void main() {
+            vBrightness = aBrightness;
+            vec4 viewPosition = modelViewMatrix * vec4(position, 1.0);
+            gl_Position = projectionMatrix * viewPosition;
+          }
+        `,
+        fragmentShader: `
+          uniform vec3 uDarkColour;
+          uniform vec3 uBrightColour;
+          varying float vBrightness;
+
+          void main() {
+            float lightLevel = pow(clamp(vBrightness, 0.0, 1.0), 1.08);
+            vec3 colour = mix(uDarkColour, uBrightColour, lightLevel);
+            float alpha = 0.040 + lightLevel * 0.26;
+            gl_FragColor = vec4(colour, alpha);
+          }
+        `,
+        transparent: true,
+        depthWrite: false,
+        depthTest: true,
+        blending: THREE.AdditiveBlending,
+        toneMapped: false
+      });
+
+      const continuationLines = new THREE.LineSegments(
+        continuationGeometry,
+        continuationMaterial
+      );
+      continuationLines.userData.rfDecoration = true;
+      continuationLines.renderOrder = 3;
+      continuationLines.frustumCulled = true;
+      surfaceField.add(continuationLines);
+    }
+
+    return surfaceField;
   }
 
   function buildSurfaceRoute(THREE, terrainRoot, box, size, center) {
@@ -1072,15 +1391,15 @@
     });
     const pulseMaterials = [];
 
-    const moonDots = buildMoonDotField(
+    const moonSurface = buildMoonDotField(
       THREE,
       meshes,
       box,
       size,
       compactViewport
     );
-    if (moonDots) {
-      terrainRoot.add(moonDots);
+    if (moonSurface) {
+      terrainRoot.add(moonSurface);
     }
 
     const route = buildSurfaceRoute(
@@ -1346,7 +1665,7 @@
     const resizeObserver = new ResizeObserver(resize);
     resizeObserver.observe(frame);
 
-    setBadge(badge, "Double summit-dot terrain loaded", true);
+    setBadge(badge, "Moon dot-and-chevron terrain loaded", true);
     window.setTimeout(() => {
       badge.style.opacity = "0";
     }, 1800);
