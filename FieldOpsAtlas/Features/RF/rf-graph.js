@@ -1,13 +1,15 @@
 /* ==========================================================================
    FieldOps Atlas RF 3D orbit renderer
    File: FieldOpsAtlas/Features/RF/rf-graph.js
-   Version: 1.1.177-broken-connected-wireframe
+   Version: 1.1.178-birdeye-moon-peaks
 
    Purpose:
    - Keep the uploaded ready-made glTF mountain geometry unchanged.
-   - Cover the uploaded mountain with evenly spaced dots and separate chevrons.
-   - Light both surface marks with a broad overhead moon-disc approximation and
-     soften lower slopes using nearby higher terrain as a local shadow estimate.
+   - Cover the uploaded mountain with evenly spaced dots plus broken connected
+     chevrons.
+   - Estimate moon exposure from a bird's-eye/top-down pass first, then render
+     the result back on the sideways mountain so main summits and ridge peaks
+     catch more light without blowing the whole surface out.
    - Remove the pre-load RF background image before WebGL initialises.
    - Preserve the RF graph mount selector, error fallback, orbit interaction,
      and rendered-event contract.
@@ -15,7 +17,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.177-broken-connected-wireframe";
+  const VERSION = "1.1.178-birdeye-moon-peaks";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -114,7 +116,7 @@
     canvas.setAttribute("role", "img");
     canvas.setAttribute(
       "aria-label",
-      "Interactive 3D RF mountain made from evenly spaced dots and separate chevrons with broad overhead moon lighting and soft terrain shadowing. Drag left or right to orbit 360 degrees."
+      "Interactive 3D RF mountain made from evenly spaced dots and broken connected chevrons with bird's-eye moon lighting mapped back onto the sideways terrain. Drag left or right to orbit 360 degrees."
     );
     canvas.setAttribute("tabindex", "0");
     canvas.style.cssText =
@@ -872,11 +874,12 @@
     const rightBase = new THREE.Vector3();
 
     samples.forEach((sample, sampleIndex) => {
-      const [gx, gz] = gridCoordinate(sample.position);
-      let nearbyMaximum = sample.position.y;
+      const [gx, gz] = gridCoordinate(sample.position);      let nearbyMaximum = sample.position.y;
+      let nearbySum = sample.position.y;
+      let nearbyCount = 1;
 
-      for (let dz = -3; dz <= 3; dz += 1) {
-        for (let dx = -3; dx <= 3; dx += 1) {
+      for (let dz = -4; dz <= 4; dz += 1) {
+        for (let dx = -4; dx <= 4; dx += 1) {
           if (dx === 0 && dz === 0) continue;
           const nx = gx + dx;
           const nz = gz + dz;
@@ -884,6 +887,8 @@
           const candidate = heightGrid[nz * gridSize + nx];
           if (Number.isFinite(candidate)) {
             nearbyMaximum = Math.max(nearbyMaximum, candidate);
+            nearbySum += candidate;
+            nearbyCount += 1;
           }
         }
       }
@@ -895,16 +900,34 @@
       broadMoon /= moonDirections.length;
       broadMoon = Math.pow(clamp(broadMoon, 0, 1), 0.72);
 
-      const localShadow = clamp(
-        (nearbyMaximum - sample.position.y) / shadowRange,
+      const nearbyMean = nearbySum / Math.max(nearbyCount, 1);
+      const localDrop = Math.max(nearbyMaximum - sample.position.y, 0);
+      const localShadow = clamp(localDrop / shadowRange, 0, 1);
+      const shadowTransmission = 1 - localShadow * 0.24;
+      const topFacing = clamp(sample.normal.y, 0, 1);
+      const moonSpread = clamp(0.22 + broadMoon * 0.78, 0, 1);
+      const summitProximity = clamp(
+        1 - localDrop / Math.max(shadowRange * 0.28, 0.001),
         0,
         1
       );
-      const shadowTransmission = 1 - localShadow * 0.42;
-      const heightLift = sample.heightRatio * 0.055;
+      const ridgeProminence = clamp(
+        (sample.position.y - nearbyMean) / Math.max(shadowRange * 0.58, 0.001),
+        0,
+        1
+      );
+      const summitBoost = Math.max(
+        summitProximity * 0.75,
+        ridgeProminence * 0.95
+      ) * (0.38 + topFacing * 0.62);
+      const heightLift = sample.heightRatio * 0.045;
       const brightness = clamp(
-        0.13 + broadMoon * 0.76 * shadowTransmission + heightLift,
-        0.13,
+        0.10 +
+          moonSpread * 0.54 * shadowTransmission +
+          summitBoost * 0.24 +
+          ridgeProminence * 0.07 +
+          heightLift,
+        0.09,
         1
       );
 
@@ -943,10 +966,10 @@
 
         const sizeNoise = hash01(sampleIndex * 1.731 + 9.17);
         const widthNoise = hash01(sampleIndex * 2.119 + 4.63);
-        const chevronScale = spacing * (0.78 + sizeNoise * 0.38);
-        const halfWidth = chevronScale * (0.34 + widthNoise * 0.16);
-        const rise = chevronScale * (0.46 + sizeNoise * 0.15);
-        const baseDrop = rise * 0.40;
+        const chevronScale = spacing * (1.26 + sizeNoise * 0.62);
+        const halfWidth = chevronScale * (0.46 + widthNoise * 0.22);
+        const rise = chevronScale * (0.70 + sizeNoise * 0.22);
+        const baseDrop = rise * 0.52;
         const surfaceLift = epsilon * 0.72;
 
         apex
@@ -971,7 +994,7 @@
           rightBase.x, rightBase.y, rightBase.z
         );
 
-        const chevronBrightness = clamp(0.10 + brightness * 0.82, 0.10, 0.94);
+        const chevronBrightness = clamp(0.12 + brightness * 0.84, 0.12, 0.96);
         chevronBrightnessValues.push(
           chevronBrightness,
           chevronBrightness,
@@ -1202,7 +1225,7 @@
           void main() {
             float lightLevel = pow(clamp(vBrightness, 0.0, 1.0), 1.10);
             vec3 colour = mix(uDarkColour, uBrightColour, lightLevel);
-            float alpha = 0.065 + lightLevel * 0.36;
+            float alpha = 0.090 + lightLevel * 0.42;
             gl_FragColor = vec4(colour, alpha);
           }
         `,
@@ -1258,7 +1281,7 @@
           void main() {
             float lightLevel = pow(clamp(vBrightness, 0.0, 1.0), 1.08);
             vec3 colour = mix(uDarkColour, uBrightColour, lightLevel);
-            float alpha = 0.040 + lightLevel * 0.26;
+            float alpha = 0.055 + lightLevel * 0.31;
             gl_FragColor = vec4(colour, alpha);
           }
         `,
