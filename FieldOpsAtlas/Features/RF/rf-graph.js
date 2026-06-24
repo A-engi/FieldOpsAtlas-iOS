@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas RF 3D orbit renderer
    File: FieldOpsAtlas/Features/RF/rf-graph.js
-   Version: 1.1.188-embedded-exact-rollback
+   Version: 1.1.189-embedded-exact-rollback-fix
 
    Purpose:
    - Rebuild the original terrain from its exact embedded vertex and index data.
@@ -13,7 +13,7 @@
 (() => {
   "use strict";
 
-  const VERSION = "1.1.188-embedded-exact-rollback";
+  const VERSION = "1.1.189-embedded-exact-rollback-fix";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -15118,6 +15118,29 @@
   function setBadge(badge, text, dim = false) {
     badge.textContent = text;
     badge.style.opacity = dim ? "0.42" : "1";
+  }
+
+
+  function createPointCloud(THREE, points, colour, size, opacity = 1) {
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute(
+      "position",
+      new THREE.Float32BufferAttribute(points, 3)
+    );
+
+    const material = new THREE.PointsMaterial({
+      color: colour,
+      size,
+      transparent: true,
+      opacity,
+      sizeAttenuation: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending
+    });
+
+    const cloud = new THREE.Points(geometry, material);
+    cloud.renderOrder = 4;
+    return cloud;
   }
 
   async function loadDependencies() {
