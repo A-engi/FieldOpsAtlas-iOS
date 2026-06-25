@@ -1,20 +1,20 @@
 /* ==========================================================================
    FieldOps Atlas RF Builder 2
    File: FieldOpsAtlas/Features/RF/rf-graph-builder-2.js
-   Version: 1.1.201-builder-2-ridge-shoulder-dots-large
+   Version: 1.1.202-builder-2-moon-birdseye
 
    Purpose:
    - Build a lightweight mountain from the connected ridge web only.
    - Infer one previously unassigned major ridge from the principal peak.
    - Form a low-resolution curved surface from ridge-height constraints.
-   - Add ridge-relative dots across every local crest, shoulder, and ridge junction.
+   - Remove ridge tubes and cover the mountain base with large moonlit dots in a bird's-eye view.
    - Preserve orbit interaction, mount lifecycle, fallback, and rendered event.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.201-builder-2-ridge-shoulder-dots-large";
-  const MODE = "three-ridge-web-builder-2-ridge-shoulder-dots-large";
+  const VERSION = "1.1.202-builder-2-moon-birdseye";
+  const MODE = "three-ridge-web-builder-2-moon-birdseye";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -1052,162 +1052,6 @@
     };
   }
 
-  function buildRidgeSegments(
-    ridgePositions,
-    ridgeOffsets
-  ) {
-    const segments = [];
-
-    for (
-      let pathIndex = 0;
-      pathIndex < ridgeOffsets.length - 1;
-      pathIndex += 1
-    ) {
-      const start = ridgeOffsets[pathIndex];
-      const end = ridgeOffsets[pathIndex + 1];
-
-      for (
-        let pointIndex = start;
-        pointIndex < end - 1;
-        pointIndex += 1
-      ) {
-        const offsetA = pointIndex * 3;
-        const offsetB = (
-          pointIndex + 1
-        ) * 3;
-
-        const ax = ridgePositions[offsetA];
-        const ay =
-          ridgePositions[offsetA + 1];
-        const az =
-          ridgePositions[offsetA + 2];
-
-        const bx = ridgePositions[offsetB];
-        const by =
-          ridgePositions[offsetB + 1];
-        const bz =
-          ridgePositions[offsetB + 2];
-
-        const dx = bx - ax;
-        const dz = bz - az;
-
-        segments.push({
-          pathIndex,
-          ax,
-          ay,
-          az,
-          dx,
-          dy: by - ay,
-          dz,
-          lengthSquared:
-            dx * dx + dz * dz
-        });
-      }
-    }
-
-    return segments;
-  }
-
-  function findRidgeMetrics(
-    x,
-    z,
-    segments,
-    pathDistances
-  ) {
-    pathDistances.fill(Infinity);
-
-    let nearestDistanceSquared =
-      Infinity;
-
-    let nearestRidgeY = 0;
-
-    for (
-      let segmentIndex = 0;
-      segmentIndex < segments.length;
-      segmentIndex += 1
-    ) {
-      const segment =
-        segments[segmentIndex];
-
-      const pointDx = x - segment.ax;
-      const pointDz = z - segment.az;
-
-      const t = clamp(
-        (
-          pointDx * segment.dx
-          + pointDz * segment.dz
-        ) / Math.max(
-          segment.lengthSquared,
-          1e-8
-        ),
-        0,
-        1
-      );
-
-      const nearestX =
-        segment.ax + segment.dx * t;
-
-      const nearestZ =
-        segment.az + segment.dz * t;
-
-      const distanceX = x - nearestX;
-      const distanceZ = z - nearestZ;
-
-      const distanceSquared =
-        distanceX * distanceX
-        + distanceZ * distanceZ;
-
-      if (
-        distanceSquared
-        < pathDistances[
-          segment.pathIndex
-        ]
-      ) {
-        pathDistances[
-          segment.pathIndex
-        ] = distanceSquared;
-      }
-
-      if (
-        distanceSquared
-        < nearestDistanceSquared
-      ) {
-        nearestDistanceSquared =
-          distanceSquared;
-
-        nearestRidgeY =
-          segment.ay
-          + segment.dy * t;
-      }
-    }
-
-    let nearbyPathCount = 0;
-
-    const convergenceRadiusSquared =
-      1.0;
-
-    for (
-      let pathIndex = 0;
-      pathIndex < pathDistances.length;
-      pathIndex += 1
-    ) {
-      if (
-        pathDistances[pathIndex]
-        <= convergenceRadiusSquared
-      ) {
-        nearbyPathCount += 1;
-      }
-    }
-
-    return {
-      distance: Math.sqrt(
-        nearestDistanceSquared
-      ),
-      ridgeY: nearestRidgeY,
-      nearbyPathCount
-    };
-  }
-
   function buildPeakDotField(
     THREE,
     mountain
@@ -1226,38 +1070,6 @@
     if (!positions || !index) {
       return group;
     }
-
-    geometry.computeBoundingBox();
-
-    const bounds =
-      geometry.boundingBox;
-
-    const minimumY = bounds.min.y;
-    const heightRange = Math.max(
-      0.001,
-      bounds.max.y - bounds.min.y
-    );
-
-    const ridgePositions =
-      decodeFloat32(
-        EMBEDDED.ridgePositions
-      );
-
-    const ridgeOffsets =
-      decodeUint32(
-        EMBEDDED.ridgeOffsets
-      );
-
-    const ridgeSegments =
-      buildRidgeSegments(
-        ridgePositions,
-        ridgeOffsets
-      );
-
-    const pathDistances =
-      new Float32Array(
-        ridgeOffsets.length - 1
-      );
 
     const glowPositions = [];
     const glowColors = [];
@@ -1284,6 +1096,13 @@
 
     const triangleNormal =
       new THREE.Vector3();
+
+    const moonDirection =
+      new THREE.Vector3(
+        -0.52,
+        0.82,
+        0.24
+      ).normalize();
 
     for (
       let triangleIndex = 0;
@@ -1342,6 +1161,18 @@
         triangleNormal.multiplyScalar(-1);
       }
 
+      const moonLight = clamp(
+        triangleNormal.dot(
+          moonDirection
+        ),
+        0,
+        1
+      );
+
+      if (moonLight < 0.24) {
+        continue;
+      }
+
       const area = doubleArea * 0.5;
 
       centroid
@@ -1350,77 +1181,16 @@
         .add(vertexC)
         .multiplyScalar(1 / 3);
 
-      const ridgeMetrics =
-        findRidgeMetrics(
-          centroid.x,
-          centroid.z,
-          ridgeSegments,
-          pathDistances
-        );
-
-      const heightNorm = clamp(
-        (centroid.y - minimumY)
-        / heightRange,
-        0,
-        1
-      );
-
-      const verticalDrop = Math.max(
-        0,
-        ridgeMetrics.ridgeY
-        - centroid.y
-      );
-
-      const ridgeCore = Math.exp(
-        -Math.pow(
-          ridgeMetrics.distance / 0.42,
-          2
-        )
-      );
-
-      const shoulderBand =
-        Math.exp(
-          -Math.pow(
-            (
-              ridgeMetrics.distance
-              - 0.72
-            ) / 0.58,
-            2
-          )
-        )
-        * Math.exp(
-          -Math.pow(
-            (
-              verticalDrop
-              - 0.50
-            ) / 1.35,
-            2
-          )
-        );
-
-      const convergence = clamp(
-        (
-          ridgeMetrics.nearbyPathCount
-          - 1
-        ) / 3,
-        0,
-        1
-      );
-
       const densityWeight =
         area
         * (
-          0.55
-          + ridgeCore * 7.0
-          + shoulderBand * 13.5
-          + convergence * 7.5
-          + heightNorm * 0.85
-        )
-        * 0.75;
+          9.2
+          + moonLight * 13.5
+        );
 
       const random =
         createSeededRandom(
-          triangleIndex * 7 + 17
+          triangleIndex * 5 + 23
         );
 
       let sampleCount = Math.floor(
@@ -1469,26 +1239,9 @@
           + vertexB.z * baryB
           + vertexC.z * baryC;
 
-        const sampleHeightNorm =
-          clamp(
-            (sampleY - minimumY)
-            / heightRange,
-            0,
-            1
-          );
-
-        const brightness = clamp(
-          0.14
-          + ridgeCore * 0.66
-          + shoulderBand * 0.72
-          + convergence * 0.38
-          + sampleHeightNorm * 0.18,
-          0.12,
-          1
-        );
-
         const offsetDistance =
-          0.018 + brightness * 0.020;
+          0.020
+          + moonLight * 0.024;
 
         const offsetX =
           sampleX
@@ -1505,16 +1258,9 @@
           + triangleNormal.z
             * offsetDistance;
 
-        const glowStrength = clamp(
-          0.18
-          + brightness * 0.70,
-          0,
-          1
-        );
-
-        const coreStrength = clamp(
-          0.30
-          + brightness * 0.70,
+        const brightness = clamp(
+          0.28
+          + moonLight * 0.72,
           0,
           1
         );
@@ -1526,9 +1272,9 @@
         );
 
         glowColors.push(
-          0.08 + glowStrength * 0.20,
-          0.38 + glowStrength * 0.30,
-          0.46 + glowStrength * 0.34
+          0.10 + brightness * 0.24,
+          0.42 + brightness * 0.26,
+          0.50 + brightness * 0.30
         );
 
         corePositions.push(
@@ -1538,9 +1284,9 @@
         );
 
         coreColors.push(
-          0.34 + coreStrength * 0.50,
-          0.70 + coreStrength * 0.18,
-          0.74 + coreStrength * 0.18
+          0.48 + brightness * 0.42,
+          0.76 + brightness * 0.16,
+          0.80 + brightness * 0.15
         );
       }
     }
@@ -1570,9 +1316,9 @@
 
     const glowMaterial =
       new THREE.PointsMaterial({
-        size: 0.225,
+        size: 0.45,
         transparent: true,
-        opacity: 0.16,
+        opacity: 0.18,
         depthWrite: false,
         depthTest: true,
         blending: THREE.AdditiveBlending,
@@ -1612,9 +1358,9 @@
 
     const coreMaterial =
       new THREE.PointsMaterial({
-        size: 0.078,
+        size: 0.156,
         transparent: true,
-        opacity: 0.94,
+        opacity: 0.96,
         depthWrite: false,
         depthTest: true,
         blending: THREE.AdditiveBlending,
@@ -1916,10 +1662,6 @@
 
     terrainRoot.add(peakDots);
 
-    const ridgeWeb =
-      buildRidgeWeb(THREE);
-
-    terrainRoot.add(ridgeWeb);
 
     terrainRoot.updateMatrixWorld(true);
 
@@ -1946,10 +1688,10 @@
       );
 
     const orbitRadiusBase =
-      Math.max(size.x, size.z) * 0.73;
+      Math.max(size.x, size.z) * 0.22;
 
     const targetLift =
-      size.y * 0.29;
+      size.y * 1.68;
 
     const state = {
       azimuth: FRONT_AZIMUTH,
@@ -2043,10 +1785,10 @@
 
       camera.fov =
         aspect < 0.82
-          ? 47
+          ? 36
           : aspect < 1.12
-            ? 45
-            : 44;
+            ? 34
+            : 33;
 
       camera.updateProjectionMatrix();
 
