@@ -1,21 +1,21 @@
 /* ==========================================================================
    FieldOps Atlas RF Builder 2
    File: FieldOpsAtlas/Features/RF/rf-graph-builder-2.js
-   Version: 1.1.213-terrain-lit-scales
+   Version: 1.1.214-smooth-shadow-flow
 
    Purpose:
    - Build a lightweight mountain from the connected ridge web only.
    - Infer one previously unassigned major ridge from the principal peak.
    - Form a low-resolution curved surface from ridge-height constraints.
-   - Cover the full mountain surface with solid subdivided triangle scales using terrain-position lighting.
-   - Brighten exposed ridges and light-facing slopes; darken grooves, inward faces, and sheltered terrain.
+   - Cover the full mountain surface with solid subdivided triangle scales using smooth terrain shadow flow.
+   - Keep ridge highlights flowing smoothly while making lower sheltered grooves and channels very dark.
    - Preserve orbit interaction, mount lifecycle, fallback, and rendered event.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.213-terrain-lit-scales";
-  const MODE = "three-ridge-web-builder-2-terrain-lit-scales";
+  const VERSION = "1.1.214-smooth-shadow-flow";
+  const MODE = "three-ridge-web-builder-2-smooth-shadow-flow";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -1909,28 +1909,28 @@
       variation
     ) {
       const glowR =
-        0.010
-        + brightness * 0.060;
+        0.004
+        + brightness * 0.040;
 
       const glowG =
-        0.080
-        + brightness * 0.360;
+        0.030
+        + brightness * 0.240;
 
       const glowB =
-        0.130
-        + brightness * 0.500;
+        0.060
+        + brightness * 0.360;
 
       const coreR =
-        0.018
-        + brightness * 0.190;
+        0.010
+        + brightness * 0.110;
 
       const coreG =
-        0.120
-        + brightness * 0.650;
+        0.080
+        + brightness * 0.470;
 
       const coreB =
-        0.210
-        + brightness * 0.750;
+        0.130
+        + brightness * 0.580;
 
       const glowBiasA =
         0.82 + variation * 0.18;
@@ -2000,10 +2000,10 @@
       const brightness = clamp(
         baseBrightness
         * (
-          0.58
-          + shadeVariation * 0.68
+          0.88
+          + shadeVariation * 0.22
         ),
-        0.05,
+        0.02,
         1
       );
 
@@ -2017,37 +2017,37 @@
       const shadowWeight =
         Math.pow(
           brightness,
-          1.35
+          1.55
         );
 
       const highlightWeight =
         Math.pow(
           brightness,
-          3.0
+          2.6
         );
 
       const red =
-        0.004
-        + shadowWeight * 0.055
+        0.002
+        + shadowWeight * 0.040
         + highlightWeight * (
-          0.11
-          + cyanShift * 0.05
+          0.090
+          + cyanShift * 0.030
         );
 
       const green =
-        0.018
-        + shadowWeight * 0.36
+        0.010
+        + shadowWeight * 0.200
         + highlightWeight * (
-          0.38
-          + cyanShift * 0.08
+          0.440
+          + cyanShift * 0.060
         );
 
       const blue =
-        0.030
-        + shadowWeight * 0.46
+        0.018
+        + shadowWeight * 0.280
         + highlightWeight * (
-          0.38
-          + cyanShift * 0.08
+          0.520
+          + cyanShift * 0.050
         );
 
       fillPositions.push(
@@ -2199,12 +2199,15 @@
       );
 
       /*
-       * Every scale remains visible, but its brightness now
-       * comes from its actual terrain position and orientation.
+       * Smooth terrain lighting:
+       * - peaks and exposed ridges stay bright
+       * - sheltered lower grooves become very dark
+       * - variation flows across the surface instead of
+       *   changing abruptly face to face
        */
-      const grooveBrightness = clamp(
-        1 - grooveDepth / 1.65,
-        0.16,
+      const grooveShadow = clamp(
+        grooveDepth / 1.15,
+        0,
         1
       );
 
@@ -2230,32 +2233,57 @@
         1
       );
 
-      const faceVariation =
-        variationOf(
-          triangleIndex,
-          0,
-          5
+      const sheltered =
+        Math.pow(
+          1 - keyResponse,
+          1.55
         );
 
-      const baseBrightness = clamp(
-        (
-          0.07
-          + Math.pow(
-            keyResponse,
-            1.25
-          ) * 0.62
-          + fillResponse * 0.14
-          + ridgeCore * 0.11
-          + heightNorm * 0.08
-          + slopeStrength * 0.03
-        )
-        * grooveBrightness
-        * (
-          0.92
-          + faceVariation * 0.16
-        ),
-        0.05,
+      const peakProtection = clamp(
+        heightNorm * 0.80
+        + ridgeCore * 0.55,
+        0,
         1
+      );
+
+      const flowVariation = clamp(
+        0.5
+        + Math.sin(
+          faceCentroid.x * 1.10
+          + faceCentroid.y * 0.85
+        ) * 0.18
+        + Math.cos(
+          faceCentroid.z * 1.30
+          - faceCentroid.y * 0.60
+        ) * 0.14,
+        0,
+        1
+      );
+
+      const baseBrightness = clamp(
+        0.03
+        + Math.pow(
+          keyResponse,
+          1.12
+        ) * 0.42
+        + fillResponse * 0.10
+        + Math.pow(
+          heightNorm,
+          1.35
+        ) * 0.28
+        + ridgeCore * 0.10
+        + slopeStrength * 0.03
+        + flowVariation * 0.06
+        - grooveShadow * (
+          0.55
+          - peakProtection * 0.25
+        )
+        - sheltered * (
+          0.16
+          + (1 - heightNorm) * 0.12
+        ),
+        0.02,
+        0.92
       );
 
       const offsetDistance =
@@ -2415,7 +2443,7 @@
     const glowLineMaterial =
       new THREE.LineBasicMaterial({
         transparent: true,
-        opacity: 0.12,
+        opacity: 0.06,
         depthWrite: false,
         depthTest: true,
         blending: THREE.AdditiveBlending,
