@@ -1,20 +1,20 @@
 /* ==========================================================================
    FieldOps Atlas RF Builder 2
    File: FieldOpsAtlas/Features/RF/rf-graph-builder-2.js
-   Version: 1.1.208-peak-facet-style
+   Version: 1.1.209-convex-peak-facets
 
    Purpose:
    - Build a lightweight mountain from the connected ridge web only.
    - Infer one previously unassigned major ridge from the principal peak.
    - Form a low-resolution curved surface from ridge-height constraints.
    - Preserve the mountain body while styling the protruding ridge facets with a cyan polygon-network glow.
-   - Light restrained ridge dots and polygon facets on the protruding ridge sections only.
+   - Light restrained ridge dots and genuine convex crease edges on protruding ridge sections only.
    - Preserve orbit interaction, mount lifecycle, fallback, and rendered event.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.208-peak-facet-style";
+  const VERSION = "1.1.209-convex-peak-facets";
   const MODE = "three-ridge-web-builder-2-dramatic-edge-shading";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
@@ -1836,17 +1836,8 @@
         ridgeOffsets.length - 1
       );
 
-    const glowLinePositions = [];
-    const glowLineColors = [];
-    const coreLinePositions = [];
-    const coreLineColors = [];
-    const glowNodePositions = [];
-    const glowNodeColors = [];
-    const coreNodePositions = [];
-    const coreNodeColors = [];
-
-    const edgeKeys = new Set();
-    const nodeKeys = new Set();
+    const faces = [];
+    const edges = new Map();
 
     const vertexA =
       new THREE.Vector3();
@@ -1863,45 +1854,422 @@
     const edgeAC =
       new THREE.Vector3();
 
-    const centroid =
+    const faceNormal =
       new THREE.Vector3();
 
-    const triangleNormal =
+    const faceCentroid =
       new THREE.Vector3();
 
-    function pushSegment(
-      startPoint,
-      endPoint,
-      key,
+    function addEdge(
+      startIndex,
+      endIndex,
+      oppositeIndex,
+      faceIndex
+    ) {
+      const lowIndex = Math.min(
+        startIndex,
+        endIndex
+      );
+
+      const highIndex = Math.max(
+        startIndex,
+        endIndex
+      );
+
+      const key =
+        `${lowIndex}-${highIndex}`;
+
+      let edge = edges.get(key);
+
+      if (!edge) {
+        edge = {
+          key,
+          startIndex: lowIndex,
+          endIndex: highIndex,
+          faces: []
+        };
+
+        edges.set(key, edge);
+      }
+
+      edge.faces.push({
+        faceIndex,
+        oppositeIndex
+      });
+    }
+
+    for (
+      let triangleOffset = 0;
+      triangleOffset < index.count;
+      triangleOffset += 3
+    ) {
+      const indexA =
+        index.getX(triangleOffset);
+
+      const indexB =
+        index.getX(
+          triangleOffset + 1
+        );
+
+      const indexC =
+        index.getX(
+          triangleOffset + 2
+        );
+
+      vertexA.fromBufferAttribute(
+        positions,
+        indexA
+      );
+
+      vertexB.fromBufferAttribute(
+        positions,
+        indexB
+      );
+
+      vertexC.fromBufferAttribute(
+        positions,
+        indexC
+      );
+
+      edgeAB.subVectors(
+        vertexB,
+        vertexA
+      );
+
+      edgeAC.subVectors(
+        vertexC,
+        vertexA
+      );
+
+      faceNormal.crossVectors(
+        edgeAB,
+        edgeAC
+      );
+
+      const doubleArea =
+        faceNormal.length();
+
+      if (doubleArea <= 1e-6) {
+        continue;
+      }
+
+      faceNormal.normalize();
+
+      if (faceNormal.y < 0) {
+        faceNormal.multiplyScalar(-1);
+      }
+
+      faceCentroid
+        .copy(vertexA)
+        .add(vertexB)
+        .add(vertexC)
+        .multiplyScalar(1 / 3);
+
+      const faceIndex = faces.length;
+
+      faces.push({
+        normal: faceNormal.clone(),
+        centroid:
+          faceCentroid.clone()
+      });
+
+      addEdge(
+        indexA,
+        indexB,
+        indexC,
+        faceIndex
+      );
+
+      addEdge(
+        indexB,
+        indexC,
+        indexA,
+        faceIndex
+      );
+
+      addEdge(
+        indexC,
+        indexA,
+        indexB,
+        faceIndex
+      );
+    }
+
+    const glowLinePositions = [];
+    const glowLineColors = [];
+    const coreLinePositions = [];
+    const coreLineColors = [];
+    const glowNodePositions = [];
+    const glowNodeColors = [];
+    const coreNodePositions = [];
+    const coreNodeColors = [];
+
+    const nodeStrengths = new Map();
+
+    const startPoint =
+      new THREE.Vector3();
+
+    const endPoint =
+      new THREE.Vector3();
+
+    const oppositeA =
+      new THREE.Vector3();
+
+    const oppositeB =
+      new THREE.Vector3();
+
+    const midpoint =
+      new THREE.Vector3();
+
+    const horizontalEdge =
+      new THREE.Vector2();
+
+    const averageNormal =
+      new THREE.Vector3();
+
+    const displayStart =
+      new THREE.Vector3();
+
+    const displayEnd =
+      new THREE.Vector3();
+
+    function rememberNode(
+      vertexIndex,
+      point,
       strength
     ) {
-      if (edgeKeys.has(key)) {
+      const previous =
+        nodeStrengths.get(vertexIndex);
+
+      if (
+        previous
+        && previous.strength >= strength
+      ) {
         return;
       }
 
-      edgeKeys.add(key);
+      nodeStrengths.set(
+        vertexIndex,
+        {
+          point: point.clone(),
+          strength
+        }
+      );
+    }
+
+    edges.forEach((edge) => {
+      if (edge.faces.length !== 2) {
+        return;
+      }
+
+      const first =
+        edge.faces[0];
+
+      const second =
+        edge.faces[1];
+
+      const firstFace =
+        faces[first.faceIndex];
+
+      const secondFace =
+        faces[second.faceIndex];
+
+      if (!firstFace || !secondFace) {
+        return;
+      }
+
+      startPoint.fromBufferAttribute(
+        positions,
+        edge.startIndex
+      );
+
+      endPoint.fromBufferAttribute(
+        positions,
+        edge.endIndex
+      );
+
+      oppositeA.fromBufferAttribute(
+        positions,
+        first.oppositeIndex
+      );
+
+      oppositeB.fromBufferAttribute(
+        positions,
+        second.oppositeIndex
+      );
+
+      midpoint
+        .copy(startPoint)
+        .add(endPoint)
+        .multiplyScalar(0.5);
+
+      horizontalEdge.set(
+        endPoint.x - startPoint.x,
+        endPoint.z - startPoint.z
+      );
+
+      const horizontalLength =
+        horizontalEdge.length();
+
+      if (horizontalLength <= 1e-5) {
+        return;
+      }
+
+      const normalDot = clamp(
+        firstFace.normal.dot(
+          secondFace.normal
+        ),
+        -1,
+        1
+      );
+
+      const dihedralAngle =
+        Math.acos(normalDot);
+
+      if (dihedralAngle < 0.24) {
+        return;
+      }
+
+      const oppositeAverageY =
+        (
+          oppositeA.y
+          + oppositeB.y
+        ) * 0.5;
+
+      const crestLift =
+        midpoint.y
+        - oppositeAverageY;
+
+      const liftRatio =
+        crestLift
+        / horizontalLength;
+
+      if (liftRatio < 0.032) {
+        return;
+      }
+
+      const heightNorm = clamp(
+        (midpoint.y - minimumY)
+        / heightRange,
+        0,
+        1
+      );
+
+      if (heightNorm < 0.16) {
+        return;
+      }
+
+      const ridgeMetrics =
+        findRidgeMetrics(
+          midpoint.x,
+          midpoint.z,
+          ridgeSegments,
+          pathDistances
+        );
+
+      const ridgeCore = Math.exp(
+        -Math.pow(
+          ridgeMetrics.distance / 0.46,
+          2
+        )
+      );
+
+      const angleStrength = clamp(
+        (
+          dihedralAngle - 0.24
+        ) / 0.62,
+        0,
+        1
+      );
+
+      const convexStrength = clamp(
+        (
+          liftRatio - 0.032
+        ) / 0.105,
+        0,
+        1
+      );
+
+      if (
+        ridgeCore < 0.08
+        && convexStrength < 0.64
+      ) {
+        return;
+      }
+
+      const prominence = clamp(
+        convexStrength * 0.62
+        + angleStrength * 0.25
+        + ridgeCore * 0.09
+        + heightNorm * 0.04,
+        0,
+        1
+      );
+
+      if (prominence < 0.24) {
+        return;
+      }
+
+      averageNormal
+        .copy(firstFace.normal)
+        .add(secondFace.normal);
+
+      if (
+        averageNormal.lengthSq()
+        <= 1e-8
+      ) {
+        averageNormal.set(
+          0,
+          1,
+          0
+        );
+      } else {
+        averageNormal.normalize();
+      }
+
+      const offsetDistance =
+        0.018
+        + prominence * 0.024;
+
+      displayStart
+        .copy(startPoint)
+        .addScaledVector(
+          averageNormal,
+          offsetDistance
+        );
+
+      displayEnd
+        .copy(endPoint)
+        .addScaledVector(
+          averageNormal,
+          offsetDistance
+        );
 
       const glowR =
-        0.08 + strength * 0.14;
+        0.08 + prominence * 0.14;
+
       const glowG =
-        0.46 + strength * 0.24;
+        0.46 + prominence * 0.24;
+
       const glowB =
-        0.54 + strength * 0.24;
+        0.54 + prominence * 0.24;
 
       const coreR =
-        0.28 + strength * 0.28;
+        0.28 + prominence * 0.28;
+
       const coreG =
-        0.76 + strength * 0.18;
+        0.76 + prominence * 0.18;
+
       const coreB =
-        0.82 + strength * 0.14;
+        0.82 + prominence * 0.14;
 
       glowLinePositions.push(
-        startPoint.x,
-        startPoint.y,
-        startPoint.z,
-        endPoint.x,
-        endPoint.y,
-        endPoint.z
+        displayStart.x,
+        displayStart.y,
+        displayStart.z,
+        displayEnd.x,
+        displayEnd.y,
+        displayEnd.z
       );
 
       glowLineColors.push(
@@ -1914,12 +2282,12 @@
       );
 
       coreLinePositions.push(
-        startPoint.x,
-        startPoint.y,
-        startPoint.z,
-        endPoint.x,
-        endPoint.y,
-        endPoint.z
+        displayStart.x,
+        displayStart.y,
+        displayStart.z,
+        displayEnd.x,
+        displayEnd.y,
+        displayEnd.z
       );
 
       coreLineColors.push(
@@ -1930,18 +2298,23 @@
         coreG,
         coreB
       );
-    }
 
-    function pushNode(
-      point,
-      key,
-      strength
-    ) {
-      if (nodeKeys.has(key)) {
-        return;
-      }
+      rememberNode(
+        edge.startIndex,
+        displayStart,
+        prominence
+      );
 
-      nodeKeys.add(key);
+      rememberNode(
+        edge.endIndex,
+        displayEnd,
+        prominence
+      );
+    });
+
+    nodeStrengths.forEach((entry) => {
+      const { point, strength } =
+        entry;
 
       glowNodePositions.push(
         point.x,
@@ -1966,181 +2339,7 @@
         0.80 + strength * 0.16,
         0.86 + strength * 0.12
       );
-    }
-
-    for (
-      let triangleIndex = 0;
-      triangleIndex < index.count;
-      triangleIndex += 3
-    ) {
-      const vertexIndexA =
-        index.getX(triangleIndex);
-
-      const vertexIndexB =
-        index.getX(triangleIndex + 1);
-
-      const vertexIndexC =
-        index.getX(triangleIndex + 2);
-
-      vertexA.fromBufferAttribute(
-        positions,
-        vertexIndexA
-      );
-
-      vertexB.fromBufferAttribute(
-        positions,
-        vertexIndexB
-      );
-
-      vertexC.fromBufferAttribute(
-        positions,
-        vertexIndexC
-      );
-
-      edgeAB.subVectors(
-        vertexB,
-        vertexA
-      );
-
-      edgeAC.subVectors(
-        vertexC,
-        vertexA
-      );
-
-      triangleNormal.crossVectors(
-        edgeAB,
-        edgeAC
-      );
-
-      const doubleArea =
-        triangleNormal.length();
-
-      if (doubleArea <= 1e-6) {
-        continue;
-      }
-
-      triangleNormal.normalize();
-
-      if (triangleNormal.y < 0) {
-        triangleNormal.multiplyScalar(-1);
-      }
-
-      centroid
-        .copy(vertexA)
-        .add(vertexB)
-        .add(vertexC)
-        .multiplyScalar(1 / 3);
-
-      const ridgeMetrics =
-        findRidgeMetrics(
-          centroid.x,
-          centroid.z,
-          ridgeSegments,
-          pathDistances
-        );
-
-      const heightNorm = clamp(
-        (centroid.y - minimumY)
-        / heightRange,
-        0,
-        1
-      );
-
-      const ridgeCore = Math.exp(
-        -Math.pow(
-          ridgeMetrics.distance / 0.34,
-          2
-        )
-      );
-
-      const convergence = clamp(
-        (
-          ridgeMetrics.nearbyPathCount
-          - 1
-        ) / 3,
-        0,
-        1
-      );
-
-      const prominence = clamp(
-        ridgeCore * 0.78
-        + convergence * 0.46
-        + heightNorm * 0.12
-        + (
-          1 - clamp(
-            triangleNormal.y,
-            0,
-            1
-          )
-        ) * 0.24,
-        0,
-        1
-      );
-
-      if (prominence < 0.34) {
-        continue;
-      }
-
-      const offsetDistance =
-        0.020 + prominence * 0.018;
-
-      const offsetA =
-        vertexA.clone().addScaledVector(
-          triangleNormal,
-          offsetDistance
-        );
-
-      const offsetB =
-        vertexB.clone().addScaledVector(
-          triangleNormal,
-          offsetDistance
-        );
-
-      const offsetC =
-        vertexC.clone().addScaledVector(
-          triangleNormal,
-          offsetDistance
-        );
-
-      pushSegment(
-        offsetA,
-        offsetB,
-        `${Math.min(vertexIndexA, vertexIndexB)}-${Math.max(vertexIndexA, vertexIndexB)}`,
-        prominence
-      );
-
-      pushSegment(
-        offsetB,
-        offsetC,
-        `${Math.min(vertexIndexB, vertexIndexC)}-${Math.max(vertexIndexB, vertexIndexC)}`,
-        prominence
-      );
-
-      pushSegment(
-        offsetC,
-        offsetA,
-        `${Math.min(vertexIndexC, vertexIndexA)}-${Math.max(vertexIndexC, vertexIndexA)}`,
-        prominence
-      );
-
-      pushNode(
-        offsetA,
-        `n-${vertexIndexA}`,
-        prominence
-      );
-
-      pushNode(
-        offsetB,
-        `n-${vertexIndexB}`,
-        prominence
-      );
-
-      pushNode(
-        offsetC,
-        `n-${vertexIndexC}`,
-        prominence
-      );
-    }
+    });
 
     if (coreLinePositions.length === 0) {
       return group;
@@ -2312,7 +2511,6 @@
 
     return group;
   }
-
 
   function buildRidgeWeb(THREE) {
     const positions = decodeFloat32(
