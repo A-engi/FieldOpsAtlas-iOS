@@ -1,20 +1,20 @@
 /* ==========================================================================
    FieldOps Atlas RF Builder 2
    File: FieldOpsAtlas/Features/RF/rf-graph-builder-2.js
-   Version: 1.1.199-builder-2-peak-dots
+   Version: 1.1.201-builder-2-ridge-shoulder-dots-large
 
    Purpose:
    - Build a lightweight mountain from the connected ridge web only.
    - Infer one previously unassigned major ridge from the principal peak.
    - Form a low-resolution curved surface from ridge-height constraints.
-   - Add a dense peak-and-shoulder dot field with brightness falling off downhill.
+   - Add ridge-relative dots across every local crest, shoulder, and ridge junction.
    - Preserve orbit interaction, mount lifecycle, fallback, and rendered event.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.199-builder-2-peak-dots";
-  const MODE = "three-ridge-web-builder-2-peak-dots";
+  const VERSION = "1.1.201-builder-2-ridge-shoulder-dots-large";
+  const MODE = "three-ridge-web-builder-2-ridge-shoulder-dots-large";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -1052,6 +1052,162 @@
     };
   }
 
+  function buildRidgeSegments(
+    ridgePositions,
+    ridgeOffsets
+  ) {
+    const segments = [];
+
+    for (
+      let pathIndex = 0;
+      pathIndex < ridgeOffsets.length - 1;
+      pathIndex += 1
+    ) {
+      const start = ridgeOffsets[pathIndex];
+      const end = ridgeOffsets[pathIndex + 1];
+
+      for (
+        let pointIndex = start;
+        pointIndex < end - 1;
+        pointIndex += 1
+      ) {
+        const offsetA = pointIndex * 3;
+        const offsetB = (
+          pointIndex + 1
+        ) * 3;
+
+        const ax = ridgePositions[offsetA];
+        const ay =
+          ridgePositions[offsetA + 1];
+        const az =
+          ridgePositions[offsetA + 2];
+
+        const bx = ridgePositions[offsetB];
+        const by =
+          ridgePositions[offsetB + 1];
+        const bz =
+          ridgePositions[offsetB + 2];
+
+        const dx = bx - ax;
+        const dz = bz - az;
+
+        segments.push({
+          pathIndex,
+          ax,
+          ay,
+          az,
+          dx,
+          dy: by - ay,
+          dz,
+          lengthSquared:
+            dx * dx + dz * dz
+        });
+      }
+    }
+
+    return segments;
+  }
+
+  function findRidgeMetrics(
+    x,
+    z,
+    segments,
+    pathDistances
+  ) {
+    pathDistances.fill(Infinity);
+
+    let nearestDistanceSquared =
+      Infinity;
+
+    let nearestRidgeY = 0;
+
+    for (
+      let segmentIndex = 0;
+      segmentIndex < segments.length;
+      segmentIndex += 1
+    ) {
+      const segment =
+        segments[segmentIndex];
+
+      const pointDx = x - segment.ax;
+      const pointDz = z - segment.az;
+
+      const t = clamp(
+        (
+          pointDx * segment.dx
+          + pointDz * segment.dz
+        ) / Math.max(
+          segment.lengthSquared,
+          1e-8
+        ),
+        0,
+        1
+      );
+
+      const nearestX =
+        segment.ax + segment.dx * t;
+
+      const nearestZ =
+        segment.az + segment.dz * t;
+
+      const distanceX = x - nearestX;
+      const distanceZ = z - nearestZ;
+
+      const distanceSquared =
+        distanceX * distanceX
+        + distanceZ * distanceZ;
+
+      if (
+        distanceSquared
+        < pathDistances[
+          segment.pathIndex
+        ]
+      ) {
+        pathDistances[
+          segment.pathIndex
+        ] = distanceSquared;
+      }
+
+      if (
+        distanceSquared
+        < nearestDistanceSquared
+      ) {
+        nearestDistanceSquared =
+          distanceSquared;
+
+        nearestRidgeY =
+          segment.ay
+          + segment.dy * t;
+      }
+    }
+
+    let nearbyPathCount = 0;
+
+    const convergenceRadiusSquared =
+      1.0;
+
+    for (
+      let pathIndex = 0;
+      pathIndex < pathDistances.length;
+      pathIndex += 1
+    ) {
+      if (
+        pathDistances[pathIndex]
+        <= convergenceRadiusSquared
+      ) {
+        nearbyPathCount += 1;
+      }
+    }
+
+    return {
+      distance: Math.sqrt(
+        nearestDistanceSquared
+      ),
+      ridgeY: nearestRidgeY,
+      nearbyPathCount
+    };
+  }
+
   function buildPeakDotField(
     THREE,
     mountain
@@ -1081,6 +1237,27 @@
       0.001,
       bounds.max.y - bounds.min.y
     );
+
+    const ridgePositions =
+      decodeFloat32(
+        EMBEDDED.ridgePositions
+      );
+
+    const ridgeOffsets =
+      decodeUint32(
+        EMBEDDED.ridgeOffsets
+      );
+
+    const ridgeSegments =
+      buildRidgeSegments(
+        ridgePositions,
+        ridgeOffsets
+      );
+
+    const pathDistances =
+      new Float32Array(
+        ridgeOffsets.length - 1
+      );
 
     const glowPositions = [];
     const glowColors = [];
@@ -1173,6 +1350,14 @@
         .add(vertexC)
         .multiplyScalar(1 / 3);
 
+      const ridgeMetrics =
+        findRidgeMetrics(
+          centroid.x,
+          centroid.z,
+          ridgeSegments,
+          pathDistances
+        );
+
       const heightNorm = clamp(
         (centroid.y - minimumY)
         / heightRange,
@@ -1180,48 +1365,62 @@
         1
       );
 
-      const slopeFactor = clamp(
-        1 - Math.abs(triangleNormal.y),
+      const verticalDrop = Math.max(
         0,
-        1
+        ridgeMetrics.ridgeY
+        - centroid.y
       );
 
-      const shoulderFactor = clamp(
+      const ridgeCore = Math.exp(
+        -Math.pow(
+          ridgeMetrics.distance / 0.42,
+          2
+        )
+      );
+
+      const shoulderBand =
         Math.exp(
           -Math.pow(
-            (heightNorm - 0.72) / 0.18,
+            (
+              ridgeMetrics.distance
+              - 0.72
+            ) / 0.58,
             2
           )
         )
-        * clamp(
-          (slopeFactor - 0.10)
-          / 0.55,
-          0,
-          1
-        ),
+        * Math.exp(
+          -Math.pow(
+            (
+              verticalDrop
+              - 0.50
+            ) / 1.35,
+            2
+          )
+        );
+
+      const convergence = clamp(
+        (
+          ridgeMetrics.nearbyPathCount
+          - 1
+        ) / 3,
         0,
         1
       );
 
-      const peakFactor = Math.pow(
-        clamp(
-          (heightNorm - 0.56) / 0.44,
-          0,
-          1
-        ),
-        1.35
-      );
-
       const densityWeight =
-        area * (
-          2.8
-          + peakFactor * 12.0
-          + shoulderFactor * 16.0
-        );
+        area
+        * (
+          0.55
+          + ridgeCore * 7.0
+          + shoulderBand * 13.5
+          + convergence * 7.5
+          + heightNorm * 0.85
+        )
+        * 0.75;
 
       const random =
         createSeededRandom(
-          triangleIndex + 1
+          triangleIndex * 7 + 17
         );
 
       let sampleCount = Math.floor(
@@ -1270,39 +1469,20 @@
           + vertexB.z * baryB
           + vertexC.z * baryC;
 
-        const sampleHeightNorm = clamp(
-          (sampleY - minimumY)
-          / heightRange,
-          0,
-          1
-        );
-
-        const shoulderBrightness = clamp(
-          Math.exp(
-            -Math.pow(
-              (sampleHeightNorm - 0.74) / 0.17,
-              2
-            )
-          )
-          * clamp(
-            (slopeFactor - 0.08)
-            / 0.62,
+        const sampleHeightNorm =
+          clamp(
+            (sampleY - minimumY)
+            / heightRange,
             0,
             1
-          ),
-          0,
-          1
-        );
-
-        const peakBrightness = Math.pow(
-          sampleHeightNorm,
-          2.1
-        );
+          );
 
         const brightness = clamp(
-          0.12
-          + peakBrightness * 0.72
-          + shoulderBrightness * 0.58,
+          0.14
+          + ridgeCore * 0.66
+          + shoulderBand * 0.72
+          + convergence * 0.38
+          + sampleHeightNorm * 0.18,
           0.12,
           1
         );
@@ -1326,15 +1506,15 @@
             * offsetDistance;
 
         const glowStrength = clamp(
-          0.22
-          + brightness * 0.62,
+          0.18
+          + brightness * 0.70,
           0,
           1
         );
 
         const coreStrength = clamp(
-          0.32
-          + brightness * 0.68,
+          0.30
+          + brightness * 0.70,
           0,
           1
         );
@@ -1390,7 +1570,7 @@
 
     const glowMaterial =
       new THREE.PointsMaterial({
-        size: 0.16,
+        size: 0.225,
         transparent: true,
         opacity: 0.16,
         depthWrite: false,
@@ -1432,7 +1612,7 @@
 
     const coreMaterial =
       new THREE.PointsMaterial({
-        size: 0.056,
+        size: 0.078,
         transparent: true,
         opacity: 0.94,
         depthWrite: false,
