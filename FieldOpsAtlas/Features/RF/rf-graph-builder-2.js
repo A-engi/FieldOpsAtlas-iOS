@@ -1,23 +1,23 @@
 /* ==========================================================================
    FieldOps Atlas RF Builder 2
    File: FieldOpsAtlas/Features/RF/rf-graph-builder-2.js
-   Version: 1.1.222-mockup-peak-ridges
+   Version: 1.1.223-shard-plate-peaks
 
    Purpose:
    - Build a lightweight mountain from the connected ridge web only.
    - Infer one previously unassigned major ridge from the principal peak.
    - Form a low-resolution curved surface from ridge-height constraints.
    - Sharpen the existing 3D relief without changing its topology or surface complexity.
-   - Push the terrain toward a mockup-style central peak with sharper sub-ridges and clearer angular breaks.
-   - Keep the faceted triangular scale treatment and preserve the dense line-work.
+   - Reshape the terrain into a taller central spire with sharper supporting peaks and ridge blades.
+   - Add irregular raised cyan triangle plates over the dark mountain while preserving the dense line-work.
    - Preserve the wider camera fit while keeping the mountain base anchored to the graph bottom.
    - Preserve orbit interaction, mount lifecycle, fallback, and rendered event.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.222-mockup-peak-ridges";
-  const MODE = "three-ridge-web-builder-2-mockup-peak-ridges";
+  const VERSION = "1.1.223-shard-plate-peaks";
+  const MODE = "three-ridge-web-builder-2-shard-plate-peaks";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -1043,26 +1043,51 @@
       {
         x: -1.10,
         z: -0.60,
-        radius: 2.05,
-        lift: 2.60
+        radius: 1.78,
+        lift: 2.95,
+        spire: 1.00
       },
       {
-        x: 3.10,
-        z: -1.75,
-        radius: 2.10,
-        lift: 1.65
+        x: 3.05,
+        z: -1.70,
+        radius: 1.78,
+        lift: 1.78,
+        spire: 0.72
       },
       {
-        x: -7.80,
-        z: 6.80,
-        radius: 2.50,
-        lift: 1.55
+        x: -7.65,
+        z: 6.70,
+        radius: 2.12,
+        lift: 1.72,
+        spire: 0.62
       },
       {
-        x: 5.00,
-        z: 8.70,
-        radius: 2.20,
-        lift: 1.35
+        x: 4.90,
+        z: 8.55,
+        radius: 1.92,
+        lift: 1.52,
+        spire: 0.58
+      },
+      {
+        x: -4.15,
+        z: 2.60,
+        radius: 1.34,
+        lift: 1.20,
+        spire: 0.72
+      },
+      {
+        x: 1.70,
+        z: 2.85,
+        radius: 1.28,
+        lift: 1.12,
+        spire: 0.68
+      },
+      {
+        x: 5.85,
+        z: 3.30,
+        radius: 1.40,
+        lift: 1.05,
+        spire: 0.60
       }
     ];
 
@@ -1084,12 +1109,13 @@
       );
 
       const upperRelief =
-        Math.pow(heightNorm, 1.06)
+        Math.pow(heightNorm, 1.02)
         * (
-          1 + heightNorm * 0.34
+          1 + heightNorm * 0.40
         );
 
       let localLift = 0;
+      let spireLift = 0;
       let strongestInfluence = 0;
       let strongestAnchor = null;
 
@@ -1121,7 +1147,13 @@
         localLift +=
           influence
           * anchor.lift
-          * Math.pow(heightNorm, 1.38);
+          * Math.pow(heightNorm, 1.34);
+
+        spireLift +=
+          Math.pow(influence, 1.72)
+          * anchor.spire
+          * Math.pow(heightNorm, 1.92)
+          * 0.82;
 
         if (
           influence
@@ -1134,14 +1166,17 @@
 
       const anchorPull =
         strongestAnchor
-          ? strongestInfluence
-            * Math.pow(heightNorm, 1.85)
-            * 0.135
+          ? Math.pow(
+              strongestInfluence,
+              1.18
+            )
+            * Math.pow(heightNorm, 1.72)
+            * 0.185
           : 0;
 
       const mockupSpinePull =
-        Math.pow(heightNorm, 1.55)
-        * 0.032;
+        Math.pow(heightNorm, 1.46)
+        * 0.050;
 
       const baseX =
         originalX
@@ -1151,7 +1186,9 @@
               - originalX
             : 0
         ) * anchorPull
-        - originalX * mockupSpinePull * 0.12;
+        - originalX
+          * mockupSpinePull
+          * 0.15;
 
       const baseZ =
         originalZ
@@ -1161,7 +1198,9 @@
               - originalZ
             : 0
         ) * anchorPull
-        - originalZ * mockupSpinePull * 0.04;
+        - originalZ
+          * mockupSpinePull
+          * 0.05;
 
       const localX =
         strongestAnchor
@@ -1186,51 +1225,62 @@
         );
 
       const facetStrength =
-        Math.pow(heightNorm, 1.18)
+        Math.pow(heightNorm, 1.12)
         * clamp(
-          0.58
-          + strongestInfluence * 0.72,
-          0.58,
-          1.18
+          0.54
+          + strongestInfluence * 0.78,
+          0.54,
+          1.24
         );
 
       const ridgeStrength =
-        Math.pow(heightNorm, 1.08)
+        Math.pow(heightNorm, 1.02)
         * clamp(
-          0.36
-          + strongestInfluence * 1.20,
-          0.36,
-          1.34
+          0.34
+          + strongestInfluence * 1.32,
+          0.34,
+          1.44
         );
 
       const spikeLift =
         Math.max(
           0,
-          facetPattern - 0.18
+          facetPattern - 0.16
         )
         * facetStrength
-        * 0.42;
+        * 0.48;
 
       const ridgeLift =
-        ridgeFan
+        Math.pow(ridgeFan, 1.35)
         * ridgeStrength
-        * 0.72;
+        * 0.88;
+
+      const planeBreakLift =
+        Math.pow(
+          facetPattern,
+          1.45
+        )
+        * Math.pow(
+          heightNorm,
+          1.36
+        )
+        * 0.22;
 
       const shoulderLift =
         facetPattern
         * facetStrength
-        * 0.10;
+        * 0.08;
 
       let facetDirectionX =
         Math.sin(
-          baseX * 2.2
-          + baseZ * 1.1
+          baseX * 2.20
+          + baseZ * 1.10
         ) * 0.35;
 
       let facetDirectionZ =
         Math.cos(
-          baseZ * 2.0
-          - baseX * 1.2
+          baseZ * 2.00
+          - baseX * 1.20
         ) * 0.35;
 
       if (strongestAnchor) {
@@ -1249,10 +1299,10 @@
       const lateralFacetPush =
         Math.max(
           0,
-          facetPattern - 0.24
+          facetPattern - 0.20
         )
         * facetStrength
-        * 0.10;
+        * 0.12;
 
       const ridgeDirectionLength = Math.hypot(
         localX,
@@ -1260,9 +1310,9 @@
       ) || 1;
 
       const ridgeLateralPull =
-        ridgeFan
+        Math.pow(ridgeFan, 1.30)
         * ridgeStrength
-        * 0.085;
+        * 0.105;
 
       positions[offset] =
         baseX
@@ -1277,8 +1327,10 @@
         bounds.minimumY
         + upperRelief * bounds.height
         + localLift
+        + spireLift
         + spikeLift
         + ridgeLift
+        + planeBreakLift
         + shoulderLift;
 
       positions[offset + 2] =
@@ -1288,11 +1340,13 @@
           * lateralFacetPush
         - localZ
           / ridgeDirectionLength
-          * ridgeLateralPull * 0.45;
+          * ridgeLateralPull
+          * 0.48;
     }
 
     return positions;
   }
+
   function decodeUint32(encoded) {
     return new Uint32Array(
       decodeBase64(encoded)
@@ -2247,8 +2301,8 @@
         ridgeOffsets.length - 1
       );
 
-    const fillPositions = [];
-    const fillColors = [];
+    const platePositions = [];
+    const plateColors = [];
     const glowLinePositions = [];
     const glowLineColors = [];
     const coreLinePositions = [];
@@ -2274,6 +2328,9 @@
     const midpointCA =
       new THREE.Vector3();
 
+    const centroid =
+      new THREE.Vector3();
+
     const edgeAB =
       new THREE.Vector3();
 
@@ -2294,6 +2351,15 @@
           / Math.max(width, 0.001),
           2
         )
+      );
+    }
+
+    function seededUnit(value) {
+      return fract(
+        Math.sin(
+          value * 12.9898
+          + 78.233
+        ) * 43758.5453123
       );
     }
 
@@ -2323,11 +2389,6 @@
       const ridgeDistance =
         ridgeMetrics.distance;
 
-      /*
-       * All terms are continuous functions of world position.
-       * No per-face random lighting is used, so the cyan flow
-       * crosses triangle boundaries smoothly.
-       */
       const crestRibbon =
         gaussian(
           verticalDrop,
@@ -2403,32 +2464,6 @@
         0.018,
         0.72
       );
-    }
-
-    function colourAt(brightness) {
-      const shadowWeight =
-        Math.pow(
-          brightness,
-          1.55
-        );
-
-      const highlightWeight =
-        Math.pow(
-          brightness,
-          2.15
-        );
-
-      return [
-        0.001
-          + shadowWeight * 0.008
-          + highlightWeight * 0.026,
-        0.004
-          + shadowWeight * 0.105
-          + highlightWeight * 0.330,
-        0.012
-          + shadowWeight * 0.190
-          + highlightWeight * 0.520
-      ];
     }
 
     function pushLine(
@@ -2511,27 +2546,32 @@
       );
     }
 
-    function pushTriangle(
+    function pushPlate(
       pointA,
       pointB,
       pointC,
-      idA,
-      idB,
-      idC,
-      brightnessA,
-      brightnessB,
-      brightnessC
+      strength
     ) {
-      const colourA =
-        colourAt(brightnessA);
+      const shadow =
+        clamp(
+          strength,
+          0,
+          1
+        );
 
-      const colourB =
-        colourAt(brightnessB);
+      const red =
+        0.010
+        + shadow * 0.055;
 
-      const colourC =
-        colourAt(brightnessC);
+      const green =
+        0.100
+        + shadow * 0.620;
 
-      fillPositions.push(
+      const blue =
+        0.145
+        + shadow * 0.820;
+
+      platePositions.push(
         pointA.x,
         pointA.y,
         pointA.z,
@@ -2543,44 +2583,17 @@
         pointC.z
       );
 
-      fillColors.push(
-        colourA[0],
-        colourA[1],
-        colourA[2],
-        colourB[0],
-        colourB[1],
-        colourB[2],
-        colourC[0],
-        colourC[1],
-        colourC[2]
-      );
-
-      pushLine(
-        idA,
-        idB,
-        pointA,
-        pointB,
-        brightnessA,
-        brightnessB
-      );
-
-      pushLine(
-        idB,
-        idC,
-        pointB,
-        pointC,
-        brightnessB,
-        brightnessC
-      );
-
-      pushLine(
-        idC,
-        idA,
-        pointC,
-        pointA,
-        brightnessC,
-        brightnessA
-      );
+      for (
+        let vertexIndex = 0;
+        vertexIndex < 3;
+        vertexIndex += 1
+      ) {
+        plateColors.push(
+          red,
+          green,
+          blue
+        );
+      }
     }
 
     function midpointId(
@@ -2700,8 +2713,8 @@
         ) / 3;
 
       const offsetDistance =
-        0.014
-        + averageBrightness * 0.012;
+        0.012
+        + averageBrightness * 0.010;
 
       const displayA =
         vertexA.clone()
@@ -2767,100 +2780,331 @@
           indexA
         );
 
-      pushTriangle(
-        displayA,
-        displayAB,
-        displayCA,
+      /*
+       * Preserve the dense four-way subdivision line web.
+       * The bright plate layer is separate, so black terrain
+       * remains visible between irregular cyan triangles.
+       */
+      pushLine(
         idA,
         idAB,
-        idCA,
+        displayA,
+        displayAB,
         brightnessA,
-        brightnessAB,
-        brightnessCA
+        brightnessAB
       );
 
-      pushTriangle(
-        displayAB,
-        displayB,
-        displayBC,
+      pushLine(
         idAB,
         idB,
-        idBC,
+        displayAB,
+        displayB,
         brightnessAB,
+        brightnessB
+      );
+
+      pushLine(
+        idB,
+        idBC,
+        displayB,
+        displayBC,
         brightnessB,
         brightnessBC
       );
 
-      pushTriangle(
-        displayCA,
-        displayBC,
-        displayC,
-        idCA,
+      pushLine(
         idBC,
         idC,
-        brightnessCA,
+        displayBC,
+        displayC,
         brightnessBC,
         brightnessC
       );
 
-      pushTriangle(
-        displayAB,
-        displayBC,
+      pushLine(
+        idC,
+        idCA,
+        displayC,
         displayCA,
+        brightnessC,
+        brightnessCA
+      );
+
+      pushLine(
+        idCA,
+        idA,
+        displayCA,
+        displayA,
+        brightnessCA,
+        brightnessA
+      );
+
+      pushLine(
         idAB,
         idBC,
-        idCA,
+        displayAB,
+        displayBC,
         brightnessAB,
+        brightnessBC
+      );
+
+      pushLine(
+        idBC,
+        idCA,
+        displayBC,
+        displayCA,
         brightnessBC,
         brightnessCA
       );
-    }
 
-    if (fillPositions.length === 0) {
-      return group;
-    }
-
-    const fillGeometry =
-      new THREE.BufferGeometry();
-
-    fillGeometry.setAttribute(
-      "position",
-      new THREE.Float32BufferAttribute(
-        fillPositions,
-        3
-      )
-    );
-
-    fillGeometry.setAttribute(
-      "color",
-      new THREE.Float32BufferAttribute(
-        fillColors,
-        3
-      )
-    );
-
-    const fillMaterial =
-      new THREE.MeshBasicMaterial({
-        color: 0xffffff,
-        vertexColors: true,
-        transparent: false,
-        opacity: 1,
-        depthWrite: true,
-        depthTest: true,
-        blending: THREE.NormalBlending,
-        toneMapped: false,
-        side: THREE.DoubleSide
-      });
-
-    const fillMesh =
-      new THREE.Mesh(
-        fillGeometry,
-        fillMaterial
+      pushLine(
+        idCA,
+        idAB,
+        displayCA,
+        displayAB,
+        brightnessCA,
+        brightnessAB
       );
 
-    fillMesh.userData.rfDecoration = true;
-    fillMesh.renderOrder = 5;
-    group.add(fillMesh);
+      centroid
+        .copy(vertexA)
+        .add(vertexB)
+        .add(vertexC)
+        .multiplyScalar(
+          1 / 3
+        );
+
+      const heightNorm = clamp(
+        (
+          centroid.y - minimumY
+        ) / heightRange,
+        0,
+        1
+      );
+
+      const slopeStrength =
+        clamp(
+          1 - Math.abs(faceNormal.y),
+          0,
+          1
+        );
+
+      const faceSeed =
+        indexA * 0.754877666
+        + indexB * 0.569840291
+        + indexC * 0.438289017;
+
+      const selectionNoise =
+        seededUnit(faceSeed);
+
+      const clusterNoise =
+        seededUnit(
+          faceSeed + 19.731
+        );
+
+      const liftNoise =
+        seededUnit(
+          faceSeed + 41.173
+        );
+
+      const plateDensity = clamp(
+        0.08
+        + averageBrightness * 0.78
+        + heightNorm * 0.20
+        + slopeStrength * 0.12
+        + clusterNoise * 0.06,
+        0.10,
+        0.52
+      );
+
+      if (
+        selectionNoise
+        > plateDensity
+      ) {
+        continue;
+      }
+
+      const inset = clamp(
+        0.54
+        + clusterNoise * 0.30
+        - averageBrightness * 0.06,
+        0.50,
+        0.84
+      );
+
+      const plateLift =
+        0.026
+        + averageBrightness * 0.080
+        + heightNorm * 0.050
+        + liftNoise * 0.045;
+
+      const plateA =
+        centroid.clone()
+          .lerp(
+            vertexA,
+            inset
+          )
+          .addScaledVector(
+            faceNormal,
+            plateLift
+            * (
+              0.82
+              + seededUnit(
+                faceSeed + 3.11
+              ) * 0.42
+            )
+          );
+
+      const plateB =
+        centroid.clone()
+          .lerp(
+            vertexB,
+            inset
+          )
+          .addScaledVector(
+            faceNormal,
+            plateLift
+            * (
+              0.82
+              + seededUnit(
+                faceSeed + 7.73
+              ) * 0.42
+            )
+          );
+
+      const plateC =
+        centroid.clone()
+          .lerp(
+            vertexC,
+            inset
+          )
+          .addScaledVector(
+            faceNormal,
+            plateLift
+            * (
+              0.82
+              + seededUnit(
+                faceSeed + 11.39
+              ) * 0.42
+            )
+          );
+
+      const plateStrength = clamp(
+        0.34
+        + averageBrightness * 1.08
+        + heightNorm * 0.20
+        + slopeStrength * 0.12
+        + liftNoise * 0.14,
+        0,
+        1
+      );
+
+      pushPlate(
+        plateA,
+        plateB,
+        plateC,
+        plateStrength
+      );
+
+      const plateId =
+        `p${triangleOffset}`;
+
+      pushLine(
+        `${plateId}a`,
+        `${plateId}b`,
+        plateA,
+        plateB,
+        plateStrength,
+        plateStrength
+      );
+
+      pushLine(
+        `${plateId}b`,
+        `${plateId}c`,
+        plateB,
+        plateC,
+        plateStrength,
+        plateStrength
+      );
+
+      pushLine(
+        `${plateId}c`,
+        `${plateId}a`,
+        plateC,
+        plateA,
+        plateStrength,
+        plateStrength
+      );
+    }
+
+    if (platePositions.length > 0) {
+      const plateGeometry =
+        new THREE.BufferGeometry();
+
+      plateGeometry.setAttribute(
+        "position",
+        new THREE.Float32BufferAttribute(
+          platePositions,
+          3
+        )
+      );
+
+      plateGeometry.setAttribute(
+        "color",
+        new THREE.Float32BufferAttribute(
+          plateColors,
+          3
+        )
+      );
+
+      plateGeometry.computeVertexNormals();
+
+      const plateGlowMaterial =
+        new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.18,
+          depthWrite: false,
+          depthTest: true,
+          blending: THREE.AdditiveBlending,
+          toneMapped: false,
+          side: THREE.DoubleSide
+        });
+
+      const plateGlow =
+        new THREE.Mesh(
+          plateGeometry,
+          plateGlowMaterial
+        );
+
+      plateGlow.userData.rfDecoration = true;
+      plateGlow.renderOrder = 5;
+      group.add(plateGlow);
+
+      const plateCoreMaterial =
+        new THREE.MeshBasicMaterial({
+          color: 0xffffff,
+          vertexColors: true,
+          transparent: true,
+          opacity: 0.88,
+          depthWrite: true,
+          depthTest: true,
+          blending: THREE.NormalBlending,
+          toneMapped: false,
+          side: THREE.DoubleSide
+        });
+
+      const plateCore =
+        new THREE.Mesh(
+          plateGeometry,
+          plateCoreMaterial
+        );
+
+      plateCore.userData.rfDecoration = true;
+      plateCore.renderOrder = 6;
+      group.add(plateCore);
+    }
 
     const glowLineGeometry =
       new THREE.BufferGeometry();
@@ -2884,7 +3128,7 @@
     const glowLineMaterial =
       new THREE.LineBasicMaterial({
         transparent: true,
-        opacity: 0.075,
+        opacity: 0.070,
         depthWrite: false,
         depthTest: true,
         blending: THREE.AdditiveBlending,
@@ -2899,7 +3143,7 @@
       );
 
     glowLines.userData.rfDecoration = true;
-    glowLines.renderOrder = 6;
+    glowLines.renderOrder = 7;
     group.add(glowLines);
 
     const coreLineGeometry =
@@ -2924,7 +3168,7 @@
     const coreLineMaterial =
       new THREE.LineBasicMaterial({
         transparent: true,
-        opacity: 0.62,
+        opacity: 0.58,
         depthWrite: false,
         depthTest: true,
         blending: THREE.NormalBlending,
@@ -2939,7 +3183,7 @@
       );
 
     coreLines.userData.rfDecoration = true;
-    coreLines.renderOrder = 7;
+    coreLines.renderOrder = 8;
     group.add(coreLines);
 
     return group;
