@@ -1,21 +1,22 @@
 /* ==========================================================================
    FieldOps Atlas RF Builder 2
    File: FieldOpsAtlas/Features/RF/rf-graph-builder-2.js
-   Version: 1.1.219-true-zoom-out-bottom-anchor
+   Version: 1.1.220-dramatic-cyan-relief
 
    Purpose:
    - Build a lightweight mountain from the connected ridge web only.
    - Infer one previously unassigned major ridge from the principal peak.
    - Form a low-resolution curved surface from ridge-height constraints.
-   - Rebuild the full mountain scale layer with continuous cyan-blue ridge-flow shading.
-   - Apply a true wider camera fit while keeping the mountain base anchored to the graph bottom.
+   - Sharpen the existing 3D relief without changing its topology or surface complexity.
+   - Shift the mountain toward a darker navy-cyan wireframe treatment with brighter ridge definition.
+   - Preserve the wider camera fit while keeping the mountain base anchored to the graph bottom.
    - Preserve orbit interaction, mount lifecycle, fallback, and rendered event.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.219-true-zoom-out-bottom-anchor";
-  const MODE = "three-ridge-web-builder-2-true-zoom-out-bottom-anchor";
+  const VERSION = "1.1.220-dramatic-cyan-relief";
+  const MODE = "three-ridge-web-builder-2-dramatic-cyan-relief";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -882,6 +883,174 @@
     );
   }
 
+  let terrainShapeBounds = null;
+
+  function getTerrainShapeBounds() {
+    if (terrainShapeBounds) {
+      return terrainShapeBounds;
+    }
+
+    const positions = decodeFloat32(
+      EMBEDDED.meshPositions
+    );
+
+    let minimumY = Infinity;
+    let maximumY = -Infinity;
+
+    for (
+      let offset = 0;
+      offset < positions.length;
+      offset += 3
+    ) {
+      const y = positions[offset + 1];
+
+      minimumY = Math.min(minimumY, y);
+      maximumY = Math.max(maximumY, y);
+    }
+
+    terrainShapeBounds = {
+      minimumY,
+      maximumY,
+      height: Math.max(
+        0.001,
+        maximumY - minimumY
+      )
+    };
+
+    return terrainShapeBounds;
+  }
+
+  function shapeTerrainPositions(encoded) {
+    const positions = decodeFloat32(encoded);
+    const bounds = getTerrainShapeBounds();
+
+    const peakAnchors = [
+      {
+        x: -2.294,
+        z: -0.447,
+        radius: 1.85,
+        lift: 1.00
+      },
+      {
+        x: 3.066,
+        z: -1.710,
+        radius: 2.10,
+        lift: 1.50
+      },
+      {
+        x: -8.325,
+        z: 7.128,
+        radius: 2.35,
+        lift: 2.00
+      },
+      {
+        x: 5.076,
+        z: 9.022,
+        radius: 2.05,
+        lift: 1.55
+      }
+    ];
+
+    for (
+      let offset = 0;
+      offset < positions.length;
+      offset += 3
+    ) {
+      const originalX = positions[offset];
+      const originalY = positions[offset + 1];
+      const originalZ = positions[offset + 2];
+
+      const heightNorm = clamp(
+        (
+          originalY - bounds.minimumY
+        ) / bounds.height,
+        0,
+        1
+      );
+
+      const upperRelief =
+        Math.pow(heightNorm, 1.12)
+        * (
+          1 + heightNorm * 0.25
+        );
+
+      let localLift = 0;
+      let strongestInfluence = 0;
+      let strongestAnchor = null;
+
+      for (
+        let anchorIndex = 0;
+        anchorIndex < peakAnchors.length;
+        anchorIndex += 1
+      ) {
+        const anchor =
+          peakAnchors[anchorIndex];
+
+        const deltaX =
+          originalX - anchor.x;
+
+        const deltaZ =
+          originalZ - anchor.z;
+
+        const influence = Math.exp(
+          -(
+            deltaX * deltaX
+            + deltaZ * deltaZ
+          ) / (
+            2
+            * anchor.radius
+            * anchor.radius
+          )
+        );
+
+        localLift +=
+          influence
+          * anchor.lift
+          * Math.pow(heightNorm, 1.55);
+
+        if (
+          influence
+          > strongestInfluence
+        ) {
+          strongestInfluence = influence;
+          strongestAnchor = anchor;
+        }
+      }
+
+      const peakPull =
+        strongestAnchor
+          ? strongestInfluence
+            * Math.pow(heightNorm, 2.1)
+            * 0.055
+          : 0;
+
+      positions[offset] =
+        originalX
+        + (
+          strongestAnchor
+            ? strongestAnchor.x
+              - originalX
+            : 0
+        ) * peakPull;
+
+      positions[offset + 1] =
+        bounds.minimumY
+        + upperRelief * bounds.height
+        + localLift;
+
+      positions[offset + 2] =
+        originalZ
+        + (
+          strongestAnchor
+            ? strongestAnchor.z
+              - originalZ
+            : 0
+        ) * peakPull;
+    }
+
+    return positions;
+  }
+
   function decodeUint32(encoded) {
     return new Uint32Array(
       decodeBase64(encoded)
@@ -1240,7 +1409,7 @@
     );
 
     const ridgePositions =
-      decodeFloat32(
+      shapeTerrainPositions(
         EMBEDDED.ridgePositions
       );
 
@@ -1543,9 +1712,9 @@
         );
 
         coreColors.push(
-          0.42 + coreStrength * 0.46,
-          0.76 + coreStrength * 0.18,
-          0.82 + coreStrength * 0.16
+          0.08 + coreStrength * 0.18,
+          0.58 + coreStrength * 0.34,
+          0.68 + coreStrength * 0.32
         );
       }
     }
@@ -1575,9 +1744,9 @@
 
     const glowMaterial =
       new THREE.PointsMaterial({
-        size: 0.170,
+        size: 0.155,
         transparent: true,
-        opacity: 0.22,
+        opacity: 0.20,
         depthWrite: false,
         depthTest: true,
         blending: THREE.AdditiveBlending,
@@ -1617,7 +1786,7 @@
 
     const coreMaterial =
       new THREE.PointsMaterial({
-        size: 0.054,
+        size: 0.048,
         transparent: true,
         opacity: 1.0,
         depthWrite: false,
@@ -1648,7 +1817,7 @@
     geometry.setAttribute(
       "position",
       new THREE.BufferAttribute(
-        decodeFloat32(
+        shapeTerrainPositions(
           EMBEDDED.meshPositions
         ),
         3
@@ -1670,10 +1839,10 @@
 
     const material =
       new THREE.MeshStandardMaterial({
-        color: 0x062c37,
-        emissive: 0x03141b,
-        emissiveIntensity: 0.24,
-        roughness: 0.90,
+        color: 0x021821,
+        emissive: 0x01131a,
+        emissiveIntensity: 0.18,
+        roughness: 0.94,
         metalness: 0.02,
         flatShading: false,
         side: THREE.DoubleSide,
@@ -1682,7 +1851,7 @@
       });
 
     const edgeColor =
-      new THREE.Color(0x76f4ff);
+      new THREE.Color(0x22f4ff);
 
     const edgeDirection =
       new THREE.Vector3(
@@ -1701,7 +1870,7 @@
       };
 
       shader.uniforms.rfEdgeStrength = {
-        value: 1.18
+        value: 1.52
       };
 
       shader.vertexShader =
@@ -1761,9 +1930,9 @@
               "  rfEdge",
               ");",
               "",
-              "outgoingLight *= 0.80;",
-              "outgoingLight += vec3(0.006, 0.040, 0.055) * (",
-              "  0.34 + clamp(rfWorldNormal.y, 0.0, 1.0) * 0.50",
+              "outgoingLight *= 0.58;",
+              "outgoingLight += vec3(0.002, 0.022, 0.034) * (",
+              "  0.28 + clamp(rfWorldNormal.y, 0.0, 1.0) * 0.42",
               ");",
               "outgoingLight += rfEdgeColor * rfEdge * rfEdgeStrength;",
               "",
@@ -1816,7 +1985,7 @@
     );
 
     const ridgePositions =
-      decodeFloat32(
+      shapeTerrainPositions(
         EMBEDDED.ridgePositions
       );
 
@@ -2009,14 +2178,14 @@
 
       return [
         0.001
-          + shadowWeight * 0.012
-          + highlightWeight * 0.042,
-        0.006
-          + shadowWeight * 0.135
-          + highlightWeight * 0.410,
-        0.016
-          + shadowWeight * 0.235
-          + highlightWeight * 0.610
+          + shadowWeight * 0.008
+          + highlightWeight * 0.026,
+        0.004
+          + shadowWeight * 0.105
+          + highlightWeight * 0.330,
+        0.012
+          + shadowWeight * 0.190
+          + highlightWeight * 0.520
       ];
     }
 
@@ -2042,13 +2211,13 @@
       const lineBrightnessA =
         Math.pow(
           brightnessA,
-          0.82
+          0.60
         );
 
       const lineBrightnessB =
         Math.pow(
           brightnessB,
-          0.82
+          0.60
         );
 
       glowLinePositions.push(
@@ -2061,18 +2230,18 @@
       );
 
       glowLineColors.push(
-        0.002
-          + lineBrightnessA * 0.020,
-        0.014
-          + lineBrightnessA * 0.145,
-        0.034
-          + lineBrightnessA * 0.245,
-        0.002
-          + lineBrightnessB * 0.020,
-        0.014
-          + lineBrightnessB * 0.145,
-        0.034
-          + lineBrightnessB * 0.245
+        0.006
+          + lineBrightnessA * 0.055,
+        0.060
+          + lineBrightnessA * 0.390,
+        0.100
+          + lineBrightnessA * 0.560,
+        0.006
+          + lineBrightnessB * 0.055,
+        0.060
+          + lineBrightnessB * 0.390,
+        0.100
+          + lineBrightnessB * 0.560
       );
 
       coreLinePositions.push(
@@ -2085,18 +2254,18 @@
       );
 
       coreLineColors.push(
-        0.005
-          + lineBrightnessA * 0.050,
-        0.040
-          + lineBrightnessA * 0.260,
-        0.080
-          + lineBrightnessA * 0.390,
-        0.005
-          + lineBrightnessB * 0.050,
-        0.040
-          + lineBrightnessB * 0.260,
-        0.080
-          + lineBrightnessB * 0.390
+        0.012
+          + lineBrightnessA * 0.090,
+        0.105
+          + lineBrightnessA * 0.560,
+        0.150
+          + lineBrightnessA * 0.760,
+        0.012
+          + lineBrightnessB * 0.090,
+        0.105
+          + lineBrightnessB * 0.560,
+        0.150
+          + lineBrightnessB * 0.760
       );
     }
 
@@ -2473,7 +2642,7 @@
     const glowLineMaterial =
       new THREE.LineBasicMaterial({
         transparent: true,
-        opacity: 0.022,
+        opacity: 0.075,
         depthWrite: false,
         depthTest: true,
         blending: THREE.AdditiveBlending,
@@ -2513,7 +2682,7 @@
     const coreLineMaterial =
       new THREE.LineBasicMaterial({
         transparent: true,
-        opacity: 0.34,
+        opacity: 0.62,
         depthWrite: false,
         depthTest: true,
         blending: THREE.NormalBlending,
@@ -2535,7 +2704,7 @@
   }
 
   function buildRidgeWeb(THREE) {
-    const positions = decodeFloat32(
+    const positions = shapeTerrainPositions(
       EMBEDDED.ridgePositions
     );
 
@@ -2548,9 +2717,9 @@
 
     const glowMaterial =
       new THREE.MeshBasicMaterial({
-        color: 0x319fb0,
+        color: 0x08cadd,
         transparent: true,
-        opacity: 0.17,
+        opacity: 0.15,
         depthWrite: false,
         depthTest: true,
         blending: THREE.AdditiveBlending,
@@ -2560,9 +2729,9 @@
 
     const coreMaterial =
       new THREE.MeshBasicMaterial({
-        color: 0xcafcff,
+        color: 0x39f5ff,
         transparent: true,
-        opacity: 0.66,
+        opacity: 0.72,
         depthWrite: false,
         depthTest: true,
         blending: THREE.AdditiveBlending,
@@ -2613,7 +2782,7 @@
         new THREE.TubeGeometry(
           curve,
           tubularSegments,
-          0.090,
+          0.070,
           4,
           false
         ),
@@ -2628,7 +2797,7 @@
         new THREE.TubeGeometry(
           curve,
           tubularSegments,
-          0.038,
+          0.026,
           4,
           false
         ),
@@ -2689,7 +2858,7 @@
     renderer.toneMapping =
       THREE.ACESFilmicToneMapping;
 
-    renderer.toneMappingExposure = 0.98;
+    renderer.toneMappingExposure = 1.04;
 
     const scene = new THREE.Scene();
 
@@ -2709,17 +2878,17 @@
 
     const hemisphere =
       new THREE.HemisphereLight(
-        0x4d8793,
-        0x021017,
-        0.36
+        0x317f8d,
+        0x010b11,
+        0.28
       );
 
     scene.add(hemisphere);
 
     const keyLight =
       new THREE.DirectionalLight(
-        0x85f3ff,
-        0.96
+        0x55f6ff,
+        1.12
       );
 
     keyLight.position.set(
@@ -2732,8 +2901,8 @@
 
     const fillLight =
       new THREE.DirectionalLight(
-        0x154b5d,
-        0.18
+        0x0b3a4a,
+        0.12
       );
 
     fillLight.position.set(
@@ -2795,7 +2964,7 @@
     const target =
       new THREE.Vector3(
         center.x,
-        box.min.y + size.y * 0.82,
+        box.min.y + size.y * 0.62,
         center.z
       );
 
@@ -2808,10 +2977,10 @@
       Math.max(
         size.x,
         size.z
-      ) * 1.18;
+      ) * 1.05;
 
     const targetLift =
-      size.y * 0.16;
+      size.y * 0.08;
 
     const state = {
       azimuth: FRONT_AZIMUTH,
