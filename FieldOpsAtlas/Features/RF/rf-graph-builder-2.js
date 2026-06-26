@@ -1,21 +1,21 @@
 /* ==========================================================================
    FieldOps Atlas RF Builder 2
    File: FieldOpsAtlas/Features/RF/rf-graph-builder-2.js
-   Version: 1.1.216-ridge-band-fade
+   Version: 1.1.217-sleek-horizontal-glow
 
    Purpose:
    - Build a lightweight mountain from the connected ridge web only.
    - Infer one previously unassigned major ridge from the principal peak.
    - Form a low-resolution curved surface from ridge-height constraints.
-   - Cover the full mountain surface with solid subdivided triangle scales using cyan-blue ridge-band shading.
-   - Spread brighter cyan-blue gently along the upper ridge bands of each hump while keeping sheltered lower channels very dark.
+   - Cover the full mountain surface with solid subdivided triangle scales using sleek cyan-blue horizontal ridge glow.
+   - Spread brighter cyan-blue in smooth, mostly horizontal bands beneath each ridge crest while keeping sheltered lower channels very dark.
    - Preserve orbit interaction, mount lifecycle, fallback, and rendered event.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.216-ridge-band-fade";
-  const MODE = "three-ridge-web-builder-2-ridge-band-fade";
+  const VERSION = "1.1.217-sleek-horizontal-glow";
+  const MODE = "three-ridge-web-builder-2-sleek-horizontal-glow";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -1875,16 +1875,16 @@
 
     const lightDirection =
       new THREE.Vector3(
-        -0.18,
-        0.86,
-        0.46
+        -0.08,
+        0.92,
+        0.38
       ).normalize();
 
     const fillDirection =
       new THREE.Vector3(
-        0.62,
-        0.30,
-        -0.56
+        0.50,
+        0.28,
+        -0.44
       ).normalize();
 
     function variationOf(
@@ -2000,8 +2000,8 @@
       const brightness = clamp(
         baseBrightness
         * (
-          0.97
-          + shadeVariation * 0.06
+          0.992
+          + shadeVariation * 0.016
         ),
         0.02,
         1
@@ -2017,37 +2017,37 @@
       const shadowWeight =
         Math.pow(
           brightness,
-          1.95
+          2.05
         );
 
       const highlightWeight =
         Math.pow(
           brightness,
-          2.05
+          1.92
         );
 
       const red =
         0.001
-        + shadowWeight * 0.014
+        + shadowWeight * 0.010
         + highlightWeight * (
-          0.050
-          + cyanShift * 0.012
+          0.040
+          + cyanShift * 0.008
         );
 
       const green =
-        0.005
-        + shadowWeight * 0.080
+        0.004
+        + shadowWeight * 0.070
         + highlightWeight * (
-          0.385
-          + cyanShift * 0.045
+          0.365
+          + cyanShift * 0.032
         );
 
       const blue =
-        0.016
-        + shadowWeight * 0.170
+        0.014
+        + shadowWeight * 0.150
         + highlightWeight * (
-          0.610
-          + cyanShift * 0.036
+          0.595
+          + cyanShift * 0.026
         );
 
       fillPositions.push(
@@ -2199,13 +2199,14 @@
       );
 
       /*
-       * Cyan-blue ridge-band shading:
-       * - each hump gets its own upper ridge highlight
-       * - the highlight fades in gently around ridge bands
-       * - sheltered bowls/grooves remain dark
+       * Sleek horizontal glow:
+       * - bands are driven mainly by vertical drop below the
+       *   local ridge, so they read more horizontal/smooth
+       * - each hump receives its own band from the local ridge
+       * - lower channels stay dark and protected
        */
       const grooveShadow = clamp(
-        grooveDepth / 0.96,
+        grooveDepth / 0.90,
         0,
         1
       );
@@ -2235,7 +2236,7 @@
       const sheltered =
         Math.pow(
           1 - keyResponse,
-          1.70
+          1.55
         );
 
       const verticalDrop =
@@ -2245,54 +2246,71 @@
           - faceCentroid.y
         );
 
-      const upperRidgeBand =
+      const crestBand =
         Math.exp(
           -Math.pow(
-            ridgeMetrics.distance / 0.34,
+            (
+              verticalDrop - 0.10
+            ) / 0.11,
             2
           )
         )
         * Math.exp(
           -Math.pow(
-            verticalDrop / 0.26,
+            ridgeMetrics.distance / 0.78,
             2
           )
         );
 
-      const shoulderBand =
+      const upperShoulderBand =
         Math.exp(
           -Math.pow(
             (
-              ridgeMetrics.distance
-              - 0.48
-            ) / 0.52,
+              verticalDrop - 0.24
+            ) / 0.14,
+            2
+          )
+        )
+        * Math.exp(
+          -Math.pow(
+            ridgeMetrics.distance / 0.88,
+            2
+          )
+        );
+
+      const lowerShoulderBand =
+        Math.exp(
+          -Math.pow(
+            (
+              verticalDrop - 0.42
+            ) / 0.20,
             2
           )
         )
         * Math.exp(
           -Math.pow(
             (
-              verticalDrop
-              - 0.16
-            ) / 0.34,
+              ridgeMetrics.distance - 0.18
+            ) / 1.08,
             2
           )
         );
 
       const ridgeBandHighlight = clamp(
-        upperRidgeBand * 0.82
-        + shoulderBand * 0.72,
+        crestBand * 0.34
+        + upperShoulderBand * 0.98
+        + lowerShoulderBand * 0.44,
         0,
         1
       );
 
       const peakProtection = clamp(
-        Math.pow(
+        ridgeBandHighlight * 0.70
+        + Math.pow(
           heightNorm,
-          1.05
-        ) * 0.44
-        + ridgeBandHighlight * 0.62
-        + ridgeCore * 0.24,
+          1.06
+        ) * 0.26
+        + ridgeCore * 0.18,
         0,
         1
       );
@@ -2300,54 +2318,53 @@
       const flowVariation = clamp(
         0.5
         + Math.sin(
-          faceCentroid.x * 0.46
-          + faceCentroid.y * 0.18
-        ) * 0.045
+          faceCentroid.x * 0.22
+          + faceCentroid.y * 0.10
+        ) * 0.018
         + Math.cos(
-          faceCentroid.z * 0.52
-          - faceCentroid.y * 0.16
-        ) * 0.040,
+          faceCentroid.z * 0.25
+          - faceCentroid.y * 0.08
+        ) * 0.016,
         0,
         1
       );
 
       const valleyBias = clamp(
-        (1 - heightNorm) * 0.52
-        + grooveShadow * 0.48,
+        (1 - heightNorm) * 0.50
+        + grooveShadow * 0.50,
         0,
         1
       );
 
       const ridgeFade = Math.pow(
         ridgeBandHighlight,
-        0.84
+        0.92
       );
 
       const baseBrightness = clamp(
-        0.020
+        0.016
         + Math.pow(
           keyResponse,
-          0.96
-        ) * 0.24
-        + fillResponse * 0.06
+          1.00
+        ) * 0.16
+        + fillResponse * 0.05
         + Math.pow(
           heightNorm,
-          1.10
-        ) * 0.10
-        + ridgeCore * 0.04
-        + ridgeFade * 0.34
-        + slopeStrength * 0.015
-        + flowVariation * 0.022
+          1.08
+        ) * 0.06
+        + ridgeFade * 0.48
+        + slopeStrength * 0.012
+        + flowVariation * 0.010
         - grooveShadow * (
-          0.70
-          - peakProtection * 0.28
+          0.62
+          - peakProtection * 0.18
         )
         - sheltered * (
-          0.14
-          + valleyBias * 0.18
+          0.12
+          + valleyBias * 0.14
         ),
         0.02,
-        0.78
+        0.72
       );
 
       const offsetDistance =
@@ -2507,7 +2524,7 @@
     const glowLineMaterial =
       new THREE.LineBasicMaterial({
         transparent: true,
-        opacity: 0.028,
+        opacity: 0.020,
         depthWrite: false,
         depthTest: true,
         blending: THREE.AdditiveBlending,
@@ -2547,7 +2564,7 @@
     const coreLineMaterial =
       new THREE.LineBasicMaterial({
         transparent: true,
-        opacity: 0.60,
+        opacity: 0.48,
         depthWrite: false,
         depthTest: true,
         blending: THREE.NormalBlending,
