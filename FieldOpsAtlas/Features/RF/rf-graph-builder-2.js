@@ -1,22 +1,23 @@
 /* ==========================================================================
    FieldOps Atlas RF Builder 2
    File: FieldOpsAtlas/Features/RF/rf-graph-builder-2.js
-   Version: 1.1.220-dramatic-cyan-relief
+   Version: 1.1.221-faceted-scale-relief
 
    Purpose:
    - Build a lightweight mountain from the connected ridge web only.
    - Infer one previously unassigned major ridge from the principal peak.
    - Form a low-resolution curved surface from ridge-height constraints.
    - Sharpen the existing 3D relief without changing its topology or surface complexity.
-   - Shift the mountain toward a darker navy-cyan wireframe treatment with brighter ridge definition.
+   - Push the terrain into faceted triangular scales so the silhouette reads sharper and more dramatic.
+   - Keep the darker navy-cyan wireframe treatment with brighter ridge definition.
    - Preserve the wider camera fit while keeping the mountain base anchored to the graph bottom.
    - Preserve orbit interaction, mount lifecycle, fallback, and rendered event.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.220-dramatic-cyan-relief";
-  const MODE = "three-ridge-web-builder-2-dramatic-cyan-relief";
+  const VERSION = "1.1.221-faceted-scale-relief";
+  const MODE = "three-ridge-web-builder-2-faceted-scale-relief";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -920,6 +921,55 @@
     return terrainShapeBounds;
   }
 
+  function fract(value) {
+    return value - Math.floor(value);
+  }
+
+  function trianglePulse(value) {
+    return 1
+      - Math.abs(
+        fract(value) * 2 - 1
+      );
+  }
+
+  function computeScaleFacet(x, z) {
+    const facetScale = 1.42;
+    const skewX = x * facetScale;
+    const skewZ = z * facetScale;
+    const basisA = skewX + skewZ * 0.5;
+    const basisB = skewZ * 0.86602540378;
+    const basisC = basisA - basisB;
+
+    const edgeA = trianglePulse(basisA);
+    const edgeB = trianglePulse(basisB);
+    const edgeC = trianglePulse(basisC);
+
+    const cellCore = Math.pow(
+      Math.min(
+        edgeA,
+        edgeB,
+        edgeC
+      ),
+      1.35
+    );
+
+    const cellRidge = Math.pow(
+      Math.max(
+        edgeA * edgeB,
+        edgeB * edgeC,
+        edgeC * edgeA
+      ),
+      1.08
+    );
+
+    return clamp(
+      cellCore * 1.22
+      + cellRidge * 0.44,
+      0,
+      1.35
+    );
+  }
+
   function shapeTerrainPositions(encoded) {
     const positions = decodeFloat32(encoded);
     const bounds = getTerrainShapeBounds();
@@ -1024,7 +1074,7 @@
             * 0.055
           : 0;
 
-      positions[offset] =
+      const baseX =
         originalX
         + (
           strongestAnchor
@@ -1033,12 +1083,7 @@
             : 0
         ) * peakPull;
 
-      positions[offset + 1] =
-        bounds.minimumY
-        + upperRelief * bounds.height
-        + localLift;
-
-      positions[offset + 2] =
+      const baseZ =
         originalZ
         + (
           strongestAnchor
@@ -1046,6 +1091,86 @@
               - originalZ
             : 0
         ) * peakPull;
+
+      const facetPattern =
+        computeScaleFacet(
+          baseX,
+          baseZ
+        );
+
+      const facetStrength =
+        Math.pow(heightNorm, 1.30)
+        * clamp(
+          0.44
+          + strongestInfluence * 0.90,
+          0.44,
+          1.0
+        );
+
+      const spikeLift =
+        Math.max(
+          0,
+          facetPattern - 0.36
+        )
+        * facetStrength
+        * 0.34;
+
+      const shoulderLift =
+        facetPattern
+        * facetStrength
+        * 0.12;
+
+      let facetDirectionX =
+        Math.sin(
+          baseX * 2.4
+          + baseZ * 1.3
+        );
+
+      let facetDirectionZ =
+        Math.cos(
+          baseZ * 2.2
+          - baseX * 1.1
+        );
+
+      if (strongestAnchor) {
+        facetDirectionX +=
+          baseX - strongestAnchor.x;
+
+        facetDirectionZ +=
+          baseZ - strongestAnchor.z;
+      }
+
+      const facetDirectionLength = Math.hypot(
+        facetDirectionX,
+        facetDirectionZ
+      ) || 1;
+
+      const lateralFacetPush =
+        Math.max(
+          0,
+          facetPattern - 0.42
+        )
+        * facetStrength
+        * 0.085;
+
+      positions[offset] =
+        baseX
+        + facetDirectionX
+          / facetDirectionLength
+          * lateralFacetPush;
+
+      positions[offset + 1] =
+        bounds.minimumY
+        + upperRelief * bounds.height
+        + localLift
+        + spikeLift
+        + shoulderLift;
+
+      positions[offset + 2] =
+        baseZ
+        + facetDirectionZ
+          / facetDirectionLength
+          * lateralFacetPush;
     }
 
     return positions;
@@ -1841,10 +1966,10 @@
       new THREE.MeshStandardMaterial({
         color: 0x021821,
         emissive: 0x01131a,
-        emissiveIntensity: 0.18,
-        roughness: 0.94,
+        emissiveIntensity: 0.17,
+        roughness: 0.96,
         metalness: 0.02,
-        flatShading: false,
+        flatShading: true,
         side: THREE.DoubleSide,
         depthWrite: true,
         depthTest: true
@@ -1870,7 +1995,7 @@
       };
 
       shader.uniforms.rfEdgeStrength = {
-        value: 1.52
+        value: 1.64
       };
 
       shader.vertexShader =
@@ -1930,9 +2055,9 @@
               "  rfEdge",
               ");",
               "",
-              "outgoingLight *= 0.58;",
-              "outgoingLight += vec3(0.002, 0.022, 0.034) * (",
-              "  0.28 + clamp(rfWorldNormal.y, 0.0, 1.0) * 0.42",
+              "outgoingLight *= 0.56;",
+              "outgoingLight += vec3(0.002, 0.024, 0.038) * (",
+              "  0.24 + clamp(rfWorldNormal.y, 0.0, 1.0) * 0.40",
               ");",
               "outgoingLight += rfEdgeColor * rfEdge * rfEdgeStrength;",
               "",
