@@ -1,22 +1,22 @@
 /* ==========================================================================
-   FieldOps Atlas RF Builder 3 — fixed vertex colour indexed surface
+   FieldOps Atlas RF Builder 3 — connected indexed surface
    File: FieldOpsAtlas/Features/RF/rf-graph-builder-3.js
-   Version: 1.1.257-builder-3-fixed-vertex-colour-indexed-13k
+   Version: 1.1.258-builder-3-connected-indexed-surface-13k
 
    Geometry:
    - One geometry build, one material, one rendered mountain mesh.
    - One visible mesh and one material only.
-   - Shape comes only from the original positions and indices.
-   - All 8,143 indexed vertices use one fixed vertex colour.
-   - The original indexed triangle connectivity is preserved.
-   - Both triangle sides render so back-facing faces are visible.
+   - All 8,143 vertices use one fixed vertex colour.
+   - Original 12,816 triangles retained.
+   - 416 explicit indexed bridge triangles connect 417 components into one component.
+   - Both triangle sides render so every bridge and source face can be inspected.
    - No second mesh, overlay, cap or render pass.
    ========================================================================== */
 (() => {
   "use strict";
 
-  const VERSION = "1.1.257-builder-3-fixed-vertex-colour-indexed-13k";
-  const MODE = "three-neon-peak-fixed-vertex-colour-indexed-builder-3";
+  const VERSION = "1.1.258-builder-3-connected-indexed-surface-13k";
+  const MODE = "three-neon-peak-connected-indexed-surface-builder-3";
   const MOUNT_SELECTOR = "[data-rf-graph]";
   const MAP_PAPER_SELECTOR = ".rf-map-paper";
   const LEGACY_KEY_SELECTOR = ".rf-graph-key";
@@ -27,7 +27,7 @@
   const FRONT_AZIMUTH = 0;
   let dependencyPromise = null;
 
-  const META = Object.freeze({"name":"Neon Peak fixed vertex colour indexed 13k","version":"1.0.0","builderVersion":"1.1.257-builder-3-fixed-vertex-colour-indexed-13k","source":"v1.1.255 builder reduced to the original indexed positions and indices with one fixed vertex colour","texturedSourceFile":"Meshy_AI_Neon_Peak_0627144328_texture.glb","sourceVertexCount":8478,"sourceFaceCount":14062,"vertexCount":8143,"faceCount":12816,"indexCount":38448,"removedInternalPlaneFaces":1246,"removedFaceCount":1246,"mappingRule":"Removed the narrow buried plane under the peaks whose texture statistically matches the original bottom plate.","internalPlaneYRange":[-0.215,-0.135],"bottomTextureDistanceThreshold":2.5,"addedGeometry":false,"addedBaseGeometry":false,"opaqueSurface":true,"positionComponentType":"Uint16 quantized to Float32 at runtime","colourComponentType":"Uint8 normalized baked vertex colour","indexComponentType":"Uint16","boundsMin":[-0.7897142390143058,-0.4,-0.7853454034795696],"boundsMax":[0.7559676500151892,0.5086992847261541,0.7824623450897789],"quantScale":[2.3585593790028153e-05,1.3865862283148762e-05,2.3923212765230006e-05],"center":[-0.016873294499558322,0.054349642363077044,-0.0014415291948953746],"size":[1.545681889029495,0.9086992847261541,1.5678077485693485],"isWatertight":false,"quantizationErrorModelUnits":{"mean":0.0,"p95":0.0,"max":0.0},"runtimeTexture":false,"textureLayerAdded":false,"bakedVertexColour":true,"peakColourBlend":{"lowerTerrainTextureContribution":0.1,"fullTextureFromNormalisedHeight":0.72,"transitionStartsAtNormalisedHeight":0.28},"geometryChanged":false,"peakColourMode":"Five independent peak-local fades using sampled authored colour; not a continuous mountain-wide gradient.","peakCount":5,"peaks":[{"centreXZ":[-0.0025720130174635668,0.003742112396228074],"radiusCore":0.04379264493519848,"radiusOuter":0.08054548592230482,"baseY":0.21812627472048862,"peakY":0.5086992847261541,"highVertexCount":285},{"centreXZ":[-0.1134630463660021,0.0006239190791953193],"radiusCore":0.05350222603910863,"radiusOuter":0.1050093855955903,"baseY":0.10095973842788164,"peakY":0.38756711182056647,"highVertexCount":257},{"centreXZ":[0.00023366340318945866,-0.1167867817239937],"radiusCore":0.05651644809623027,"radiusOuter":0.1027571783567823,"baseY":0.10177782430258742,"peakY":0.37829084995314,"highVertexCount":231},{"centreXZ":[0.11250892653245059,0.007148597383246233],"radiusCore":0.05447403853113857,"radiusOuter":0.10828913524492952,"baseY":0.10091814084103212,"peakY":0.36237284005208525,"highVertexCount":220},{"centreXZ":[-0.00819425664095668,0.12464548333409979],"radiusCore":0.05585610126593689,"radiusOuter":0.10155654775624888,"baseY":0.09993366461892861,"peakY":0.34967171020072096,"highVertexCount":256}],"geometryReferenceVersion":"1.1.240-builder-3-internal-plane-removed-13k","positionsSha256":"743e85509559f3b9e86899c9904c25f0c55acb8aad7288bc6497afc99129b389","indicesSha256":"179f8db713d90a8458c705a51a159ef3cbd46deb6a0cac81303cc66beb4a645a","mainPeakColourChanged":false,"secondaryPeakCount":4,"secondaryPeakLookup":"Uploaded GLB high-elevation groups; exact source apexes mapped to retained geometry.","sourceMainApexXYZ":[0.001491,0.521219,-0.000401],"mappedMainApexXYZ":[0.0027617123306401536,0.5086992847261541,-0.0006640247800253629],"secondaryPeaks":[{"sourceGroupCentreXZ":[-0.1389,-0.0076],"sourceApexXYZ":[-0.078398,0.378148,0.00011],"mappedApexXYZ":[-0.08688712966525691,0.3510444305667527,-0.005687899460723678],"baseY":0.075,"coreRadius":0.056353437349480166,"outerRadius":0.11571943055781153,"changedVertexCount":227},{"sourceGroupCentreXZ":[0.1293,0.0061],"sourceApexXYZ":[0.055423,0.407203,0.000208],"mappedApexXYZ":[0.07337698013798444,0.36237284005208525,-0.004132890630983765],"baseY":0.075,"coreRadius":0.058657359157477496,"outerRadius":0.12255162993026053,"changedVertexCount":214},{"sourceGroupCentreXZ":[0.0013,0.1519],"sourceApexXYZ":[0.002606,0.353695,0.085314],"mappedApexXYZ":[-0.014408599948500411,0.32553124396575894,0.09120111223845784],"baseY":0.075,"coreRadius":0.06643181712826672,"outerRadius":0.12062755993172357,"changedVertexCount":209},{"sourceGroupCentreXZ":[-0.0027,-0.1274],"sourceApexXYZ":[0.00277,0.402906,-0.053165],"mappedApexXYZ":[0.0026909555492700132,0.37829084995314,-0.06296007082068433],"baseY":0.075,"coreRadius":0.06693372515836765,"outerRadius":0.13159058221864872,"changedVertexCount":221}],"colourLayers":{"layer1":"Approved main peak; unchanged byte-for-byte.","layer2":"Four source-identified secondary peaks; each receives the Layer-1 colour ramp independently."},"layer1MainPeakColourChanged":false,"layer2SecondaryPeakCount":4,"layer2ChangedVertexCount":1185,"layer2Peaks":[{"group":1,"apexXYZ":[-0.08688712966525691,0.3510444305667527,-0.005687899460723678],"baseY":-0.015,"fullColourRadius":0.08999494326786596,"outerFadeRadius":0.1551636952894241,"changedVertexCount":305},{"group":2,"apexXYZ":[0.07337698013798444,0.36237284005208525,-0.004132890630983765],"baseY":-0.015,"fullColourRadius":0.09905304420443153,"outerFadeRadius":0.17078111069729576,"changedVertexCount":290},{"group":3,"apexXYZ":[-0.014408599948500411,0.32553124396575894,0.09120111223845784],"baseY":-0.015,"fullColourRadius":0.105,"outerFadeRadius":0.18372953148707472,"changedVertexCount":292},{"group":4,"apexXYZ":[0.0026909555492700132,0.37829084995314,-0.06296007082068433],"baseY":-0.015,"fullColourRadius":0.09927140704538673,"outerFadeRadius":0.17115759835411506,"changedVertexCount":298}]});
+  const META = Object.freeze({"name":"Neon Peak connected indexed surface 13k","version":"1.0.0","builderVersion":"1.1.258-builder-3-connected-indexed-surface-13k","source":"v1.1.257 indexed surface connected with 416 explicit bridge triangles","texturedSourceFile":"Meshy_AI_Neon_Peak_0627144328_texture.glb","sourceVertexCount":8478,"sourceFaceCount":14062,"vertexCount":8143,"faceCount":13232,"indexCount":39696,"removedInternalPlaneFaces":1246,"removedFaceCount":1246,"mappingRule":"Removed the narrow buried plane under the peaks whose texture statistically matches the original bottom plate.","internalPlaneYRange":[-0.215,-0.135],"bottomTextureDistanceThreshold":2.5,"addedGeometry":true,"addedBaseGeometry":false,"opaqueSurface":true,"positionComponentType":"Uint16 quantized to Float32 at runtime","colourComponentType":"Uint8 normalized baked vertex colour","indexComponentType":"Uint16","boundsMin":[-0.7897142390143058,-0.4,-0.7853454034795696],"boundsMax":[0.7559676500151892,0.5086992847261541,0.7824623450897789],"quantScale":[2.3585593790028153e-05,1.3865862283148762e-05,2.3923212765230006e-05],"center":[-0.016873294499558322,0.054349642363077044,-0.0014415291948953746],"size":[1.545681889029495,0.9086992847261541,1.5678077485693485],"isWatertight":false,"quantizationErrorModelUnits":{"mean":0.0,"p95":0.0,"max":0.0},"runtimeTexture":false,"textureLayerAdded":false,"bakedVertexColour":true,"peakColourBlend":{"lowerTerrainTextureContribution":0.1,"fullTextureFromNormalisedHeight":0.72,"transitionStartsAtNormalisedHeight":0.28},"geometryChanged":true,"peakColourMode":"Five independent peak-local fades using sampled authored colour; not a continuous mountain-wide gradient.","peakCount":5,"peaks":[{"centreXZ":[-0.0025720130174635668,0.003742112396228074],"radiusCore":0.04379264493519848,"radiusOuter":0.08054548592230482,"baseY":0.21812627472048862,"peakY":0.5086992847261541,"highVertexCount":285},{"centreXZ":[-0.1134630463660021,0.0006239190791953193],"radiusCore":0.05350222603910863,"radiusOuter":0.1050093855955903,"baseY":0.10095973842788164,"peakY":0.38756711182056647,"highVertexCount":257},{"centreXZ":[0.00023366340318945866,-0.1167867817239937],"radiusCore":0.05651644809623027,"radiusOuter":0.1027571783567823,"baseY":0.10177782430258742,"peakY":0.37829084995314,"highVertexCount":231},{"centreXZ":[0.11250892653245059,0.007148597383246233],"radiusCore":0.05447403853113857,"radiusOuter":0.10828913524492952,"baseY":0.10091814084103212,"peakY":0.36237284005208525,"highVertexCount":220},{"centreXZ":[-0.00819425664095668,0.12464548333409979],"radiusCore":0.05585610126593689,"radiusOuter":0.10155654775624888,"baseY":0.09993366461892861,"peakY":0.34967171020072096,"highVertexCount":256}],"geometryReferenceVersion":"1.1.240-builder-3-internal-plane-removed-13k","positionsSha256":"743e85509559f3b9e86899c9904c25f0c55acb8aad7288bc6497afc99129b389","indicesSha256":"341290bca515027c5ef9d401b0150578983f5aed2761ee1bb065ef1a1cbe2ea8","mainPeakColourChanged":false,"secondaryPeakCount":4,"secondaryPeakLookup":"Uploaded GLB high-elevation groups; exact source apexes mapped to retained geometry.","sourceMainApexXYZ":[0.001491,0.521219,-0.000401],"mappedMainApexXYZ":[0.0027617123306401536,0.5086992847261541,-0.0006640247800253629],"secondaryPeaks":[{"sourceGroupCentreXZ":[-0.1389,-0.0076],"sourceApexXYZ":[-0.078398,0.378148,0.00011],"mappedApexXYZ":[-0.08688712966525691,0.3510444305667527,-0.005687899460723678],"baseY":0.075,"coreRadius":0.056353437349480166,"outerRadius":0.11571943055781153,"changedVertexCount":227},{"sourceGroupCentreXZ":[0.1293,0.0061],"sourceApexXYZ":[0.055423,0.407203,0.000208],"mappedApexXYZ":[0.07337698013798444,0.36237284005208525,-0.004132890630983765],"baseY":0.075,"coreRadius":0.058657359157477496,"outerRadius":0.12255162993026053,"changedVertexCount":214},{"sourceGroupCentreXZ":[0.0013,0.1519],"sourceApexXYZ":[0.002606,0.353695,0.085314],"mappedApexXYZ":[-0.014408599948500411,0.32553124396575894,0.09120111223845784],"baseY":0.075,"coreRadius":0.06643181712826672,"outerRadius":0.12062755993172357,"changedVertexCount":209},{"sourceGroupCentreXZ":[-0.0027,-0.1274],"sourceApexXYZ":[0.00277,0.402906,-0.053165],"mappedApexXYZ":[0.0026909555492700132,0.37829084995314,-0.06296007082068433],"baseY":0.075,"coreRadius":0.06693372515836765,"outerRadius":0.13159058221864872,"changedVertexCount":221}],"colourLayers":{"layer1":"Approved main peak; unchanged byte-for-byte.","layer2":"Four source-identified secondary peaks; each receives the Layer-1 colour ramp independently."},"layer1MainPeakColourChanged":false,"layer2SecondaryPeakCount":4,"layer2ChangedVertexCount":1185,"layer2Peaks":[{"group":1,"apexXYZ":[-0.08688712966525691,0.3510444305667527,-0.005687899460723678],"baseY":-0.015,"fullColourRadius":0.08999494326786596,"outerFadeRadius":0.1551636952894241,"changedVertexCount":305},{"group":2,"apexXYZ":[0.07337698013798444,0.36237284005208525,-0.004132890630983765],"baseY":-0.015,"fullColourRadius":0.09905304420443153,"outerFadeRadius":0.17078111069729576,"changedVertexCount":290},{"group":3,"apexXYZ":[-0.014408599948500411,0.32553124396575894,0.09120111223845784],"baseY":-0.015,"fullColourRadius":0.105,"outerFadeRadius":0.18372953148707472,"changedVertexCount":292},{"group":4,"apexXYZ":[0.0026909555492700132,0.37829084995314,-0.06296007082068433],"baseY":-0.015,"fullColourRadius":0.09927140704538673,"outerFadeRadius":0.17115759835411506,"changedVertexCount":298}],"addedBridgeTriangles":416,"connectedComponentCountBefore":417,"connectedComponentCountAfter":1,"bridgeStrategy":"Minimum spanning tree across nearest spatial components; one explicit indexed triangle per connection."});
 
   const POSITIONS_BASE64 = [
     "SX8AAMMAyX7zAhUDf3/DBLMCtn8AAAAAS2oAAO0CZGpTACQDW2oAAA4DnWgAADUDi2hfAFEDm2gAAA8DeEMAAJoDWkM9ALwDk0MAAJgD0UUAAEoFeEX1AEIG",
@@ -1430,7 +1430,35 @@
     "nR+vH54fnh+vH5YfpR+kH6kfpR+pH6YfrR+wH64fsR+yH6cfoh+rH6ofmx+oH6Efsx+vH50fsR+0H7IfnR+1H7Mflh+vH50frB+2H60ftx+mH6kfuB+5H7of",
     "rh+2H6wfnR+vH7UfsR+nH7Ifph+3H6kfth+wH60fqx+7H6Ifqx+8H70fqx+iH70fvR+8H6sfsB+2H64fqx+9H7sftB++H7Ifux+9H6Ifvh+xH7Ifsx+1H68f",
     "sR++H7QfsB+/H8AfsB/AH7Yfth/AH8Efth/BH8Ifth/CH7Afwx+4H8QfxB+4H7ofxB+6H8UfuB/DH8YfuB/GH7kfuh+5H8Yfuh/GH8cfyB/JH8ofyB/KH8sf",
-    "yB/LH8ofyB/KH8kfuh/HH8UfsB/CH78fzB/NH84fzB/OH80f",
+    "yB/LH8ofyB/KH8kfuh/HH8UfsB/CH78fzB/NH84fzB/OH80ffxqkGsUa+hXZFTkWcQUFBgMGWweBB9cHPwjyByMIuA6PDZANxwIlAyYDJBP/EtsTShVIFXYV",
+    "1xU6Fn4W4ALhAmQDAwdXB1YHSgcOCNYHVBycHJ0ctQS2BIkFbRpsGogadAcdBz8HmRpmGmMaPxZAFgIWWgUABekEABJqEUYSfRTRFCIUAxy0Gz8cDAp5CnUK",
+    "6w/pD1YQow9ZEOwPrRjQGM4Yqg1SDTAN8BRJFUgV+BcZGBsY8BLxEp0TJRTME9AT0wAGAQcBERkPGXIYphH3EUMS0QpuCmkLfQZwBi0HYAiYB5YHuAxnDWkN",
+    "+xBcEfcQpgekB3AIRhlFGQUZVR9GH20fuheAF0wYxhLOEksT/wmICQIKmQyFDYQNOwQCBAEEPAWiBH0ENANfA98DqwgcCI8IugxpDWoNqB1uHfQd/xWDFoQW",
+    "xBPDE5kT6gX5BLAE/h39HVceYgxjDMgMpw4IEQcRah5pHnoehRhqGN8YlQnVCdQJFRFHEAQS6xrsGu0a/wD+AEsBahrJGscaDQy+C+0MghO2E7MTohLRE9UT",
+    "2BySHEgcRAFWAXIBahrKGt4adg3UDf0N0Ao3C2gLexc1F3wXQQw+DNEM4w1wDm4OLxQKFPsUShtHG08bFxViFaIU9QvRDNIMDA4zDQINdwUbBRwF6BLnEpIT",
+    "zhTPFEYV7AmRCpIK4Ai+CLUJjgiuCK8I4QYTCBQITwhzCBcJIBhkGJ8YWxodGrwarQ2mDTQNngafBvoGOQWMBHgE8AYZB6AHIx+FH4MfMBcRF/EWPA86D/YN",
+    "+gLeApYDPQRnBGkErBOvFLIU5hbTFtIWoQuiC6ALMQA4AE4A0RIoFCYUmxd5F3cXhwuFC7kMBgYEBugFNhKOE5AT3gYOB5wHOxAKEWgRAA5xDkUP2RhkGTsZ",
+    "pwVtBZ4FLhUPFVgWSQBIAGkAlQKUAn8CnBHjEBITCBL+EaMTrR6dHm4ewQbCBi4IZRoRGuwaThcAGAEYrAhdCCAJohTzFPIUQwtCCzwLvxZfF2AXTA9REFMQ",
+    "PQc8B88HUxVRFQYWQxlAGWYZiQ2fDJ4MyRg1GMIZlRZjFt0WJxsKG5Ab7QnuCd4JhgqICsMKohWhFdYVQhdBF24WahdxFyUXfBV7FYMWdQHGAccBqRppGsMa",
+    "gRWCFeIV7gmNCo8KkwFsAaMBvxugG6wbOQU3BUIFOgpRCokKEBEDEgQSzxfQF34Ysw6xDuwP2AzZDIgNOB42HooeuBqUGr0aJANrA18DxQrECskKbgYLBi8H",
+    "UQ6MDVsNvB0KHgkeyxdEGPwYLgcvB5oHphiPGIsZXBHqEuwSiQ0TDRQNuBfmF08YJQAjACIABw4PDgYOkAuRC4oK0xSCFBgVagvXDNkMzBbgFn4W+xL6EiAT",
+    "dQdyB3kHjRmMGaIZJxgmGOgY5wXkBeIFPBztG9wcUwEfARMBxRvvG+4bxhqHGm0bCh4IHioeswOKA1UDGAUXBXQFRgUcBh4GRhYfFh4WTBMcFP0TYBp3GiYb",
+    "DwbjBuYGrB7UHsMeDBayFrEWawMkA/MDAwvtC+4LbxLlEmITKRkoGUEZJRR/FIIU+RcaGGMYWRBMEksSQgtDC5sMGxcYF+kWyRxFHUQdSQ6fD54PDASUBJME",
+    "3wbgBksHWRtaG/gbmhKdEpQTDxxiHGQcsxENElcQORKbEmcTIwSKBIgEQhTUEykUqgTrBNYEuBG6Ef4SWAfxB/IH9Aa6B7kHGxbgFWsWIRboFuoWhBVpFcYV",
+    "GQXFBcQFmxM+FKYTsQZYB1YHaAtmC5QMPhmbGcoZNxikF6IX/xe5GLcYsRywHN4c2gDZAPAASA4TDxUPiAgDCQQJ9AvzC38N4wc5CMsHSQ+WEG0RUAb7Bf8G",
+    "yhpqGrMbGBoZGiQaABo5Gn4a7RxpHWodsg59DhUOjAuKC4gM/QOqA/4DsQC9AJgABxjUF48YYwtsDJMMNAGJAYsBNAYzBoUGwQjmCOQI/Ab6Bt8HWxxoHMwc",
+    "lB3SHdEdkB2DHUwdsh18HYQdAwFOAU8BrRuPG+Qb8gmNCYsJqgP9A7sDHRXaFEgWoA+hD+oPUQB9AHwAoxnKGcwZMhUzFdYUKB3bHFAdOhw9HKgcNAIdAtEC",
+    "JgAlAFMAaBMQFQ4VrQGsAbwBHBU0FTYV+AIGA+oCcA4SD5oPgQqCCv8KUh9aH2gflRmFGSQanxhkGFEZVRhWGC8YQRZAFmsW6x4DH1Yf6QL1AhoDCwrWCdQJ",
+    "+QVUBokG5gHoAdMBpQumC28MSwBNAFoA1wPVAyMEKxzwG+0b+xiuGPkYlgR4BXoFZhXTFtIWugDDAJ4AiAV0BnMGJwkqCSgJ3xzCHGwdOQKSAmcCGgZWBmMG",
+    "jRmMGQQawgbBBhcHNR8xHzAfLB5jHmIeigYCB8AHhAbUBvMGHAXGBbAFwAm/CYAKawWhBY0FWBpXGqEaRwA/AFIAvBcNGHEYawmUCZMJ1hXyFV8WUwtVC7EM",
+    "ZR6BHn8eZB6JHoAe1QG4AX0CpQoHC9gKOQMnAyYDAB7+HfwdoB+fH5UfLQAuAFYAVhqfGqEaDx52HnUeyh6wHuYeYxRiFFEV6wPqA8YEUwkSCRAJkxyRHIYc",
+    "tAJGA0QDMxd6F3cXoAE9Aj8CER8QH10fBBScE1MUjhuNG9kb9xqRG5IbiAVnB2gHhwGIAc0B4Q6nEJ0PpB2BHdsdJwFMAUsB6R7nHi8fFQMTA+oCSAFNAVcB",
+    "YBZhFgsXAx6IHoYePRLCE8AT9QPMA84DwRPCE5oUmBSZFLoVMgwmDfEMDhYNFtsWkRbxFbQWiBx7HL4chwBjAJQAfwy4C0kNFBXOFM8UbgDtAOwA3BivGP8Y",
+    "iBQrFFIV4QDgACgBYB5IHkceZxnlGeYZMh2BHLQcZRsoG3obDxWdFZ4VGRQYFJUUkQCcANgAoR6FHrwe1RvTG9kbvR2+HeAdnRk3GjgaOR46HhseyBsXHDoc",
+    "+BoYGxcb1RrCGtYa2QHTARICnh99H38fQhOSFJQUQgBNAGIA3Ri/GKgZVx+sH60fQx4iHiMelBqVGr8ahQOrA9EDnRsxHAwceAF6AXkBYgkiCY4JsB+uH7kf",
+    "Lx8xH3sfPRp2GtYabxoXGxgbwAe/BxoJax+CH4EfvhLhEBkUNgk1CaMHBQAGABsAUgvnDOUMux/MH84ftB++H8kfzR5KH0sfmR+aH4Af/AfvCO4I5gyFEBEQ",
+    "tgMzBDYEuB63HtEeQwKyArMCDgANADMAIB6oHqoe1xiZGP8aHhecGJsYAgFZAVoBTAB6AHgAoAApASoBRREUExMTdxVHFdEXRxfeGeAZtxm2GbMZBh8FHyIf",
+    "sgNTBVIFPBs9G7Uc",
   ].join("");
 
 
@@ -1582,7 +1610,8 @@
     geometry.userData.rfReferencedVertexCount = vertexCount;
     geometry.userData.rfUnusedVertexCount = 0;
     geometry.userData.rfTriangleCount = surface.indices.length / 3;
-    geometry.userData.rfConnectedComponentCount = 417;
+    geometry.userData.rfConnectedComponentCount = 1;
+    geometry.userData.rfBridgeTriangleCount = 416;
 
     return geometry;
   }
@@ -1604,7 +1633,7 @@
       toneMapped: false
     });
 
-    material.name = "rf-fixed-vertex-colour-indexed-material";
+    material.name = "rf-connected-indexed-surface-material";
     return material;
   }
 
@@ -1623,7 +1652,7 @@
     const material = createSingleLayerMaterial(THREE);
     const mountain = new THREE.Mesh(geometry, material);
 
-    mountain.name = "rf-fixed-vertex-colour-indexed-mesh";
+    mountain.name = "rf-connected-indexed-surface-mesh";
     mountain.renderOrder = 0;
     mountain.userData.rfSingleOpaqueMesh = true;
     mountain.userData.rfSingleOpaqueMeshVersion = VERSION;
@@ -1787,7 +1816,7 @@
     root.querySelectorAll(MOUNT_SELECTOR).forEach((mount) => initialiseMount(mount));
   }
 
-  window.FieldOpsRFGraph = { VERSION, META, renderMeshes: 1, visibleLayers: 1, fixedVertexColour: true, indexedSurface: true, init: initialiseMount, initAll };
+  window.FieldOpsRFGraph = { VERSION, META, renderMeshes: 1, visibleLayers: 1, fixedVertexColour: true, indexedSurface: true, connectedComponents: 1, bridgeTriangles: 416, init: initialiseMount, initAll };
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", () => initAll(), { once: true });
   } else {
