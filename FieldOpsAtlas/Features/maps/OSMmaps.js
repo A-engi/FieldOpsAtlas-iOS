@@ -1,7 +1,7 @@
 /* ==========================================================================
    FieldOps Atlas OSM maps
    File: FieldOpsAtlas/Features/maps/OSMmaps.js
-   Version: 1.1.27-site-path-moving-chevrons-original-style
+   Version: 1.1.28-site-path-group-cycle
    Purpose:
    - Own the Leaflet map, regions, sites, service clusters, RF paths, labels, and fitting.
    - Keep service-menu opening fast by returning cached cluster metadata without rerendering.
@@ -15,7 +15,7 @@
 (function fieldOpsOSMMaps() {
   "use strict";
 
-  var VERSION = "1.1.27-site-path-moving-chevrons-original-style";
+  var VERSION = "1.1.28-site-path-group-cycle";
   var REGION_TOAST_MS = 3000;
   var UK_BOUNDS = [[49.75, -8.7], [60.95, 1.95]];
   var UK_CENTER = [54.55, -3.15];
@@ -26,8 +26,7 @@
   var ATTACHED_INPUT_RADIUS_PX = 17;
   var SATELLITE_DOWNLOAD_TRAVEL_MS = 4000;
   var SATELLITE_DOWNLOAD_HOLD_MS = 2000;
-  var SITE_PATH_CHEVRON_TRAVEL_MS = 4000;
-  var SITE_PATH_CHEVRON_HOLD_MS = 2000;
+  var SITE_PATH_CHEVRON_SPEED_PX_PER_SECOND = 72;
   var INPUT_ICON_URLS = {
     satellite: "../../../data/icons/satellite-dish.svg?v=1.5.7-large-rx-farther-right",
     fibre: "../../../data/icons/ethernet-fibre.svg?v=1.0.5"
@@ -1181,11 +1180,62 @@
     startSitePathChevronAnimation();
   }
 
+  function sitePathChevronCycleMetrics() {
+    var metrics = [];
+    var longestDurationMs = 0;
+
+    state.rf.pathChevrons.forEach(function measureSitePath(record) {
+      var fromPoint;
+      var toPoint;
+      var dx;
+      var dy;
+      var lengthPx;
+      var durationMs;
+
+      if (
+        !record ||
+        !record.fromWalk ||
+        !record.toWalk ||
+        record.fromWalk.isVirtual ||
+        record.toWalk.isVirtual
+      ) {
+        return;
+      }
+
+      fromPoint = state.map.latLngToContainerPoint([
+        record.fromWalk.lat,
+        record.fromWalk.lng
+      ]);
+      toPoint = state.map.latLngToContainerPoint([
+        record.toWalk.lat,
+        record.toWalk.lng
+      ]);
+      dx = toPoint.x - fromPoint.x;
+      dy = toPoint.y - fromPoint.y;
+      lengthPx = Math.max(1, Math.sqrt(dx * dx + dy * dy));
+      durationMs =
+        lengthPx / SITE_PATH_CHEVRON_SPEED_PX_PER_SECOND * 1000;
+
+      longestDurationMs = Math.max(longestDurationMs, durationMs);
+      metrics.push({
+        record: record,
+        fromPoint: fromPoint,
+        toPoint: toPoint,
+        durationMs: durationMs,
+        angleDegrees: Math.atan2(dy, dx) * 180 / Math.PI
+      });
+    });
+
+    return {
+      paths: metrics,
+      durationMs: longestDurationMs
+    };
+  }
+
   function renderSitePathChevrons(timestamp) {
-    var cycleDuration =
-      SITE_PATH_CHEVRON_TRAVEL_MS +
-      SITE_PATH_CHEVRON_HOLD_MS;
     var reducedMotion = prefersReducedPathMotion();
+    var cycle = sitePathChevronCycleMetrics();
+    var elapsed;
     var activeCount = 0;
 
     state.rf.sitePathChevronFrame = 0;
@@ -1193,7 +1243,8 @@
     if (
       state.rf.sitePathChevronPaused ||
       !state.map ||
-      !state.rf.pathChevrons.size
+      !cycle.paths.length ||
+      !cycle.durationMs
     ) {
       return;
     }
@@ -1202,65 +1253,39 @@
       state.rf.sitePathChevronStartedAt = timestamp;
     }
 
-    state.rf.pathChevrons.forEach(
-      function moveSitePathChevron(record) {
-        var fromPoint;
-        var toPoint;
-        var elapsed;
-        var progress;
-        var currentPoint;
-        var currentLatLng;
-        var angleDegrees;
+    elapsed = timestamp - state.rf.sitePathChevronStartedAt;
 
-        if (
-          !record ||
-          !record.fromWalk ||
-          !record.toWalk ||
-          record.fromWalk.isVirtual ||
-          record.toWalk.isVirtual
-        ) {
-          return;
-        }
+    /*
+     * Every physical path starts together. Each chevron moves at the same
+     * screen speed, so shorter paths reach their receiving site first and
+     * wait there. The group resets only when the longest path has completed
+     * its one-way turn.
+     */
+    if (!reducedMotion && elapsed >= cycle.durationMs) {
+      state.rf.sitePathChevronStartedAt = timestamp;
+      elapsed = 0;
+    }
 
-        fromPoint = state.map.latLngToContainerPoint([
-          record.fromWalk.lat,
-          record.fromWalk.lng
-        ]);
-        toPoint = state.map.latLngToContainerPoint([
-          record.toWalk.lat,
-          record.toWalk.lng
-        ]);
+    cycle.paths.forEach(function moveSitePathChevron(metric) {
+      var progress = reducedMotion
+        ? 0.55
+        : Math.min(1, elapsed / metric.durationMs);
+      var currentPoint = window.L.point(
+        metric.fromPoint.x +
+          (metric.toPoint.x - metric.fromPoint.x) * progress,
+        metric.fromPoint.y +
+          (metric.toPoint.y - metric.fromPoint.y) * progress
+      );
+      var currentLatLng =
+        state.map.containerPointToLatLng(currentPoint);
 
-        elapsed =
-          (timestamp - state.rf.sitePathChevronStartedAt) %
-          cycleDuration;
-
-        progress = reducedMotion
-          ? 0.55
-          : elapsed < SITE_PATH_CHEVRON_TRAVEL_MS
-            ? elapsed / SITE_PATH_CHEVRON_TRAVEL_MS
-            : 1;
-
-        currentPoint = window.L.point(
-          fromPoint.x + (toPoint.x - fromPoint.x) * progress,
-          fromPoint.y + (toPoint.y - fromPoint.y) * progress
-        );
-        currentLatLng =
-          state.map.containerPointToLatLng(currentPoint);
-        angleDegrees =
-          Math.atan2(
-            toPoint.y - fromPoint.y,
-            toPoint.x - fromPoint.x
-          ) * 180 / Math.PI;
-
-        ensureSitePathChevronMarker(
-          record,
-          currentLatLng,
-          angleDegrees
-        );
-        activeCount += 1;
-      }
-    );
+      ensureSitePathChevronMarker(
+        metric.record,
+        currentLatLng,
+        metric.angleDegrees
+      );
+      activeCount += 1;
+    });
 
     if (activeCount && !reducedMotion) {
       state.rf.sitePathChevronFrame =
