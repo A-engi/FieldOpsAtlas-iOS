@@ -3,28 +3,28 @@
   "version": "1.1.6-satellite-backups",
   "regionId": "wenvoe",
   "serviceType": "dtt",
-  "displayName": "Wenvoe Demo DTT",
+  "displayName": "DTT",
   "demoOnly": true,
   "sourceSiteFile": "data/regions/wenvoe-sites.json",
   "sourceSiteFileSha": "aa72578e1a43bca12edc5b603de9c125e274fb8e",
   "participatingSiteCount": 76,
   "pathCount": 77,
   "notes": [
-    "Prototype-safe DTT data joined to the existing Wenvoe region records by siteId.",
+    "DTT data joined to region records by siteId.",
     "The region site file remains authoritative for site name, coordinates, physical site type, status and location metadata.",
-    "This file contains only DTT cluster membership, DTT-specific installation details and directed demo paths.",
+    "DTT cluster membership, installation details and directed paths.",
     "The existing eight clusters contain between 4 and 16 sites and are used directly by the map cluster picker.",
     "Distance, bearing and compass direction are not stored; calculate them from the linked region-site coordinates.",
-    "All paths, equipment, powers, channels outside the main Wenvoe seed set, telemetry and masked IP values are synthetic demo data.",
-    "The visual topology is rooted at the Wenvoe main site and uses shallow geographic branches rather than nearest-neighbour chains.",
+    "Synthetic values are used for paths, equipment, powers, channels, telemetry and masked IP values.",
+    "The visual topology uses shallow geographic branches.",
     "Relationship lines are synthetic presentational paths and must not be treated as verified current operational feed routes.",
-    "Two synthetic satellite input backup paths are included for interface demonstration.",
+    "Two synthetic satellite input backup paths are included.",
     "Satellite backup nodes are virtual map endpoints and are not physical records in the region site file."
   ],
   "clusters": [
     {
       "id": "wenvoe-central",
-      "name": "Wenvoe Central",
+      "name": "Central",
       "headSiteId": "stone-shelf-loop",
       "siteCount": 7,
       "siteIds": [
@@ -3265,7 +3265,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--lantern-stone-hollow-primary",
@@ -3278,7 +3278,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--starling-hollow-trail-primary",
@@ -3291,7 +3291,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--foxglove-field-cave-primary",
@@ -3304,7 +3304,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--heather-ridge-hollow-primary",
@@ -3317,7 +3317,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--bright-path-cave-primary",
@@ -3330,7 +3330,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--fern-warren-walk-primary",
@@ -3343,7 +3343,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--spring-copse-ridge-primary",
@@ -3356,7 +3356,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--hidden-coast-hollow-primary",
@@ -3369,7 +3369,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--dusk-hollow-ramble-primary",
@@ -3382,7 +3382,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--harbour-coast-cave-primary",
@@ -3395,7 +3395,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--misty-ridge-walk-primary",
@@ -3408,7 +3408,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--cedar-coast-ridge-primary",
@@ -3421,7 +3421,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--hidden-drift-trail-primary",
@@ -3434,7 +3434,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--sparrow-moor-trail-primary",
@@ -3447,7 +3447,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--oak-dale-trail-primary",
@@ -3460,7 +3460,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-fern-warren-walk--robin-spring-trail-primary",
@@ -3473,7 +3473,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-fern-warren-walk--misty-pool-cave-primary",
@@ -3486,7 +3486,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-fern-warren-walk--elder-cove-ridge-primary",
@@ -3499,7 +3499,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-fern-warren-walk--river-edge-loop-primary",
@@ -3512,7 +3512,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--golden-basin-ramble-primary",
@@ -3525,7 +3525,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--sunset-shore-path-primary",
@@ -3538,7 +3538,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--maple-camp-walk-primary",
@@ -3551,7 +3551,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--honey-haven-cave-primary",
@@ -3564,7 +3564,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--amber-loop-ramble-primary",
@@ -3577,7 +3577,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--crystal-arch-cave-primary",
@@ -3590,7 +3590,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--elm-grove-hollow-primary",
@@ -3603,7 +3603,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--bluebell-field-cave-primary",
@@ -3616,7 +3616,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--elm-view-trail-primary",
@@ -3629,7 +3629,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-maple-camp-walk--starling-thicket-trail-primary",
@@ -3642,7 +3642,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-maple-camp-walk--high-water-walk-primary",
@@ -3655,7 +3655,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--dawn-spring-trail-primary",
@@ -3668,7 +3668,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--pebble-arch-hollow-primary",
@@ -3681,7 +3681,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--cinder-mill-cave-primary",
@@ -3694,7 +3694,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--quiet-shelf-path-primary",
@@ -3707,7 +3707,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-pebble-arch-hollow--dawn-pool-ramble-primary",
@@ -3720,7 +3720,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--stone-mere-walk-primary",
@@ -3733,7 +3733,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--woodland-cliff-ramble-primary",
@@ -3746,7 +3746,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--brook-thicket-cave-primary",
@@ -3759,7 +3759,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--bluebell-haven-loop-primary",
@@ -3772,7 +3772,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--meadow-way-hollow-primary",
@@ -3785,7 +3785,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--hazel-bank-trail-primary",
@@ -3798,7 +3798,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--velvet-loop-cave-primary",
@@ -3811,7 +3811,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-brook-thicket-cave--elder-glen-hollow-primary",
@@ -3824,7 +3824,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--low-ladder-cave-primary",
@@ -3837,7 +3837,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-brook-thicket-cave--pebble-vale-ridge-primary",
@@ -3850,7 +3850,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--golden-falls-ridge-primary",
@@ -3863,7 +3863,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-brook-thicket-cave--thistle-bend-loop-primary",
@@ -3876,7 +3876,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--ashen-way-hollow-primary",
@@ -3889,7 +3889,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--shadow-camp-trail-primary",
@@ -3902,7 +3902,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--foxglove-quarry-path-primary",
@@ -3915,7 +3915,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-foxglove-quarry-path--winter-tarn-ridge-primary",
@@ -3928,7 +3928,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--maple-warren-trail-primary",
@@ -3941,7 +3941,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--heather-field-cave-primary",
@@ -3954,7 +3954,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--shadow-stone-path-primary",
@@ -3967,7 +3967,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--spring-falls-loop-primary",
@@ -3980,7 +3980,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--iron-tor-trail-primary",
@@ -3993,7 +3993,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-spring-falls-loop--drift-vale-hollow-primary",
@@ -4006,7 +4006,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--cairn-gate-ridge-primary",
@@ -4019,7 +4019,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-spring-falls-loop--green-view-trail-primary",
@@ -4032,7 +4032,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--drift-lantern-hollow-primary",
@@ -4045,7 +4045,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--meadow-camp-path-primary",
@@ -4058,7 +4058,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--emerald-arch-loop-primary",
@@ -4071,7 +4071,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--low-lane-path-primary",
@@ -4084,7 +4084,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--misty-dale-loop-primary",
@@ -4097,7 +4097,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-spring-falls-loop--bright-harbour-cave-primary",
@@ -4110,7 +4110,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--dawn-well-loop-primary",
@@ -4123,7 +4123,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-spring-falls-loop--elm-tarn-cave-primary",
@@ -4136,7 +4136,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--amber-drift-hollow-primary",
@@ -4149,7 +4149,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--shadow-pool-ridge-primary",
@@ -4162,7 +4162,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--bramble-ledge-cave-primary",
@@ -4175,7 +4175,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--red-vale-hollow-primary",
@@ -4188,7 +4188,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--bracken-basin-ramble-primary",
@@ -4201,7 +4201,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-stone-shelf-loop--summer-ford-hollow-primary",
@@ -4214,7 +4214,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-red-vale-hollow--ivy-ford-ramble-primary",
@@ -4227,7 +4227,7 @@
       "feedMethod": "off-air-demo",
       "relationshipType": "synthetic-presentational-path",
       "confidence": "synthetic-demo",
-      "notes": "Presentational Wenvoe-style dependency line only; not a verified current operational feed route."
+      "notes": "Presentational dependency line."
     },
     {
       "id": "dtt-satellite-backup-a--stone-shelf-loop-backup-1",
@@ -4301,6 +4301,5 @@
         "rxPowerDbm": null
       }
     }
-  ],
-  "_endOfFile": "Bottom/end of file: data/rf/wenvoe/dtt-details.json"
+  ]
 }

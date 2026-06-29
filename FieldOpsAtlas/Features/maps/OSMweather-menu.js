@@ -1,14 +1,3 @@
-/* ==========================================================================
-   FieldOps Atlas weather data and weather-panel behaviour
-   File: FieldOpsAtlas/Features/maps/OSMweather-menu.js
-   Version: 1.0.28-weather-panel-routing
-   Purpose:
-   - Load Open-Meteo site and selected-region forecasts.
-   - Load the selected-region forecast when the Weather panel opens.
-   - Route the panel Activate button to the full Weather HTML pages.
-   - Keep warning styling neutral unless an active Met Office warning exists.
-   ========================================================================== */
-
 (function fieldOpsOSMWeatherData() {
   "use strict";
 
@@ -540,7 +529,6 @@
     loadSiteWeather: loadSiteWeather,
     loadRegionForecast: loadRegionForecast,
     loadSelectedRegionForecast: loadSelectedRegionForecast,
-    loadPreseliForecast: loadSelectedRegionForecast,
     loadWeatherPanelForecast: loadWeatherPanelForecast,
     weatherCodeText: weatherCodeText
   };
@@ -555,6 +543,3 @@
     initWeatherPanelBehaviour();
   }
 }());
-
-/* Destination: FieldOpsAtlas/Features/maps/OSMweather-menu.js */
-/* End of file: FieldOpsAtlas/Features/maps/OSMweather-menu.js */

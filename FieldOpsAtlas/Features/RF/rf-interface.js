@@ -335,6 +335,3 @@
     initAll();
   }
 })();
-
-/* Destination: FieldOpsAtlas/Features/RF/rf-interface.js */
-/* End of file: FieldOpsAtlas/Features/RF/rf-interface.js */

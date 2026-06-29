@@ -1,9 +1,3 @@
-/* FIELDOPS ATLAS SERVICE WORKER v1.1.12-rf-demo-separate-fields
-   Keeps the browser prototype usable offline where possible.
-   Maps remains the main fallback page.
-   Bumps the RF cache so Graph data is sourced from rf-path-builder.js.
-*/
-
 const CACHE_NAME = "fieldops-atlas-v1.1.12-rf-demo-separate-fields";
 const MAP_FALLBACK = "./FieldOpsAtlas/Features/maps/index.html";
 
@@ -88,6 +82,3 @@ self.addEventListener("fetch", (event) => {
       })
   );
 });
-
-/* Destination: sw.js */
-/* End of file: sw.js */

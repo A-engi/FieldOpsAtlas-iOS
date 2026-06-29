@@ -764,7 +764,7 @@
         '<article class="weather-forecast-card" role="listitem">',
         '<strong>', escapeHtml(formatDay(day.date)), '</strong>',
         '<span>', escapeHtml(day.summary), '</span>',
-        '<span>', escapeHtml(day.minimumC), '–', escapeHtml(day.maximumC), '°C</span>',
+        '<span>', escapeHtml(day.minimumC), '-', escapeHtml(day.maximumC), ' C</span>',
         '<span>Rain ', escapeHtml(Number(day.rainMm || 0).toFixed(1)), ' mm</span>',
         '<span>Wind ', escapeHtml(day.windKmh), ' km/h</span>',
         '</article>'
@@ -772,26 +772,26 @@
     }).join("");
 
     setWeatherUpdated("Updated now");
-    setWeatherStatus("Preview loaded for " + String(data.location || "Preseli area") + ".");
+    setWeatherStatus("Loaded.");
   }
 
   function activateWeatherPreview() {
     var weather = window.FieldOpsOSMWeatherMenu;
 
-    if (!weather || typeof weather.loadPreseliForecast !== "function") {
+    if (!weather || typeof weather.loadSelectedRegionForecast !== "function") {
       setWeatherStatus("Weather data module is unavailable.");
       return;
     }
 
     setWeatherUpdated("Loading");
-    setWeatherStatus("Loading Preseli preview...");
-    renderForecastPlaceholder("Loading preview...");
+    setWeatherStatus("Loading...");
+    renderForecastPlaceholder("Loading...");
 
-    weather.loadPreseliForecast()
+    weather.loadSelectedRegionForecast()
       .then(renderForecast)
       .catch(function weatherPreviewError(error) {
         setWeatherUpdated("Not loaded");
-        setWeatherStatus(error.message || "Preseli preview unavailable.");
+        setWeatherStatus(error.message || "Preview unavailable.");
         renderForecastPlaceholder("Preview unavailable. Open full Weather for provider pages.");
       });
   }
@@ -947,6 +947,3 @@
     init();
   }
 }());
-
-/* Destination: FieldOpsAtlas/Features/maps/OSMpanes.js */
-/* End of file: FieldOpsAtlas/Features/maps/OSMpanes.js | bottom/end of file */

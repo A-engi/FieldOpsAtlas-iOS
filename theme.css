@@ -1,16 +1,4 @@
-/* ==========================================================================
-   FieldOps Atlas theme.css v1.1.1
-   Owner: shared design tokens, app-wide reset, and global page background.
-
-   Keep this file small:
-   - variables and base document rules only
-   - no component styling
-   - no map/page-specific positioning
-   ========================================================================== */
-
-/* --------------------------------------------------------------------------
-   Design tokens
-   -------------------------------------------------------------------------- */
+/* Tokens */
 :root {
   --bg-main: #070b12;
   --bg-panel: rgba(12, 18, 29, 0.9);

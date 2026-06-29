@@ -1,13 +1,4 @@
-/* FieldOps Atlas Weather map v0.3.6
-   Destination: FieldOpsAtlas/Features/Weather/weather-map.js
-
-   Purpose:
-   - Load a lightweight Weather-only Leaflet map.
-   - Use Stadia Alidade Smooth via domain authentication; no API key is stored in GitHub or browser storage.
-   - Apply the base colour filter before weather APIs/overlays arrive.
-   - Map RainViewer radar tiles above the basemap in an unfiltered weather pane.
-   - Do not load Atlas Maps region/site/editor modules.
-*/
+/* Uses Stadia domain authentication; no API key is stored in GitHub or browser storage. */
 
 (() => {
   "use strict";
@@ -104,7 +95,7 @@
     state.tileErrors = 0;
     replaceBaseLayer(makeStadiaLayer());
 
-    setStatus("Loading Stadia Alidade Smooth via domain auth...");
+    setStatus("Loading...");
   }
 
   function makeStadiaLayer() {
@@ -124,7 +115,7 @@
 
     layer.on("tileload", () => {
       if (!state.usingFallback && !state.radarFrames.length) {
-        setStatus("Stadia Alidade Smooth loaded. Loading RainViewer radar...");
+        setStatus("Loading...");
       }
     });
 
@@ -173,11 +164,11 @@
   async function loadRainViewer({ manual } = { manual: false }) {
     if (els.reloadRadar) {
       els.reloadRadar.disabled = true;
-      els.reloadRadar.textContent = manual ? "Reloading radar..." : "Loading radar...";
+      els.reloadRadar.textContent = manual ? "Reloading..." : "Loading...";
     }
 
     try {
-      setStatus("Loading RainViewer radar frames...");
+      setStatus("Loading...");
       const response = await fetch(RAINVIEWER_API, { cache: "no-store" });
       if (!response.ok) throw new Error(`RainViewer HTTP ${response.status}`);
 
@@ -206,7 +197,7 @@
       }
 
       showRadarFrame(state.radarIndex);
-      setStatus(`RainViewer radar mapped. ${state.radarFrames.length} frames available; base filter does not affect radar colours.`);
+      setStatus("Loaded.");
     } catch (error) {
       removeRadarLayer();
       state.radarFrames = [];
@@ -217,7 +208,7 @@
         els.radarRange.max = "0";
         els.radarRange.value = "0";
       }
-      setFrameTime("Radar unavailable.");
+      setFrameTime("Unavailable.");
       setStatus(error?.message || "RainViewer radar load failed.");
     } finally {
       if (els.reloadRadar) {
@@ -231,7 +222,7 @@
     const frame = state.radarFrames[index];
     if (!frame) {
       removeRadarLayer();
-      setFrameTime("Radar frame not loaded.");
+    setFrameTime("Not loaded.");
       return;
     }
 
@@ -297,5 +288,3 @@
     reloadRainViewer: () => loadRainViewer({ manual: true })
   };
 })();
-
-/* End of file: FieldOpsAtlas/Features/Weather/weather-map.js */

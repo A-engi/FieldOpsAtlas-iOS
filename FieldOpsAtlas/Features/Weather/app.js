@@ -133,5 +133,3 @@ window.AtlasWeatherLab = (() => {
     haversineKm
   };
 })();
-
-/* End of file: FieldOpsAtlas/Features/Weather/app.js */

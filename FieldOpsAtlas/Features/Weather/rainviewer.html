@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>RainViewer Radar Frames · FieldOps Atlas Weather</title>
+  <title>RainViewer Radar Frames - FieldOps Atlas Weather</title>
   <link rel="stylesheet" href="styles.css?v=0.3.2-provider-test-clean" />
 </head>
 <body>
@@ -11,7 +11,6 @@
     <header class="lab-header">
       <a class="back-link" href="../maps/index.html">Atlas Map</a>
       <div>
-        <p class="eyebrow">Weather API</p>
         <h1>RainViewer radar frames</h1>
       </div>
       <span class="version-pill">v0.3.2</span>
@@ -26,9 +25,7 @@
 
     <section class="hero-card provider-card-stack">
       <div>
-        <p class="eyebrow">No API map loaded here</p>
-        <h2>Radar frame metadata only</h2>
-        <p>This screen lists RainViewer frames and tile templates. The shared Weather map can use these frames later; this API screen does not create its own OSM/Leaflet map.</p>
+        <h2>Radar frames</h2>
       </div>
       <button id="loadRadarButton" class="primary-button" type="button">Load RainViewer frames</button>
     </section>
@@ -36,13 +33,12 @@
     <section class="weather-data-card" aria-live="polite">
       <div class="weather-card-header">
         <div>
-          <p class="eyebrow">Frame selector</p>
           <h2 id="radarFrameCount">0 frames</h2>
         </div>
         <span id="radarTimeLabel" class="metric-pill">Not loaded</span>
       </div>
       <input id="radarFrameRange" class="range-control" type="range" min="0" max="0" value="0" disabled />
-      <p id="statusText" class="status-text">Ready. No RainViewer request has been made yet.</p>
+      <p id="statusText" class="status-text">Ready.</p>
       <pre id="tileTemplate" class="code-panel">No frame selected.</pre>
     </section>
 
@@ -57,4 +53,3 @@
   <script src="rainviewer.js?v=0.3.0-demapped-weather-apis"></script>
 </body>
 </html>
-<!-- End of file: FieldOpsAtlas/Features/Weather/rainviewer.html -->

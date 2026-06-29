@@ -1,11 +1,11 @@
 {
-  "version": "0.2.0-atlas-west-wales-demo-sites",
-  "note": "Anonymised demo data derived exclusively from data/regions/West-Wales-sites.json. No separate named-location fixture is stored in Weather.",
+  "version": "0.2.0-atlas-west-wales-sites",
+  "note": "Anonymised data derived from data/regions/West-Wales-sites.json.",
   "source": "../../../../data/regions/West-Wales-sites.json",
   "regions": [
     {
       "id": "West-Wales",
-      "name": "West-Wales Demo",
+      "name": "West-Wales",
       "bounds": [
         [
           51.682979,

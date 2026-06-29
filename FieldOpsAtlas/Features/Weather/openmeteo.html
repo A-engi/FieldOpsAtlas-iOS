@@ -3,18 +3,17 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Open-Meteo Site Risk · FieldOps Atlas Weather</title>
+  <title>Open-Meteo Site Risk - FieldOps Atlas Weather</title>
   <link rel="stylesheet" href="styles.css?v=0.3.2-provider-test-clean" />
 </head>
 <body>
   <main class="lab-shell provider-shell" data-page="openmeteo">
     <header class="lab-header">
-      <a class="back-link" href="rainviewer.html">‹ RainViewer</a>
+      <a class="back-link" href="rainviewer.html">RainViewer</a>
       <div>
-        <p class="eyebrow">Weather API</p>
         <h1>Open-Meteo site risk</h1>
       </div>
-      <a class="back-link" href="metoffice.html">Met Office ›</a>
+      <a class="back-link" href="metoffice.html">Met Office</a>
     </header>
 
     <nav class="provider-tabs" aria-label="Weather provider screens">
@@ -26,9 +25,7 @@
 
     <section class="hero-card provider-card-stack">
       <div>
-        <p class="eyebrow">No API map loaded here</p>
-        <h2>Forecast values for a small site batch</h2>
-        <p>This screen fetches forecast data only. It does not load site markers, OSM tiles, or provider maps.</p>
+        <h2>Site risk</h2>
       </div>
       <div class="button-row">
         <button id="loadSitesButton" class="secondary-button" type="button">Reload sites</button>
@@ -39,12 +36,11 @@
     <section class="weather-data-card">
       <div class="weather-card-header">
         <div>
-          <p class="eyebrow">Sites</p>
           <h2><span id="regionCount">0</span> region(s), <span id="siteCount">0</span> site(s)</h2>
         </div>
         <label class="field-label" for="siteSearch">Find site</label>
       </div>
-      <input id="siteSearch" class="text-input" autocomplete="off" placeholder="Preseli" />
+      <input id="siteSearch" class="text-input" autocomplete="off" placeholder="Search site" />
       <p id="statusText" class="status-text">Ready.</p>
     </section>
 
@@ -59,4 +55,3 @@
   <script src="openmeteo.js?v=0.3.0-demapped-weather-apis"></script>
 </body>
 </html>
-<!-- End of file: FieldOpsAtlas/Features/Weather/openmeteo.html -->

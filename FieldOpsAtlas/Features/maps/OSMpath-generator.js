@@ -609,6 +609,3 @@
     clear: clear
   };
 }());
-
-/* Destination: FieldOpsAtlas/Features/maps/OSMpath-generator.js */
-/* End of file: FieldOpsAtlas/Features/maps/OSMpath-generator.js | bottom/end of file */

@@ -14366,6 +14366,3 @@
     initAll();
   }
 })();
-
-/* Destination: FieldOpsAtlas/Features/RF/rf-graph.js */
-/* End of file: FieldOpsAtlas/Features/RF/rf-graph.js */

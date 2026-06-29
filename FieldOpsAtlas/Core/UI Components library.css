@@ -4,10 +4,8 @@
   Version: 0.1.0
 
   Purpose:
-  - Reusable button standards for the browser prototype.
-  - Kept generic so the same sizing/layout rules can map cleanly to Swift/iOS later.
-  - This file does not load icons or choose page-specific effects.
-  - Page files can override variables when needed.
+ - Kept generic so the same sizing/layout rules can map cleanly to Swift/iOS later.
+ - Page files can override variables when needed.
 
   Components:
   - ibutton1      = icon-only button

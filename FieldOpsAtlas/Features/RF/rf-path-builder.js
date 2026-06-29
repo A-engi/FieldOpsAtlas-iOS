@@ -4,8 +4,7 @@
    Version: 1.1.125-network-topology
 
    Purpose:
-   - Own the prototype-safe RF topology model used by the RF graph renderer.
-   - Keep graph drawing in rf-graph.js.
+  - Keep graph drawing in rf-graph.js.
    - Keep the collapsible pane focused on one selected path.
    - Keep all values demo-only and free of private operational data.
    ========================================================================== */
@@ -230,7 +229,7 @@
         source: "FieldOpsRFPathBuilder",
         builderVersion: VERSION,
         mode: "demo-safe-rf-network",
-        note: "Prototype-safe RF network map. Replace with real path records when available."
+        note: "RF network map."
       },
       nodes: SITES.map(graphNodeFromSite),
       links: LINKS.map((link) => ({ ...link }))
@@ -373,6 +372,3 @@
     init();
   }
 })();
-
-/* Destination: FieldOpsAtlas/Features/RF/rf-path-builder.js */
-/* End of file: FieldOpsAtlas/Features/RF/rf-path-builder.js */

@@ -30,7 +30,7 @@
     state.sites = Lab.allSites(state.regions);
     populateSites();
     bindEvents();
-    setStatus("Ready. Pick a sample site and load nearby Environment Agency rainfall gauges.");
+    setStatus("Ready.");
   }
 
   function populateSites() {
@@ -58,7 +58,7 @@
 
     const radiusKm = Number(els.distanceRange?.value || 40);
     setBusy(true);
-    setStatus(`Loading EA rainfall stations within ${radiusKm} km of ${site.name}...`);
+    setStatus(`Loading...`);
 
     try {
       const url = `${EA_ROOT}/id/stations?parameter=rainfall&lat=${site.lat}&long=${site.lon}&dist=${radiusKm}`;
@@ -68,7 +68,7 @@
       const stations = Array.isArray(data?.items) ? data.items : [];
       const gauges = stations.map((station) => normaliseGauge(station, site)).filter(Boolean).sort((a, b) => a.distanceKm - b.distanceKm);
       renderGauges(gauges);
-      setStatus(`${gauges.length} rainfall gauge(s) found. No map or marker layer was created.`);
+      setStatus(`Loaded.`);
     } catch (error) {
       setStatus(error?.message || "EA rainfall gauge request failed.");
     } finally {
@@ -94,7 +94,7 @@
   function renderGauges(gauges) {
     if (!els.gaugeList) return;
     if (!gauges.length) {
-      els.gaugeList.innerHTML = `<p class="status-text">No rainfall gauges found in this radius.</p>`;
+      els.gaugeList.innerHTML = `<p class="status-text">No results.</p>`;
       return;
     }
 
@@ -109,7 +109,7 @@
 
   function clearGauges() {
     if (els.gaugeList) els.gaugeList.innerHTML = "";
-    setStatus("Gauge list cleared. No API request was made.");
+    setStatus("Cleared.");
   }
 
   function currentSite() {
@@ -125,5 +125,3 @@
     if (els.statusText) els.statusText.textContent = message;
   }
 })();
-
-/* End of file: FieldOpsAtlas/Features/Weather/ea-rainfall.js */

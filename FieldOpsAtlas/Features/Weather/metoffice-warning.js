@@ -36,7 +36,8 @@
 
   var ATLAS_REGION_FEEDS = {
     "west-wales": "wl",
-    "south-wales": "wl"
+    "south-wales": "wl",
+    "north-wales": "wl"
   };
 
   var NAME_RULES = [
@@ -47,7 +48,11 @@
     { code: "ta", pattern: /\b(tayside|fife|perth|dundee|stirling)\b/i },
     { code: "dg", pattern: /\b(lothian|borders|dumfries|galloway|edinburgh)\b/i },
     { code: "ni", pattern: /\b(northern ireland|ulster|belfast)\b/i },
-    { code: "wl", pattern: /\b(wales|welsh)\b/i },
+    {
+      code: "wl",
+      pattern:
+        /\b(wales|welsh|cardiff|swansea|pembroke|ceredigion|newport|powys|gwynedd)\b/i
+    },
     {
       code: "nw",
       pattern:

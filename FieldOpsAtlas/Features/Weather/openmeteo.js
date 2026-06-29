@@ -79,7 +79,7 @@
       state.regions = await Lab.loadRegions();
       state.sites = Lab.allSites(state.regions);
       updateSelectedSites();
-      setStatus(`${state.regions.length} region(s), ${state.sites.length} sample site(s) loaded. No map or marker data was created.`);
+      setStatus(`Loaded.`);
     } catch (error) {
       setStatus(error?.message || "Site list failed to load.");
     } finally {
@@ -128,7 +128,7 @@
       });
 
       renderRisks();
-      setStatus(`Open-Meteo loaded ${forecasts.length} forecast record(s) in one request.`);
+      setStatus(`Loaded.`);
     } catch (error) {
       setStatus(error?.message || "Open-Meteo request failed.");
     } finally {
@@ -250,7 +250,7 @@
       score: 0,
       current: {},
       hours: [],
-      summary: "Risk not loaded yet."
+      summary: "Not loaded."
     };
   }
 
@@ -263,5 +263,3 @@
     if (els.statusText) els.statusText.textContent = message;
   }
 })();
-
-/* End of file: FieldOpsAtlas/Features/Weather/openmeteo.js */

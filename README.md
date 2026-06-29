@@ -1,8 +1,8 @@
 # FieldOps Atlas Web
 
-FieldOps Atlas Web is a static GitHub Pages prototype for field engineering map, RF, network, docs, tools, profile, and weather workflows.
+FieldOps Atlas Web is a static GitHub Pages app for field engineering map, RF, network, docs, tools, profile, and weather workflows.
 
-The browser prototype is the current source of truth. Keep private operational data out of the public repo.
+The browser app is the current source of truth. Keep private operational data out of the public repo.
 
 ## Live app
 
@@ -90,7 +90,7 @@ FieldOpsAtlas/Features/RFPages/*.html
 
 RF owns the RF dashboard, RF graph, service pages, path details pane, and RF navigation.
 
-The dynamic graph loads external data from `data/rf-graph.json` when present and otherwise keeps using the embedded demo graph.
+The dynamic graph loads external data from `data/rf-graph.json` when present and otherwise uses the embedded graph.
 
 ### Feature pages
 
@@ -104,9 +104,9 @@ FieldOpsAtlas/Features/Weather/index.html
 
 Network, Docs, Tools, Profile, and Weather are feature-owned pages/folders. Weather contains the provider test pages for RainViewer, Open-Meteo, Met Office DataHub Map Images, and EA rainfall gauges.
 
-## Public prototype data rule
+## Public Data Rule
 
-Public transmitter/site names, locations, and frequencies can be used as prototype data. Keep sensitive or internal operational data dummy-only, including access notes, contacts, SharePoint links, switch ports, IPs, spares locations, config notes, job details, and fault details.
+Keep sensitive or internal operational data dummy-only, including access notes, contacts, SharePoint links, switch ports, IPs, spares locations, config notes, job details, and fault details.
 
 ## Smoke check
 
@@ -121,5 +121,3 @@ RFPages links open under FieldOpsAtlas/Features/RFPages/
 Network, Docs, and Tools links resolve to active feature/RFPages paths
 Profile opens from the drawer user row
 ```
-
-<!-- End of file: README.md -->

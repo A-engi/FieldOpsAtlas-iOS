@@ -1,15 +1,3 @@
-/* Met Office DataHub Map Images v0.4.2
-   Destination: FieldOpsAtlas/Features/Weather/metoffice.js
-
-   - Debug/count/control pane deleted.
-   - Provider-owned maps removed.
-   - Clean/repaint image path deleted.
-   - Rainfall PNG is shown as returned by Met Office. Colours are not inserted
-     a second time by this screen.
-   - Weather display colours remain centralised in weather-display-style.js
-     for future legends/overlays, not for repainting the already-coloured PNG.
-*/
-
 (() => {
   "use strict";
 
@@ -104,7 +92,7 @@
     const apiKey = getApiKey();
     const orderId = getOrderId();
     if (!apiKey || !orderId) {
-      setStatus(`Setup needed: paste the Map Images key. Order ID defaults to ${DEFAULT_ORDER_ID} while this prototype is being built.`);
+      setStatus(`Setup needed: paste the Map Images key. Default order ID: ${DEFAULT_ORDER_ID}.`);
       return;
     }
 
@@ -195,7 +183,7 @@
       els.image.alt = `Met Office ${LAYERS[state.layer].label} image: ${state.selectedFileId}`;
       els.image.hidden = false;
       els.placeholder.hidden = true;
-      setStatus(state.layer === "rainfall" ? "Rainfall image loaded from Met Office. No local colour repaint applied." : "Image loaded from Met Office.");
+      setStatus(state.layer === "rainfall" ? "Loaded." : "Loaded.");
     } catch (error) {
       setStatus(getErrorMessage(error));
       clearImage();
@@ -447,5 +435,3 @@
 
   window.addEventListener("beforeunload", clearImageUrl);
 })();
-
-/* End of file: FieldOpsAtlas/Features/Weather/metoffice.js */

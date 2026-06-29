@@ -2782,7 +2782,7 @@
       page: "map",
       label: "Maps",
       placeholder: "Search Map...",
-      emptyText: "No loaded walks match that search.",
+      emptyText: "No results.",
       items: state.walks.map(function searchItem(walk) {
         return {
           id: walk.id,
@@ -2976,7 +2976,7 @@
       return;
     }
 
-    panes().setSiteWeatherText("Loading weather...");
+    panes().setSiteWeatherText("Loading...");
 
     weather.loadSiteWeather(walk)
       .then(panes().setSiteWeatherText)
@@ -3219,6 +3219,3 @@
     init();
   }
 }());
-
-/* Destination: FieldOpsAtlas/Features/maps/OSMmaps.js */
-/* End of file: FieldOpsAtlas/Features/maps/OSMmaps.js | bottom/end of file */

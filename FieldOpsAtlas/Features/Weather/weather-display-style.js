@@ -1,12 +1,3 @@
-/* FieldOps Atlas Weather display style v0.1.2
-   Destination: FieldOpsAtlas/Features/Weather/weather-display-style.js
-
-   Purpose:
-   Shared Weather display constants only. This file is not API configuration.
-   Provider/API scripts should read Weather display choices from here instead
-   of defining separate rainfall palettes locally.
-*/
-
 (function initialiseFieldOpsWeatherDisplayStyle(global) {
   "use strict";
 
@@ -61,5 +52,3 @@
     module.exports = FIELDOPS_WEATHER_DISPLAY_STYLE;
   }
 })(typeof window !== "undefined" ? window : globalThis);
-
-/* End of file: FieldOpsAtlas/Features/Weather/weather-display-style.js */

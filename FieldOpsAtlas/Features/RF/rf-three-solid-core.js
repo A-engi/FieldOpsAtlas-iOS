@@ -659,6 +659,3 @@ globalThis.FieldOpsRFThreeSolidCore = Object.freeze({
   radialSegments: RADIAL_SEGMENTS,
   closedRemesh: true
 });
-
-/* Destination: FieldOpsAtlas/Features/RF/rf-three-solid-core.js */
-/* End of file: FieldOpsAtlas/Features/RF/rf-three-solid-core.js */

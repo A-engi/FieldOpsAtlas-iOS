@@ -1041,6 +1041,3 @@
     }
   };
 }());
-
-/* Destination: FieldOpsAtlas/Features/maps/OSMrf-paths.js */
-/* End of file: FieldOpsAtlas/Features/maps/OSMrf-paths.js | bottom/end of file */

@@ -1,18 +1,18 @@
-# FieldOps Atlas Weather Lab
+# FieldOps Atlas Weather
 
-A static FieldOps Atlas Web feature lab for weather-provider experiments.
+Static Weather pages for FieldOps Atlas Web.
 
 ## Purpose
 
-This feature folder tests:
+This feature folder includes:
 
-1. RainViewer radar tiles as a UK-wide rain/blob overlay.
-2. Open-Meteo batched site risk for visible region sites.
-3. Met Office DataHub Map Images access with a user-supplied key and order name.
+1. RainViewer radar.
+2. Open-Meteo site risk.
+3. Met Office DataHub Map Images with a user-supplied key and order name.
 
 No internal Atlas operational data belongs here.
 
-Weather site records must be derived only from the anonymised Atlas region datasets. The current Weather source is `data/regions/West-Wales-sites.json`; do not maintain a separate named-location fixture or hardcoded coordinate fallback.
+Weather site records must be derived only from the anonymised Atlas region datasets.
 
 ## Provider notes
 
@@ -26,13 +26,11 @@ https://api.rainviewer.com/public/weather-maps.json
 
 Then uses returned `host` and `path` values to create Leaflet radar tiles.
 
-RainViewer public examples state personal-use limits including max native zoom level 7, Universal Blue, past radar data only and PNG format.
+RainViewer examples include personal-use limits.
 
 ### Open-Meteo
 
 No API key. The app batches visible site coordinates into compact forecast calls.
-
-It intentionally fetches only a small set of variables for site-risk testing.
 
 ### Met Office DataHub Map Images
 
@@ -44,13 +42,11 @@ The test request uses:
 https://data.hub.api.metoffice.gov.uk/map-images/1.0.0/orders/{order}/latest?detail=MINIMAL
 ```
 
-and then tries to preview the first returned PNG file.
-
-If this fails in browser due to CORS, that is useful: it means the final Atlas version needs a tiny backend/proxy or native app networking rather than direct GitHub Pages access.
+and then previews the first returned PNG file.
 
 ## GitHub Pages
 
-After GitHub Pages is enabled for the repo, open:
+GitHub Pages URL:
 
 ```text
 https://a-engi.github.io/FieldOpsAtlas-Web/FieldOpsAtlas/Features/Weather/
@@ -71,5 +67,3 @@ FieldOpsAtlas/Features/Weather/README.md
 Do not commit API keys, access notes, contacts, internal links, ports, IPs, spares locations, configuration notes, job details or fault details.
 
 Do not add separate named-location site fixtures. Weather must use the anonymised Atlas region files.
-
-<!-- End of file: FieldOpsAtlas/Features/Weather/README.md -->

@@ -1,10 +1,3 @@
-/* FieldOps Atlas Weather styles v0.3.6
-   Destination: FieldOpsAtlas/Features/Weather/styles.css
-
-   Weather provider-test and lightweight Weather map stylesheet.
-   The Weather map filters the base pane only; RainViewer weather overlays remain unfiltered.
-*/
-
 :root {
   color-scheme: dark;
   --page-bg: #08111e;
@@ -723,5 +716,3 @@ button:disabled {
     min-height: 46vh;
   }
 }
-
-/* End of file: FieldOpsAtlas/Features/Weather/styles.css */

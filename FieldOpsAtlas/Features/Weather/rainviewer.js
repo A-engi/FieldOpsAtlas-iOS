@@ -36,11 +36,11 @@
   async function loadFrames({ manual } = { manual: false }) {
     if (els.loadRadarButton) {
       els.loadRadarButton.disabled = true;
-      els.loadRadarButton.textContent = manual ? "Reloading frames..." : "Loading frames...";
+      els.loadRadarButton.textContent = manual ? "Reloading..." : "Loading...";
     }
 
     try {
-      setStatus("Loading RainViewer frame list...");
+      setStatus("Loading...");
       const response = await fetch(RAINVIEWER_API, { cache: "no-store" });
       if (!response.ok) throw new Error(`RainViewer HTTP ${response.status}`);
       const data = await response.json();
@@ -63,7 +63,7 @@
 
       renderFrameList();
       showFrame(Math.max(0, state.frames.length - 1));
-      setStatus(`${state.frames.length} observed RainViewer frames loaded. All frames are available; no hourly grouping is applied.`);
+      setStatus("Loaded.");
     } catch (error) {
       setStatus(error?.message || "RainViewer frame load failed.");
       state.frames = [];
@@ -108,7 +108,7 @@
   function renderFrameList() {
     if (!els.frameList) return;
     if (!state.frames.length) {
-      els.frameList.innerHTML = `<p class="status-text">No frames loaded.</p>`;
+    els.frameList.innerHTML = `<p class="status-text">No results.</p>`;
       return;
     }
 
@@ -138,5 +138,3 @@
     if (els.statusText) els.statusText.textContent = message;
   }
 })();
-
-/* End of file: FieldOpsAtlas/Features/Weather/rainviewer.js */

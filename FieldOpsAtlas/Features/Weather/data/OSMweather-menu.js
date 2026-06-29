@@ -95,5 +95,4 @@
     init();
   }
 })();
-
-// End of file: FieldOpsAtlas/Features/maps/OSMweather-menu.js
+ FieldOpsAtlas/Features/maps/OSMweather-menu.js
