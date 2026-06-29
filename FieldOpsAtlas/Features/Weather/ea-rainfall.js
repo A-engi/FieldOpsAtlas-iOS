@@ -1,4 +1,4 @@
-/* Environment Agency rainfall gauge API tester v0.3.0
+/* Environment Agency rainfall gauge API tester v0.3.1
    Data-only screen. No OSM/Leaflet map and no markers.
 */
 
@@ -38,8 +38,7 @@
     els.siteSelect.innerHTML = state.sites.map((site) => `
       <option value="${Lab.escapeHtml(site.id)}">${Lab.escapeHtml(site.name)} · ${Lab.escapeHtml(site.region)}</option>
     `).join("");
-    const preseli = state.sites.find((site) => site.name.toLowerCase() === "preseli");
-    if (preseli) els.siteSelect.value = preseli.id;
+    if (state.sites[0]) els.siteSelect.value = state.sites[0].id;
   }
 
   function bindEvents() {
