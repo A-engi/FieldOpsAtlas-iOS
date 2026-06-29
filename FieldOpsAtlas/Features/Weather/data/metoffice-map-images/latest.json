@@ -1,0 +1,13 @@
+{
+  "status": "ok",
+  "generatedAt": "2026-06-29T20:34:32.764Z",
+  "provider": "Met Office DataHub",
+  "product": "Map Images",
+  "layer": "rainfall",
+  "includeLand": false,
+  "image": "latest-rainfall.png",
+  "selectedFileId": "total_precipitation_rate_ts9_2026062900",
+  "validIso": "",
+  "frameKey": "2026062900",
+  "rainfallFileCount": 98
+}
