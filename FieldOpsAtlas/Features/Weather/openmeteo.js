@@ -1,4 +1,4 @@
-/* Open-Meteo site-risk API tester v0.3.0
+/* Open-Meteo site-risk API tester v0.3.1
    Data-only screen. No OSM/Leaflet map, no markers, no local colour palette.
 */
 
@@ -91,7 +91,7 @@
     const query = String(els.siteSearch?.value || "").trim().toLowerCase();
     const source = query
       ? state.sites.filter((site) => site.name.toLowerCase().includes(query) || site.region.toLowerCase().includes(query))
-      : preferPreseliBatch(state.sites);
+      : preferDemoBatch(state.sites);
 
     state.selectedSites = source.slice(0, MAX_SITES_PER_BATCH);
     if (els.regionCount) els.regionCount.textContent = String(state.regions.length);
@@ -99,10 +99,8 @@
     renderRisks();
   }
 
-  function preferPreseliBatch(sites) {
-    const preseli = sites.find((site) => site.name.toLowerCase() === "preseli");
-    if (!preseli) return sites;
-    return [...sites].sort((a, b) => Lab.haversineKm(preseli, a) - Lab.haversineKm(preseli, b));
+  function preferDemoBatch(sites) {
+    return sites;
   }
 
   async function fetchRisk({ auto }) {
